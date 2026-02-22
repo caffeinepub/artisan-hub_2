@@ -1,58 +1,175 @@
 {
   "kind": "build_request",
-  "title": "Add stock quantity increment button in product management dashboard",
+  "title": "Enhance home page with dynamic product displays and add Shop Details admin section",
+  "projectName": "Artisan Hub",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-38",
-      "text": "Add a '+' increment button next to the inventory count in the ProductManagementTable component that increases the stock quantity by 1 for each click",
+      "id": "REQ-44",
+      "text": "Redesign the Marketplace home page (frontend/src/pages/Marketplace.tsx) to display dynamic product sections including: featured products, most viewed products, most sold products, and newest designs. The page should automatically reflect newly uploaded products when customers visit without requiring manual refresh.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-last"
         ],
         "quotes": [
-          "in the dashboard when managing products enable to increment the stock quantity of items for administration purpose"
+          "auto refresh home page with info about products",
+          "show featured products, most viewed products, and most sold, newest designs"
         ]
       },
       "acceptanceCriteria": [
-        "A '+' button appears next to the inventory count in each product row in the ProductManagementTable",
-        "Clicking the '+' button increments the inventory count by 1",
-        "The increment action immediately saves to the backend using the updateProduct function",
-        "A success toast notification appears after successful increment",
-        "The button shows a loading state while the update is in progress",
-        "The inventory count updates in the UI after successful increment"
+        "Home page displays a 'Featured Products' section with product cards",
+        "Home page displays a 'Most Viewed Products' section with product cards",
+        "Home page displays a 'Best Sellers' section showing most sold products",
+        "Home page displays a 'Newest Designs' section showing recently added products",
+        "Newly uploaded products appear in the appropriate sections when customers visit the home page",
+        "Each product section shows product images, names, and prices with links to detail view"
       ]
     },
     {
-      "id": "REQ-39",
-      "text": "Ensure the backend updateProduct function supports updating only the inventory count field without requiring other product fields",
+      "id": "REQ-45",
+      "text": "Add backend methods to support home page product displays: getMostViewedProducts(), getBestSellingProducts(), and getNewestProducts(). Implement view tracking for products and sales tracking to support these queries.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-6"
+          "msg-last"
+        ],
+        "quotes": [
+          "most viewed products",
+          "most sold"
         ]
       },
       "acceptanceCriteria": [
-        "The updateProduct function accepts partial product updates including inventory count only",
-        "Incrementing inventory count preserves all other product fields unchanged",
-        "The function returns success status after updating inventory count"
+        "Backend provides getMostViewedProducts() method returning products sorted by view count",
+        "Backend provides getBestSellingProducts() method returning products sorted by total sales",
+        "Backend provides getNewestProducts() method returning products sorted by creation date descending",
+        "Product view count is tracked and persisted when products are viewed",
+        "Product sales count is tracked and persisted when purchases are completed"
+      ]
+    },
+    {
+      "id": "REQ-46",
+      "text": "Update the Marketplace home page hero section with a new background and motto text about selling original handcrafted products designed, produced, and sold by the trader. Include promotional elements to attract buyers.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "make something up that has to do with selling original products designed, produced and sold by me",
+          "publicity tools for attracting buyers"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Hero section displays a new background design with warm, artisan-appropriate colors",
+        "Hero section includes a compelling motto about original handcrafted products",
+        "Hero section includes promotional text encouraging buyers to explore unique designs",
+        "Visual design is cohesive with the existing artisan marketplace aesthetic"
+      ]
+    },
+    {
+      "id": "REQ-47",
+      "text": "Create a new 'Shop Details' section in the admin Dashboard page (frontend/src/pages/Dashboard.tsx) as a separate tab where the trader can configure contact email address.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "new separate \"Shop Details\"",
+          "contact details to send email, setup for this i can find in profile settings shop details"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Dashboard page includes a new 'Shop Details' tab alongside existing tabs",
+        "Shop Details tab contains a form with an email input field",
+        "Form includes a save button to persist shop contact details",
+        "Success/error feedback is displayed when saving shop details",
+        "Configured email is loaded and displayed when the tab is opened"
+      ]
+    },
+    {
+      "id": "REQ-48",
+      "text": "Add backend data structure and methods to store and retrieve shop contact details including contact email. Create getShopDetails() and updateShopDetails() methods with admin authentication.",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "shop details",
+          "contact details to send email"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Backend stores shop details configuration including contact email",
+        "Backend provides getShopDetails() method to retrieve current shop details",
+        "Backend provides updateShopDetails() method with admin-only access control",
+        "Shop details persist across canister upgrades",
+        "Empty/default shop details are returned when no configuration exists"
+      ]
+    },
+    {
+      "id": "REQ-49",
+      "text": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching shop details (useShopDetails) and updating shop details (useUpdateShopDetails) with admin authentication.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "shop details"
+        ]
+      },
+      "acceptanceCriteria": [
+        "useShopDetails hook fetches current shop details from backend",
+        "useUpdateShopDetails mutation hook updates shop details with admin authentication",
+        "Query cache is invalidated after successful shop details updates",
+        "Hooks handle loading and error states appropriately"
+      ]
+    },
+    {
+      "id": "REQ-50",
+      "text": "Update the Footer component (frontend/src/components/Footer.tsx) to display the configured contact email from Shop Details as a mailto link in the 'Connect' section. Show 'Contact: email@example.com' or similar label.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "at the footer it says connect, make this show contact details to send email",
+          "mailto link"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Footer displays contact email retrieved from shop details configuration",
+        "Email is rendered as a clickable mailto link",
+        "Contact section shows a label like 'Contact:' or 'Email:' before the email address",
+        "If no email is configured, the contact section is hidden or shows placeholder text",
+        "Clicking the mailto link opens the user's default email client"
       ]
     }
   ],
   "constraints": [
-    "Do not change the existing inline editing functionality for inventory count",
-    "Maintain the single-actor architecture in backend/main.mo",
-    "Do not modify read-only paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui"
+    "Do not modify frontend/src/hooks/useInternetIdentity.ts or useInternetIdentity.tsx",
+    "Do not modify frontend/src/hooks/useActor.ts",
+    "Do not modify frontend/src/main.tsx",
+    "Do not modify frontend/src/components/ui components",
+    "Maintain single-actor architecture in backend/main.mo",
+    "Preserve existing Stripe checkout integration flow",
+    "Keep existing product management and bulk upload functionality intact"
   ],
   "nonGoals": [
-    "Adding decrement functionality",
-    "Allowing custom increment amounts (other than +1)",
-    "Bulk inventory updates across multiple products",
-    "Inventory history tracking"
+    "Creating customer review functionality (explicitly dismissed)",
+    "Implementing real-time websocket updates for home page",
+    "Adding product filtering or search functionality",
+    "Creating separate shop details management outside admin dashboard",
+    "Modifying existing branding configuration structure"
   ],
   "imageRequirements": {
-    "required": [],
+    "required": [
+      "Hero background image with warm artisan marketplace aesthetic featuring handcrafted items and creative workspace (hero-background.dim_1920x600.png)"
+    ],
     "edits": []
   }
 }

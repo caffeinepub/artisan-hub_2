@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
+  "projectStateVersion": 19,
   "summary": "Artisan Hub marketplace for a sole trader to sell handmade products with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -10,13 +10,18 @@
     "Shopping basket uses temporary cart/session storage for multi-item purchases",
     "Stripe integration supports both single-item and multi-item checkout flows",
     "Bulk upload uses manual description input by default, with AI generation as optional feature",
-    "Bulk upload auto-copy feature copies title, price, inventory count, and category from first item to subsequent items, triggered by user control (button/checkbox)"
+    "Bulk upload auto-copy feature copies title, price, inventory count, and category from first item to subsequent items, triggered by user control (button/checkbox)",
+    "Stripe checkout handles all shipping and billing information collection, platform does not collect shipping details",
+    "Home page dynamically fetches and displays product statistics (featured, most viewed, most sold, newest) from backend"
   ],
   "known_issues": [
     "Images fail to persist when creating products through bulk upload interface",
-    "Buy Now button redirects to 'no products selected' page instead of Stripe checkout"
+    "Buy Now button redirects to 'no products selected' page instead of Stripe checkout",
+    "Platform shows signup prompts after Internet Identity login",
+    "Checkout flow collects shipping information before redirecting to Stripe"
   ],
   "isFixRequest": true,
+  "imageRequirements": "## Required Images\n- Hero background image with warm artisan marketplace aesthetic featuring handcrafted items and creative workspace (hero-background.dim_1920x600.png)",
   "existing_features": [
     {
       "id": "feature-create-bulk-image-upload-interface-that-allows-uploading-multiple-images-at-once-assigns-all-images-to-a-single-selected-category-and-automatically-creates-one-product-per-uploaded-image",
@@ -273,6 +278,70 @@
         "REQ-38"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-remove-all-shipping-information-input-fields-from-the-checkout-page-component-and-update-the-checkout-flow-to-redirect-directly-to-stripe-checkout-session-creation-without-collecting-shipping-data",
+      "title": "Remove all shipping information input fields from the Checkout page component and update the checkout flow to redirect directly to Stripe checkout session creation without collecting shipping data",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-or-disable-the-profilesetupmodal-component-that-prompts-users-to-create-a-profile-after-internet-identity-login",
+      "title": "Remove or disable the ProfileSetupModal component that prompts users to create a profile after Internet Identity login",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-layout-component-to-remove-the-profilesetupmodal-integration-and-allow-authenticated-users-to-use-the-platform-without-mandatory-profile-setup",
+      "title": "Update the Layout component to remove the ProfileSetupModal integration and allow authenticated users to use the platform without mandatory profile setup",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-redesign-the-marketplace-home-page-frontend-src-pages-marketplace-tsx-to-display-dynamic-product-sections-including-featured-products-most-viewed-products-most-sold-products-and-newest-designs-the-page-should-automatically-reflect-newly-uploaded-products-when-customers-visit-without-requiring-manual-refresh",
+      "title": "Redesign the Marketplace home page (frontend/src/pages/Marketplace.tsx) to display dynamic product sections including: featured products, most viewed products, most sold products, and newest designs. The page should automatically reflect newly uploaded products when customers visit without requiring manual refresh.",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-marketplace-home-page-hero-section-with-a-new-background-and-motto-text-about-selling-original-handcrafted-products-designed-produced-and-sold-by-the-trader-include-promotional-elements-to-attract-buyers",
+      "title": "Update the Marketplace home page hero section with a new background and motto text about selling original handcrafted products designed, produced, and sold by the trader. Include promotional elements to attract buyers.",
+      "reqIds": [
+        "REQ-46"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-new-shop-details-section-in-the-admin-dashboard-page-frontend-src-pages-dashboard-tsx-as-a-separate-tab-where-the-trader-can-configure-contact-email-address",
+      "title": "Create a new 'Shop Details' section in the admin Dashboard page (frontend/src/pages/Dashboard.tsx) as a separate tab where the trader can configure contact email address.",
+      "reqIds": [
+        "REQ-47"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-in-frontend-src-hooks-usequeries-ts-for-fetching-shop-details-useshopdetails-and-updating-shop-details-useupdateshopdetails-with-admin-authentication",
+      "title": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching shop details (useShopDetails) and updating shop details (useUpdateShopDetails) with admin authentication.",
+      "reqIds": [
+        "REQ-49"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-footer-component-frontend-src-components-footer-tsx-to-display-the-configured-contact-email-from-shop-details-as-a-mailto-link-in-the-connect-section-show-contact-email-example-com-or-similar-label",
+      "title": "Update the Footer component (frontend/src/components/Footer.tsx) to display the configured contact email from Shop Details as a mailto link in the 'Connect' section. Show 'Contact: email@example.com' or similar label.",
+      "reqIds": [
+        "REQ-50"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -419,6 +488,72 @@
       "summary": "Ensure the backend updateProduct function supports updating only the inventory count field without requiring other product fields",
       "reqIds": [
         "REQ-39"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-35",
+      "summary": "Remove shipping info collection from platform, redirect directly to Stripe checkout for all payment flows",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-36",
+      "summary": "Remove signup prompts/popups that appear after Internet Identity login",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-38",
+      "summary": "Update the backend createStripeCheckoutSession function to accept checkout requests without shipping information and configure Stripe sessions accordingly",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-39",
+      "summary": "Redesign home page hero section with new background and motto about selling original handcrafted products designed, produced, and sold by the trader",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-40",
+      "summary": "Add dynamic product displays to home page showing featured products, most viewed products, most sold products, newest designs, and promotional elements to attract buyers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-41",
+      "summary": "Ensure home page automatically displays newly uploaded products without requiring manual refresh by customers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-42",
+      "summary": "Create a new 'Shop Details' section in admin settings to configure contact email",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-43",
+      "summary": "Update footer 'Connect' section to display contact email as a mailto link that is configured in Shop Details settings",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-45",
+      "summary": "Add backend methods to support home page product displays: getMostViewedProducts(), getBestSellingProducts(), and getNewestProducts(). Implement view tracking for products and sales tracking to support these queries.",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-48",
+      "summary": "Add backend data structure and methods to store and retrieve shop contact details including contact email. Create getShopDetails() and updateShopDetails() methods with admin authentication.",
+      "reqIds": [
+        "REQ-48"
       ],
       "status": "pending"
     }

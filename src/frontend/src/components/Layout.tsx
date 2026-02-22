@@ -4,14 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingBag, User, LogOut, LayoutDashboard, ShoppingBasket } from 'lucide-react';
 import Footer from './Footer';
-import { useGetCallerUserProfile, useGetCartItemCount, useBrandingConfig } from '../hooks/useQueries';
-import ProfileSetupModal from './ProfileSetupModal';
+import { useGetCartItemCount, useBrandingConfig } from '../hooks/useQueries';
 
 export default function Layout() {
   const navigate = useNavigate();
   const { identity, login, clear, loginStatus } = useInternetIdentity();
   const isAuthenticated = !!identity;
-  const { data: userProfile, isLoading: profileLoading, isFetched } = useGetCallerUserProfile();
   const { data: cartCount = 0 } = useGetCartItemCount();
   const { data: brandingConfig } = useBrandingConfig();
 
@@ -30,8 +28,6 @@ export default function Layout() {
       }
     }
   };
-
-  const showProfileSetup = isAuthenticated && !profileLoading && isFetched && userProfile === null;
 
   const siteName = brandingConfig?.siteName || 'Artisan Market';
   const logoUrl = brandingConfig?.logo?.getDirectURL();
@@ -110,7 +106,6 @@ export default function Layout() {
         <Outlet />
       </main>
       <Footer />
-      {showProfileSetup && <ProfileSetupModal />}
     </div>
   );
 }

@@ -5,13 +5,14 @@ import Storage "blob-storage/Storage";
 import MixinStorage "blob-storage/Mixin";
 import Map "mo:core/Map";
 import Principal "mo:core/Principal";
-import Iter "mo:core/Iter";
-import Text "mo:core/Text";
 import Array "mo:core/Array";
 import Runtime "mo:core/Runtime";
 import OutCall "http-outcalls/outcall";
 import Nat "mo:core/Nat";
 import Migration "migration";
+import Time "mo:core/Time";
+import Order "mo:core/Order";
+import Int "mo:core/Int";
 
 (with migration = Migration.run)
 actor {
@@ -94,6 +95,8 @@ actor {
     stripeProductDescription : Text;
     images : [Storage.ExternalBlob];
     inventoryCount : Nat;
+    viewCount : Nat;
+    createdAt : Time.Time;
   };
 
   let products = Map.empty<Nat, Product>();
@@ -111,6 +114,60 @@ actor {
   };
 
   let shoppingCarts = Map.empty<Principal, [CartItem]>();
+
+  type ShopDetails = {
+    shopName : Text;
+    address : {
+      street : Text;
+      city : Text;
+      zipcode : Text;
+      country : Text;
+    };
+    contactDetails : {
+      phone : Text;
+      email : Text;
+    };
+    openingHours : {
+      monday : ?Text;
+      tuesday : ?Text;
+      wednesday : ?Text;
+      thursday : ?Text;
+      friday : ?Text;
+      saturday : ?Text;
+      sunday : ?Text;
+    };
+    companyDetails : {
+      vatId : Text;
+      taxId : Text;
+    };
+  };
+
+  var shopDetails : ?ShopDetails = null;
+
+  public shared ({ caller }) func updateShopDetails(details : ShopDetails) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can update shop details");
+    };
+    shopDetails := ?details;
+  };
+
+  public query func getShopDetails() : async ?ShopDetails {
+    shopDetails;
+  };
+
+  // View tracking for products - No authentication required (public action)
+  public shared func trackProductView(productId : Nat) : async () {
+    switch (products.get(productId)) {
+      case (null) { Runtime.trap("Product not found") };
+      case (?product) {
+        let updatedProduct : Product = {
+          product with
+          viewCount = product.viewCount + 1;
+        };
+        products.add(productId, updatedProduct);
+      };
+    };
+  };
 
   // Stripe integration
   var configuration : ?Stripe.StripeConfiguration = null;
@@ -138,6 +195,8 @@ actor {
       stripeProductDescription;
       images;
       inventoryCount;
+      createdAt = Time.now();
+      viewCount = 0;
     };
 
     products.add(nextProductId, product);
@@ -205,17 +264,15 @@ actor {
     products.add(productId, updatedProduct);
   };
 
-  // Public query - anyone can view products
+  // Product retrieval functions - Public (no authentication required)
   public query func getProducts() : async [Product] {
     products.values().toArray();
   };
 
-  // Public query to get single product by id
   public query func getProduct(productId : Nat) : async ?Product {
     products.get(productId);
   };
 
-  // New function to get the total product count - Admin only
   public query ({ caller }) func getProductCount() : async Nat {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can view product count");
@@ -223,9 +280,7 @@ actor {
     products.size();
   };
 
-  // Shopping Cart Functions
-
-  // Get a user's cart items - Users only
+  // Shopping cart functions
   public query ({ caller }) func getCart() : async [CartItem] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access shopping cart");
@@ -236,7 +291,6 @@ actor {
     };
   };
 
-  // Add product to cart (creates cart if not exists) - Users only
   public shared ({ caller }) func addCartItem(productId : Nat, quantity : Nat) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can add items to cart");
@@ -257,7 +311,9 @@ actor {
       };
       case (?cart) {
         var found = false;
-        let updatedCart = cart.map(func(item) { if (item.product.id == productId) { found := true } });
+        for (item in cart.values()) {
+          if (item.product.id == productId) { found := true };
+        };
         if (found) {
           Runtime.trap("Product already in cart, use update quantity function");
         } else {
@@ -267,7 +323,6 @@ actor {
     };
   };
 
-  // Update quantity of a cart item - Users only
   public shared ({ caller }) func updateCartItem(productId : Nat, newQuantity : Nat) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can update cart items");
@@ -301,7 +356,6 @@ actor {
     shoppingCarts.add(caller, updatedCart);
   };
 
-  // Remove one item from cart (by product id) - Users only
   public shared ({ caller }) func removeCartItem(productId : Nat) : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can remove cart items");
@@ -328,7 +382,6 @@ actor {
     };
   };
 
-  // Remove all items from cart - Users only
   public shared ({ caller }) func removeAllCartItems() : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can clear their cart");
@@ -336,7 +389,6 @@ actor {
     shoppingCarts.remove(caller);
   };
 
-  // Get total (subtotals for now) - will later adjust for discounts, etc. - Users only
   public query ({ caller }) func getCartTotal() : async Nat {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can view cart total");
@@ -350,12 +402,10 @@ actor {
     total;
   };
 
-  // Public query - anyone can check if Stripe is configured
   public query func isStripeConfigured() : async Bool {
     configuration != null;
   };
 
-  // Admin only - sensitive configuration
   public shared ({ caller }) func setStripeConfiguration(config : Stripe.StripeConfiguration) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can configure Stripe");
@@ -370,22 +420,25 @@ actor {
     };
   };
 
-  // Public function - anyone (including guests) can check session status
   public func getStripeSessionStatus(sessionId : Text) : async Stripe.StripeSessionStatus {
     await Stripe.getSessionStatus(getStripeConfiguration(), sessionId, transform);
   };
 
-  // Public function - anyone (including guests) can create checkout session
   public shared ({ caller }) func createCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
     await Stripe.createCheckoutSession(getStripeConfiguration(), caller, items, successUrl, cancelUrl, transform);
   };
 
-  // Public query - required for HTTP outcalls
+  public shared ({ caller }) func createNoShippingCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can create checkout sessions");
+    };
+    await Stripe.createCheckoutSession(getStripeConfiguration(), caller, items, successUrl, cancelUrl, transform);
+  };
+
   public query func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
     OutCall.transform(input);
   };
 
-  // Add/Update product images
   public shared ({ caller }) func addOrUpdateProductImage(productId : Nat, image : Storage.ExternalBlob) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can add/update product images");
@@ -406,7 +459,6 @@ actor {
     products.add(productId, updatedProduct);
   };
 
-  // Replace specific image at index
   public shared ({ caller }) func replaceProductImage(productId : Nat, imageIndex : Nat, newImage : Storage.ExternalBlob) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can replace product images");
@@ -436,7 +488,6 @@ actor {
     products.add(productId, updatedProduct);
   };
 
-  // Checkout Function (create session from carts) - Users only
   public shared ({ caller }) func checkoutCartItems(successUrl : Text, cancelUrl : Text) : async ?Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can checkout");
@@ -483,5 +534,58 @@ actor {
       Runtime.trap("Unauthorized: Only admins can clear all carts");
     };
     shoppingCarts.clear();
+  };
+
+  // Sorting order types
+  public type SortingOrder = {
+    #mostViewed;
+    #bestSelling;
+    #newest;
+  };
+
+  // Product ordering modules
+  module ProductOrdering {
+    public func compareByViewCountDescending(a : Product, b : Product) : Order.Order {
+      Nat.compare(b.viewCount, a.viewCount);
+    };
+
+    public func compareByCreatedAtDescending(a : Product, b : Product) : Order.Order {
+      Int.compare(b.createdAt, a.createdAt);
+    };
+  };
+
+  // Home page product display functions - Public (no authentication required)
+  public query func getMostViewedProducts() : async [Product] {
+    let allProducts = products.values().toArray();
+    allProducts.sort(ProductOrdering.compareByViewCountDescending);
+  };
+
+  public query func getNewestProducts() : async [Product] {
+    let allProducts = products.values().toArray();
+    allProducts.sort(ProductOrdering.compareByCreatedAtDescending);
+  };
+
+  public query func getBestSellingProducts() : async [Product] {
+    // TODO: Implement best selling logic after implementing order tracking
+    // For now, return products sorted by view count as a placeholder
+    let allProducts = products.values().toArray();
+    allProducts.sort(ProductOrdering.compareByViewCountDescending);
+  };
+
+  public query func getProductsBySorting(sortType : SortingOrder) : async [Product] {
+    let allProducts = products.values().toArray();
+
+    switch (sortType) {
+      case (#mostViewed) {
+        allProducts.sort(ProductOrdering.compareByViewCountDescending);
+      };
+      case (#newest) {
+        allProducts.sort(ProductOrdering.compareByCreatedAtDescending);
+      };
+      case (#bestSelling) {
+        // TODO: best selling logic after implementing order tracking
+        allProducts.sort(ProductOrdering.compareByViewCountDescending);
+      };
+    };
   };
 };

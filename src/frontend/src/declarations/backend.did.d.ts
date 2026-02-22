@@ -23,12 +23,34 @@ export type ExternalBlob = Uint8Array;
 export interface Product {
   'id' : bigint,
   'name' : string,
+  'createdAt' : Time,
   'stripeProductId' : string,
   'shape' : string,
+  'viewCount' : bigint,
   'stripeProductDescription' : string,
   'inventoryCount' : bigint,
   'price' : bigint,
   'images' : Array<ExternalBlob>,
+}
+export interface ShopDetails {
+  'address' : {
+    'street' : string,
+    'country' : string,
+    'city' : string,
+    'zipcode' : string,
+  },
+  'openingHours' : {
+    'tuesday' : [] | [string],
+    'wednesday' : [] | [string],
+    'saturday' : [] | [string],
+    'thursday' : [] | [string],
+    'sunday' : [] | [string],
+    'friday' : [] | [string],
+    'monday' : [] | [string],
+  },
+  'shopName' : string,
+  'companyDetails' : { 'taxId' : string, 'vatId' : string },
+  'contactDetails' : { 'email' : string, 'phone' : string },
 }
 export interface ShoppingItem {
   'productName' : string,
@@ -37,6 +59,9 @@ export interface ShoppingItem {
   'priceInCents' : bigint,
   'productDescription' : string,
 }
+export type SortingOrder = { 'bestSelling' : null } |
+  { 'newest' : null } |
+  { 'mostViewed' : null };
 export interface StripeConfiguration {
   'allowedCountries' : Array<string>,
   'secretKey' : string,
@@ -45,6 +70,7 @@ export type StripeSessionStatus = {
     'completed' : { 'userPrincipal' : [] | [string], 'response' : string }
   } |
   { 'failed' : { 'error' : string } };
+export type Time = bigint;
 export interface TransformationInput {
   'context' : Uint8Array,
   'response' : http_request_result,
@@ -109,15 +135,24 @@ export interface _SERVICE {
     [Array<ShoppingItem>, string, string],
     string
   >,
+  'createNoShippingCheckoutSession' : ActorMethod<
+    [Array<ShoppingItem>, string, string],
+    string
+  >,
   'emptyCart' : ActorMethod<[], undefined>,
+  'getBestSellingProducts' : ActorMethod<[], Array<Product>>,
   'getBrandingConfig' : ActorMethod<[], BrandingConfig>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getCartTotal' : ActorMethod<[], bigint>,
+  'getMostViewedProducts' : ActorMethod<[], Array<Product>>,
+  'getNewestProducts' : ActorMethod<[], Array<Product>>,
   'getProduct' : ActorMethod<[bigint], [] | [Product]>,
   'getProductCount' : ActorMethod<[], bigint>,
   'getProducts' : ActorMethod<[], Array<Product>>,
+  'getProductsBySorting' : ActorMethod<[SortingOrder], Array<Product>>,
+  'getShopDetails' : ActorMethod<[], [] | [ShopDetails]>,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
@@ -130,6 +165,7 @@ export interface _SERVICE {
   >,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
+  'trackProductView' : ActorMethod<[bigint], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateBrandingConfig' : ActorMethod<[BrandingConfig], undefined>,
   'updateCartItem' : ActorMethod<[bigint, bigint], undefined>,
@@ -147,6 +183,7 @@ export interface _SERVICE {
     ],
     undefined
   >,
+  'updateShopDetails' : ActorMethod<[ShopDetails], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

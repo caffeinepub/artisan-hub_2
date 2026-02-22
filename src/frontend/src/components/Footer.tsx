@@ -1,10 +1,14 @@
 import { useNavigate } from '@tanstack/react-router';
-import { Heart } from 'lucide-react';
+import { Heart, Mail } from 'lucide-react';
+import { useShopDetails } from '../hooks/useQueries';
 
 export default function Footer() {
   const navigate = useNavigate();
+  const { data: shopDetails } = useShopDetails();
   const currentYear = new Date().getFullYear();
   const appIdentifier = encodeURIComponent(window.location.hostname || 'artisan-hub');
+
+  const contactEmail = shopDetails?.contactDetails?.email;
 
   return (
     <footer className="border-t border-border/40 bg-muted/30 mt-auto">
@@ -35,9 +39,19 @@ export default function Footer() {
           </div>
           <div>
             <h4 className="font-medium mb-3">Connect</h4>
-            <p className="text-sm text-muted-foreground">
-              Questions? We'd love to hear from you.
-            </p>
+            {contactEmail ? (
+              <a
+                href={`mailto:${contactEmail}`}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+              >
+                <Mail className="h-4 w-4" />
+                {contactEmail}
+              </a>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Questions? We'd love to hear from you.
+              </p>
+            )}
           </div>
         </div>
         <div className="mt-8 pt-6 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-4">

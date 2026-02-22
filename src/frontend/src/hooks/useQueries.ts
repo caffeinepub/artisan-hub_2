@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { Product, UserProfile, ShoppingItem, StripeConfiguration, ExternalBlob, CartItem, BrandingConfig } from '../backend';
+import type { Product, UserProfile, ShoppingItem, StripeConfiguration, ExternalBlob, CartItem, BrandingConfig, ShopDetails } from '../backend';
 
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
@@ -45,6 +45,45 @@ export function useGetProducts() {
     queryFn: async () => {
       if (!actor) return [];
       return actor.getProducts();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useMostViewedProducts() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Product[]>({
+    queryKey: ['products', 'mostViewed'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getMostViewedProducts();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useBestSellingProducts() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Product[]>({
+    queryKey: ['products', 'bestSelling'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getBestSellingProducts();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useNewestProducts() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<Product[]>({
+    queryKey: ['products', 'newest'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getNewestProducts();
     },
     enabled: !!actor && !isFetching,
   });
@@ -213,7 +252,7 @@ export function useCreateCheckoutSession() {
       const baseUrl = `${window.location.protocol}//${window.location.host}`;
       const successUrl = `${baseUrl}/payment-success`;
       const cancelUrl = `${baseUrl}/payment-failure`;
-      const result = await actor.createCheckoutSession(items, successUrl, cancelUrl);
+      const result = await actor.createNoShippingCheckoutSession(items, successUrl, cancelUrl);
       const session = JSON.parse(result) as { id: string; url: string };
       if (!session?.url) {
         throw new Error('Stripe session missing url');
@@ -328,6 +367,20 @@ export function useRemoveAllCartItems() {
   });
 }
 
+export function useGetCartItemCount() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<number>({
+    queryKey: ['cartCount'],
+    queryFn: async () => {
+      if (!actor) return 0;
+      const cart = await actor.getCart();
+      return cart.length;
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
 export function useGetCartTotal() {
   const { actor, isFetching } = useActor();
 
@@ -341,49 +394,6 @@ export function useGetCartTotal() {
   });
 }
 
-export function useGetCartItemCount() {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<number>({
-    queryKey: ['cartCount'],
-    queryFn: async () => {
-      if (!actor) return 0;
-      const cart = await actor.getCart();
-      return cart.reduce((sum, item) => sum + Number(item.quantity), 0);
-    },
-    enabled: !!actor && !isFetching,
-  });
-}
-
-export function useCheckoutCartItems() {
-  const { actor } = useActor();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async () => {
-      if (!actor) throw new Error('Actor not available');
-      const baseUrl = `${window.location.protocol}//${window.location.host}`;
-      const successUrl = `${baseUrl}/payment-success`;
-      const cancelUrl = `${baseUrl}/payment-failure`;
-      const result = await actor.checkoutCartItems(successUrl, cancelUrl);
-      if (!result) {
-        throw new Error('Checkout failed');
-      }
-      const session = JSON.parse(result) as { id: string; url: string };
-      if (!session?.url) {
-        throw new Error('Stripe session missing url');
-      }
-      return session;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-      queryClient.invalidateQueries({ queryKey: ['cartCount'] });
-      queryClient.invalidateQueries({ queryKey: ['cartTotal'] });
-    },
-  });
-}
-
-// Branding Configuration Hooks
 export function useBrandingConfig() {
   const { actor, isFetching } = useActor();
 
@@ -397,7 +407,7 @@ export function useBrandingConfig() {
   });
 }
 
-export function useUpdateBranding() {
+export function useUpdateBrandingConfig() {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
@@ -408,6 +418,34 @@ export function useUpdateBranding() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['brandingConfig'] });
+    },
+  });
+}
+
+export function useShopDetails() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<ShopDetails | null>({
+    queryKey: ['shopDetails'],
+    queryFn: async () => {
+      if (!actor) return null;
+      return actor.getShopDetails();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useUpdateShopDetails() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (details: ShopDetails) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.updateShopDetails(details);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['shopDetails'] });
     },
   });
 }

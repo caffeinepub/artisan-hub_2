@@ -14,16 +14,24 @@ export class ExternalBlob {
     static fromBytes(blob: Uint8Array<ArrayBuffer>): ExternalBlob;
     withUploadProgress(onProgress: (percentage: number) => void): ExternalBlob;
 }
-export interface UserProfile {
-    stripeAccountId?: string;
+export interface Product {
+    id: bigint;
     name: string;
-    email: string;
+    createdAt: Time;
+    stripeProductId: string;
+    shape: string;
+    viewCount: bigint;
+    stripeProductDescription: string;
+    inventoryCount: bigint;
+    price: bigint;
+    images: Array<ExternalBlob>;
 }
 export interface TransformationOutput {
     status: bigint;
     body: Uint8Array;
     headers: Array<http_header>;
 }
+export type Time = bigint;
 export interface BrandingConfig {
     theme?: string;
     primaryColor?: string;
@@ -52,6 +60,32 @@ export interface TransformationInput {
     context: Uint8Array;
     response: http_request_result;
 }
+export interface ShopDetails {
+    address: {
+        street: string;
+        country: string;
+        city: string;
+        zipcode: string;
+    };
+    openingHours: {
+        tuesday?: string;
+        wednesday?: string;
+        saturday?: string;
+        thursday?: string;
+        sunday?: string;
+        friday?: string;
+        monday?: string;
+    };
+    shopName: string;
+    companyDetails: {
+        taxId: string;
+        vatId: string;
+    };
+    contactDetails: {
+        email: string;
+        phone: string;
+    };
+}
 export type StripeSessionStatus = {
     __kind__: "completed";
     completed: {
@@ -72,15 +106,15 @@ export interface CartItem {
     quantity: bigint;
     product: Product;
 }
-export interface Product {
-    id: bigint;
+export interface UserProfile {
+    stripeAccountId?: string;
     name: string;
-    stripeProductId: string;
-    shape: string;
-    stripeProductDescription: string;
-    inventoryCount: bigint;
-    price: bigint;
-    images: Array<ExternalBlob>;
+    email: string;
+}
+export enum SortingOrder {
+    bestSelling = "bestSelling",
+    newest = "newest",
+    mostViewed = "mostViewed"
 }
 export enum UserRole {
     admin = "admin",
@@ -95,15 +129,21 @@ export interface backendInterface {
     checkoutCartItems(successUrl: string, cancelUrl: string): Promise<string | null>;
     clearAllCarts(): Promise<void>;
     createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
+    createNoShippingCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     emptyCart(): Promise<void>;
+    getBestSellingProducts(): Promise<Array<Product>>;
     getBrandingConfig(): Promise<BrandingConfig>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
     getCartTotal(): Promise<bigint>;
+    getMostViewedProducts(): Promise<Array<Product>>;
+    getNewestProducts(): Promise<Array<Product>>;
     getProduct(productId: bigint): Promise<Product | null>;
     getProductCount(): Promise<bigint>;
     getProducts(): Promise<Array<Product>>;
+    getProductsBySorting(sortType: SortingOrder): Promise<Array<Product>>;
+    getShopDetails(): Promise<ShopDetails | null>;
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
@@ -113,9 +153,11 @@ export interface backendInterface {
     replaceProductImage(productId: bigint, imageIndex: bigint, newImage: ExternalBlob): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
+    trackProductView(productId: bigint): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateBrandingConfig(config: BrandingConfig): Promise<void>;
     updateCartItem(productId: bigint, newQuantity: bigint): Promise<void>;
     updateInventoryCount(productId: bigint, inventoryCount: bigint): Promise<void>;
     updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null): Promise<void>;
+    updateShopDetails(details: ShopDetails): Promise<void>;
 }
