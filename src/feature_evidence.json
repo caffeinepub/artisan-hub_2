@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-redesign-the-marketplace-home-page-frontend-src-pages-marketplace-tsx-to-display-dynamic-product-sections-including-featured-products-most-viewed-products-most-sold-products-and-newest-designs-the-page-should-automatically-reflect-newly-uploaded-products-when-customers-visit-without-requiring-manual-refresh",
-      "featureTitle": "Redesign the Marketplace home page (frontend/src/pages/Marketplace.tsx) to display dynamic product sections including: featured products, most viewed products, most sold products, and newest designs. The page should automatically reflect newly uploaded products when customers visit without requiring manual refresh.",
+      "featureId": "feature-add-quick-stock-adjustment-controls-to-the-productmanagementtable-component-including-increment-and-decrement-buttons-next-to-the-inventory-count-field-that-modify-stock-by-1-per-click-without-entering-edit-mode",
+      "featureTitle": "Add quick stock adjustment controls to the ProductManagementTable component including increment (+) and decrement (-) buttons next to the inventory count field that modify stock by 1 per click without entering edit mode",
       "files": [
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/pages/Marketplace.tsx"
+        "frontend/src/components/ProductManagementTable.tsx",
+        "frontend/src/hooks/useQueries.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -20,37 +20,14 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-44"
+        "REQ-59"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-marketplace-home-page-hero-section-with-a-new-background-and-motto-text-about-selling-original-handcrafted-products-designed-produced-and-sold-by-the-trader-include-promotional-elements-to-attract-buyers",
-      "featureTitle": "Update the Marketplace home page hero section with a new background and motto text about selling original handcrafted products designed, produced, and sold by the trader. Include promotional elements to attract buyers.",
+      "featureId": "feature-add-a-total-inventory-value-calculator-section-to-the-dashboard-page-that-displays-the-sum-of-price-inventory-count-for-all-listed-products-showing-the-potential-value-of-all-stock",
+      "featureTitle": "Add a total inventory value calculator section to the Dashboard page that displays the sum of (price × inventory count) for all listed products, showing the potential value of all stock",
       "files": [
-        "frontend/src/pages/Marketplace.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-46"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-a-new-shop-details-section-in-the-admin-dashboard-page-frontend-src-pages-dashboard-tsx-as-a-separate-tab-where-the-trader-can-configure-contact-email-address",
-      "featureTitle": "Create a new 'Shop Details' section in the admin Dashboard page (frontend/src/pages/Dashboard.tsx) as a separate tab where the trader can configure contact email address.",
-      "files": [
-        "frontend/src/components/ShopDetailsSettings.tsx",
         "frontend/src/pages/Dashboard.tsx"
       ],
       "components": [
@@ -65,13 +42,13 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-47"
+        "REQ-60"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-create-react-query-hooks-in-frontend-src-hooks-usequeries-ts-for-fetching-shop-details-useshopdetails-and-updating-shop-details-useupdateshopdetails-with-admin-authentication",
-      "featureTitle": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching shop details (useShopDetails) and updating shop details (useUpdateShopDetails) with admin authentication.",
+      "featureId": "feature-create-react-query-hook-usetotalinventoryvalue-in-usequeries-ts-that-fetches-the-total-inventory-value-from-the-backend-with-automatic-refetching-when-product-data-changes",
+      "featureTitle": "Create React Query hook useTotalInventoryValue in useQueries.ts that fetches the total inventory value from the backend with automatic refetching when product data changes",
       "files": [
         "frontend/src/hooks/useQueries.ts"
       ],
@@ -87,29 +64,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-49"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-footer-component-frontend-src-components-footer-tsx-to-display-the-configured-contact-email-from-shop-details-as-a-mailto-link-in-the-connect-section-show-contact-email-example-com-or-similar-label",
-      "featureTitle": "Update the Footer component (frontend/src/components/Footer.tsx) to display the configured contact email from Shop Details as a mailto link in the 'Connect' section. Show 'Contact: email@example.com' or similar label.",
-      "files": [
-        "frontend/src/components/Footer.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-50"
+        "REQ-62"
       ],
       "confidence": "high"
     }

@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useIsCallerAdmin, useGetProducts, useGetProductCount, useIsStripeConfigured } from '../hooks/useQueries';
+import { useIsCallerAdmin, useGetProducts, useGetProductCount, useIsStripeConfigured, useTotalInventoryValue } from '../hooks/useQueries';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Package, Upload, Settings, TrendingUp, Edit, Palette, Store } from 'lucide-react';
+import { Package, Upload, Settings, TrendingUp, Edit, Palette, Store, Home, DollarSign } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import ProductManagementTable from '../components/ProductManagementTable';
 import BulkProductUpload from '../components/BulkProductUpload';
 import StripeSetup from '../components/StripeSetup';
 import BrandingSettings from '../components/BrandingSettings';
 import ShopDetailsSettings from '../components/ShopDetailsSettings';
+import HomepageSettings from '../components/HomepageSettings';
 
 export default function Dashboard() {
   const { identity } = useInternetIdentity();
@@ -17,6 +18,7 @@ export default function Dashboard() {
   const { data: products = [], isLoading: productsLoading } = useGetProducts();
   const { data: productCount = BigInt(0), isLoading: countLoading } = useGetProductCount();
   const { data: isStripeConfigured, isLoading: stripeLoading } = useIsStripeConfigured();
+  const { data: totalInventoryValue = BigInt(0), isLoading: inventoryValueLoading } = useTotalInventoryValue();
   const [showStripeSetup, setShowStripeSetup] = useState(false);
 
   useEffect(() => {
@@ -68,13 +70,16 @@ export default function Dashboard() {
     );
   }
 
-  const totalRevenue = products.reduce((sum, product) => {
-    return sum + Number(product.price) * (Number(product.inventoryCount) > 0 ? 1 : 0);
-  }, 0);
-
   const totalInventory = products.reduce((sum, product) => {
     return sum + Number(product.inventoryCount);
   }, 0);
+
+  const formatCurrency = (value: bigint) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(Number(value) / 100);
+  };
 
   return (
     <div className="container py-8">
@@ -86,7 +91,7 @@ export default function Dashboard() {
       </div>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Products</CardTitle>
@@ -117,22 +122,46 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Estimated Value</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Inventory Value</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            {inventoryValueLoading ? (
+              <Skeleton className="h-8 w-24" />
+            ) : (
+              <div className="text-2xl font-bold">{formatCurrency(totalInventoryValue)}</div>
+            )}
+            <p className="text-xs text-muted-foreground mt-1">
+              Price × inventory for all items
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Average Item Value</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {productsLoading ? (
+            {productsLoading || inventoryValueLoading ? (
               <Skeleton className="h-8 w-24" />
             ) : (
-              <div className="text-2xl font-bold">${(totalRevenue / 100).toFixed(2)}</div>
+              <div className="text-2xl font-bold">
+                {totalInventory > 0
+                  ? formatCurrency(totalInventoryValue / BigInt(totalInventory))
+                  : '$0.00'}
+              </div>
             )}
+            <p className="text-xs text-muted-foreground mt-1">
+              Per unit in stock
+            </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="products" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 lg:w-auto">
+        <TabsList className="grid w-full grid-cols-6 lg:w-auto">
           <TabsTrigger value="products" className="flex items-center gap-2">
             <Edit className="h-4 w-4" />
             <span className="hidden sm:inline">Products</span>
@@ -152,6 +181,10 @@ export default function Dashboard() {
           <TabsTrigger value="shop-details" className="flex items-center gap-2">
             <Store className="h-4 w-4" />
             <span className="hidden sm:inline">Shop Details</span>
+          </TabsTrigger>
+          <TabsTrigger value="homepage" className="flex items-center gap-2">
+            <Home className="h-4 w-4" />
+            <span className="hidden sm:inline">Homepage</span>
           </TabsTrigger>
         </TabsList>
 
@@ -173,6 +206,10 @@ export default function Dashboard() {
 
         <TabsContent value="shop-details">
           <ShopDetailsSettings />
+        </TabsContent>
+
+        <TabsContent value="homepage">
+          <HomepageSettings />
         </TabsContent>
       </Tabs>
     </div>

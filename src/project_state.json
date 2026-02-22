@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 19,
-  "summary": "Artisan Hub marketplace for a sole trader to sell handmade products with bulk image upload, AI-generated descriptions, and Stripe payment processing",
+  "projectStateVersion": 25,
+  "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
     "Each uploaded image becomes a separate product listing",
@@ -20,8 +20,7 @@
     "Platform shows signup prompts after Internet Identity login",
     "Checkout flow collects shipping information before redirecting to Stripe"
   ],
-  "isFixRequest": true,
-  "imageRequirements": "## Required Images\n- Hero background image with warm artisan marketplace aesthetic featuring handcrafted items and creative workspace (hero-background.dim_1920x600.png)",
+  "isFixRequest": false,
   "existing_features": [
     {
       "id": "feature-create-bulk-image-upload-interface-that-allows-uploading-multiple-images-at-once-assigns-all-images-to-a-single-selected-category-and-automatically-creates-one-product-per-uploaded-image",
@@ -342,6 +341,78 @@
         "REQ-50"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-bulkproductupload-component-to-replace-the-default-pre-populated-description-template-from-handcrafted-3d-printed-dolphin-ocarina-to-original-3d-printed-dolphin-ocarina-uniquely-designed-and-precision-crafted-for-beautiful-sound-and-artisan-appeal-this-one-of-a-kind-piece-combines-intricate-detail-with-functional-artistry-perfect-for-collectors-and-music-enthusiasts-alike",
+      "title": "Update the BulkProductUpload component to replace the default pre-populated description template from 'Handcrafted 3D printed dolphin ocarina...' to 'Original 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike'",
+      "reqIds": [
+        "REQ-51"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-marketplace-home-page-hero-section-motto-text-to-replace-handcrafted-references-with-original-creations-or-similar-terminology-emphasizing-uniqueness-and-originality",
+      "title": "Update the Marketplace home page hero section motto text to replace 'handcrafted' references with 'original creations' or similar terminology emphasizing uniqueness and originality",
+      "reqIds": [
+        "REQ-52"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-review-and-update-any-other-ui-text-across-all-frontend-components-and-pages-that-currently-uses-handcrafted-handmade-or-artisan-terminology-to-instead-emphasize-original-creations-unique-designs-or-custom-made-messaging",
+      "title": "Review and update any other UI text across all frontend components and pages that currently uses 'handcrafted', 'handmade', or 'artisan' terminology to instead emphasize 'original creations', 'unique designs', or 'custom-made' messaging",
+      "reqIds": [
+        "REQ-53"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-homepage-or-main-page-tab-to-the-admin-dashboard-page-frontend-src-pages-dashboard-tsx-with-a-configuration-form-for-editing-the-hero-section-including-motto-text-background-image-upload-selection-and-promotional-text-fields",
+      "title": "Add a new 'Homepage' or 'Main Page' tab to the admin Dashboard page (frontend/src/pages/Dashboard.tsx) with a configuration form for editing the hero section including motto text, background image upload/selection, and promotional text fields",
+      "reqIds": [
+        "REQ-54"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-in-frontend-src-hooks-usequeries-ts-for-fetching-homepage-configuration-usehomepageconfig-and-mutating-homepage-settings-useupdatehomepageconfig-with-admin-authentication",
+      "title": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching homepage configuration (useHomepageConfig) and mutating homepage settings (useUpdateHomepageConfig) with admin authentication",
+      "reqIds": [
+        "REQ-57"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-marketplace-home-page-component-frontend-src-pages-marketplace-tsx-to-dynamically-render-the-hero-section-using-configured-motto-text-and-background-image-from-homepage-configuration-instead-of-hardcoded-values",
+      "title": "Update the Marketplace home page component (frontend/src/pages/Marketplace.tsx) to dynamically render the hero section using configured motto text and background image from homepage configuration instead of hardcoded values",
+      "reqIds": [
+        "REQ-58"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-quick-stock-adjustment-controls-to-the-productmanagementtable-component-including-increment-and-decrement-buttons-next-to-the-inventory-count-field-that-modify-stock-by-1-per-click-without-entering-edit-mode",
+      "title": "Add quick stock adjustment controls to the ProductManagementTable component including increment (+) and decrement (-) buttons next to the inventory count field that modify stock by 1 per click without entering edit mode",
+      "reqIds": [
+        "REQ-59"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-total-inventory-value-calculator-section-to-the-dashboard-page-that-displays-the-sum-of-price-inventory-count-for-all-listed-products-showing-the-potential-value-of-all-stock",
+      "title": "Add a total inventory value calculator section to the Dashboard page that displays the sum of (price × inventory count) for all listed products, showing the potential value of all stock",
+      "reqIds": [
+        "REQ-60"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-usetotalinventoryvalue-in-usequeries-ts-that-fetches-the-total-inventory-value-from-the-backend-with-automatic-refetching-when-product-data-changes",
+      "title": "Create React Query hook useTotalInventoryValue in useQueries.ts that fetches the total inventory value from the backend with automatic refetching when product data changes",
+      "reqIds": [
+        "REQ-62"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -554,6 +625,48 @@
       "summary": "Add backend data structure and methods to store and retrieve shop contact details including contact email. Create getShopDetails() and updateShopDetails() methods with admin authentication.",
       "reqIds": [
         "REQ-48"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-49",
+      "summary": "Add editable home page branding configuration in admin control panel for customizing hero section background, motto text, and promotional elements",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-51",
+      "summary": "Create backend data structure in backend/main.mo to store homepage configuration including hero motto text, hero background image blob reference, and promotional text content with default values matching current implementation",
+      "reqIds": [
+        "REQ-55"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-52",
+      "summary": "Add backend methods getHomepageConfig() and updateHomepageConfig() in backend/main.mo with admin authentication to retrieve and modify homepage configuration including hero section settings",
+      "reqIds": [
+        "REQ-56"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-53",
+      "summary": "Enhance product management table with easier inline stock editing controls",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-54",
+      "summary": "Add total inventory value calculator to product management page showing the sum of (price × inventory count) for all listed products",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-57",
+      "summary": "Create backend helper method getTotalInventoryValue() that calculates and returns the sum of (price × inventory count) across all products in the system",
+      "reqIds": [
+        "REQ-61"
       ],
       "status": "pending"
     }

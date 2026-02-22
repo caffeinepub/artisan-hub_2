@@ -62,6 +62,11 @@ export const CartItem = IDL.Record({
   'quantity' : IDL.Nat,
   'product' : Product,
 });
+export const HomepageConfig = IDL.Record({
+  'heroImage' : IDL.Opt(ExternalBlob),
+  'promotionalText' : IDL.Text,
+  'heroMotto' : IDL.Text,
+});
 export const SortingOrder = IDL.Variant({
   'bestSelling' : IDL.Null,
   'newest' : IDL.Null,
@@ -180,6 +185,7 @@ export const idlService = IDL.Service({
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
   'getCartTotal' : IDL.Func([], [IDL.Nat], ['query']),
+  'getHomepageConfig' : IDL.Func([], [HomepageConfig], ['query']),
   'getMostViewedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getNewestProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getProduct' : IDL.Func([IDL.Nat], [IDL.Opt(Product)], ['query']),
@@ -192,6 +198,7 @@ export const idlService = IDL.Service({
     ),
   'getShopDetails' : IDL.Func([], [IDL.Opt(ShopDetails)], ['query']),
   'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+  'getTotalInventoryValue' : IDL.Func([], [IDL.Nat], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -212,6 +219,7 @@ export const idlService = IDL.Service({
     ),
   'updateBrandingConfig' : IDL.Func([BrandingConfig], [], []),
   'updateCartItem' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
+  'updateHomepageConfig' : IDL.Func([HomepageConfig], [], []),
   'updateInventoryCount' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
   'updateProduct' : IDL.Func(
       [
@@ -284,6 +292,11 @@ export const idlFactory = ({ IDL }) => {
     'email' : IDL.Text,
   });
   const CartItem = IDL.Record({ 'quantity' : IDL.Nat, 'product' : Product });
+  const HomepageConfig = IDL.Record({
+    'heroImage' : IDL.Opt(ExternalBlob),
+    'promotionalText' : IDL.Text,
+    'heroMotto' : IDL.Text,
+  });
   const SortingOrder = IDL.Variant({
     'bestSelling' : IDL.Null,
     'newest' : IDL.Null,
@@ -403,6 +416,7 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
     'getCartTotal' : IDL.Func([], [IDL.Nat], ['query']),
+    'getHomepageConfig' : IDL.Func([], [HomepageConfig], ['query']),
     'getMostViewedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getNewestProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getProduct' : IDL.Func([IDL.Nat], [IDL.Opt(Product)], ['query']),
@@ -415,6 +429,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getShopDetails' : IDL.Func([], [IDL.Opt(ShopDetails)], ['query']),
     'getStripeSessionStatus' : IDL.Func([IDL.Text], [StripeSessionStatus], []),
+    'getTotalInventoryValue' : IDL.Func([], [IDL.Nat], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -435,6 +450,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'updateBrandingConfig' : IDL.Func([BrandingConfig], [], []),
     'updateCartItem' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
+    'updateHomepageConfig' : IDL.Func([HomepageConfig], [], []),
     'updateInventoryCount' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
     'updateProduct' : IDL.Func(
         [

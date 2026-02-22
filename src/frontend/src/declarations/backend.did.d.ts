@@ -20,6 +20,11 @@ export interface BrandingConfig {
 }
 export interface CartItem { 'quantity' : bigint, 'product' : Product }
 export type ExternalBlob = Uint8Array;
+export interface HomepageConfig {
+  'heroImage' : [] | [ExternalBlob],
+  'promotionalText' : string,
+  'heroMotto' : string,
+}
 export interface Product {
   'id' : bigint,
   'name' : string,
@@ -146,6 +151,7 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getCartTotal' : ActorMethod<[], bigint>,
+  'getHomepageConfig' : ActorMethod<[], HomepageConfig>,
   'getMostViewedProducts' : ActorMethod<[], Array<Product>>,
   'getNewestProducts' : ActorMethod<[], Array<Product>>,
   'getProduct' : ActorMethod<[bigint], [] | [Product]>,
@@ -154,6 +160,7 @@ export interface _SERVICE {
   'getProductsBySorting' : ActorMethod<[SortingOrder], Array<Product>>,
   'getShopDetails' : ActorMethod<[], [] | [ShopDetails]>,
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
+  'getTotalInventoryValue' : ActorMethod<[], bigint>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
@@ -169,6 +176,7 @@ export interface _SERVICE {
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateBrandingConfig' : ActorMethod<[BrandingConfig], undefined>,
   'updateCartItem' : ActorMethod<[bigint, bigint], undefined>,
+  'updateHomepageConfig' : ActorMethod<[HomepageConfig], undefined>,
   'updateInventoryCount' : ActorMethod<[bigint, bigint], undefined>,
   'updateProduct' : ActorMethod<
     [

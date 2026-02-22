@@ -9,12 +9,10 @@ import Array "mo:core/Array";
 import Runtime "mo:core/Runtime";
 import OutCall "http-outcalls/outcall";
 import Nat "mo:core/Nat";
-import Migration "migration";
 import Time "mo:core/Time";
 import Order "mo:core/Order";
 import Int "mo:core/Int";
 
-(with migration = Migration.run)
 actor {
   include MixinStorage();
 
@@ -39,6 +37,32 @@ actor {
     primaryColor = null;
     secondaryColor = null;
     theme = null;
+  };
+
+  // Homepage configuration types
+  public type HomepageConfig = {
+    heroMotto : Text;
+    heroImage : ?Storage.ExternalBlob;
+    promotionalText : Text;
+  };
+
+  var homepageConfig : HomepageConfig = {
+    heroMotto = "Welcome to Sweet Treats!";
+    heroImage = null;
+    promotionalText = "Taste the best handmade pralines and chocolates!";
+  };
+
+  // Add/update homepage configuration (Admin only)
+  public shared ({ caller }) func updateHomepageConfig(config : HomepageConfig) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can update homepage configuration");
+    };
+    homepageConfig := config;
+  };
+
+  // Get current homepage configuration (Public)
+  public query func getHomepageConfig() : async HomepageConfig {
+    homepageConfig;
   };
 
   // Admin only - update branding configuration
@@ -587,5 +611,18 @@ actor {
         allProducts.sort(ProductOrdering.compareByViewCountDescending);
       };
     };
+  };
+
+  // Calculate the total inventory value across all products
+  public query ({ caller }) func getTotalInventoryValue() : async Nat {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can view total inventory value");
+    };
+
+    var totalValue = 0;
+    for (product in products.values()) {
+      totalValue += product.price * product.inventoryCount;
+    };
+    totalValue;
   };
 };

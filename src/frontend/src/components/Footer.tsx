@@ -6,7 +6,7 @@ export default function Footer() {
   const navigate = useNavigate();
   const { data: shopDetails } = useShopDetails();
   const currentYear = new Date().getFullYear();
-  const appIdentifier = encodeURIComponent(window.location.hostname || 'artisan-hub');
+  const appIdentifier = encodeURIComponent(window.location.hostname || 'original-creations-hub');
 
   const contactEmail = shopDetails?.contactDetails?.email;
 
@@ -15,9 +15,9 @@ export default function Footer() {
       <div className="container py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
-            <h3 className="font-serif text-lg font-semibold mb-3">Artisan Hub</h3>
+            <h3 className="font-serif text-lg font-semibold mb-3">Original Creations Hub</h3>
             <p className="text-sm text-muted-foreground">
-              Discover unique handmade treasures crafted with love and care.
+              Discover unique original designs crafted with passion and creativity.
             </p>
           </div>
           <div>
@@ -56,7 +56,7 @@ export default function Footer() {
         </div>
         <div className="mt-8 pt-6 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} Artisan Hub. All rights reserved.
+            © {currentYear} Original Creations Hub. All rights reserved.
           </p>
           <a
             href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${appIdentifier}`}

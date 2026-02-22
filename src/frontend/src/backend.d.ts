@@ -49,6 +49,11 @@ export interface http_request_result {
     body: Uint8Array;
     headers: Array<http_header>;
 }
+export interface HomepageConfig {
+    heroImage?: ExternalBlob;
+    promotionalText: string;
+    heroMotto: string;
+}
 export interface ShoppingItem {
     productName: string;
     currency: string;
@@ -137,6 +142,7 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
     getCartTotal(): Promise<bigint>;
+    getHomepageConfig(): Promise<HomepageConfig>;
     getMostViewedProducts(): Promise<Array<Product>>;
     getNewestProducts(): Promise<Array<Product>>;
     getProduct(productId: bigint): Promise<Product | null>;
@@ -145,6 +151,7 @@ export interface backendInterface {
     getProductsBySorting(sortType: SortingOrder): Promise<Array<Product>>;
     getShopDetails(): Promise<ShopDetails | null>;
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
+    getTotalInventoryValue(): Promise<bigint>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
@@ -157,6 +164,7 @@ export interface backendInterface {
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateBrandingConfig(config: BrandingConfig): Promise<void>;
     updateCartItem(productId: bigint, newQuantity: bigint): Promise<void>;
+    updateHomepageConfig(config: HomepageConfig): Promise<void>;
     updateInventoryCount(productId: bigint, inventoryCount: bigint): Promise<void>;
     updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null): Promise<void>;
     updateShopDetails(details: ShopDetails): Promise<void>;

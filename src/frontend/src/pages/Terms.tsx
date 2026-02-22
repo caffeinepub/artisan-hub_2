@@ -11,14 +11,14 @@ export default function Terms() {
         <CardContent className="prose prose-sm max-w-none dark:prose-invert">
           <h2>1. Introduction</h2>
           <p>
-            Welcome to Artisan Hub. By accessing and using this marketplace, you agree to be bound by these Terms and
+            Welcome to Original Creations Hub. By accessing and using this marketplace, you agree to be bound by these Terms and
             Conditions. Please read them carefully before making any purchase.
           </p>
 
           <h2>2. Products and Services</h2>
           <p>
-            All products sold on Artisan Hub are handmade and unique. While we strive to accurately represent each
-            item, slight variations may occur due to the handcrafted nature of our products.
+            All products sold on Original Creations Hub are original designs and unique creations. While we strive to accurately represent each
+            item, slight variations may occur due to the custom-made nature of our products.
           </p>
 
           <h2>3. Pricing and Payment</h2>
@@ -35,19 +35,19 @@ export default function Terms() {
 
           <h2>5. Returns and Refunds</h2>
           <p>
-            Due to the handmade nature of our products, we have a limited return policy. Please contact us within 7
+            Due to the custom-made nature of our products, we have a limited return policy. Please contact us within 7
             days of receiving your order if you have any concerns.
           </p>
 
           <h2>6. Intellectual Property</h2>
           <p>
-            All content on this website, including images, text, and designs, is the property of Artisan Hub and is
+            All content on this website, including images, text, and designs, is the property of Original Creations Hub and is
             protected by copyright laws.
           </p>
 
           <h2>7. Limitation of Liability</h2>
           <p>
-            Artisan Hub is not liable for any indirect, incidental, or consequential damages arising from the use of
+            Original Creations Hub is not liable for any indirect, incidental, or consequential damages arising from the use of
             our products or services.
           </p>
 

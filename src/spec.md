@@ -1,14 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Enhance the Marketplace home page with dynamic product sections (featured, most viewed, best sellers, newest designs) and add a Shop Details admin section for configuring contact information displayed in the footer.
+**Goal:** Enhance product management with easier stock editing and display total inventory value on dashboard.
 
 **Planned changes:**
-- Redesign home page to display featured products, most viewed products, best sellers, and newest designs sections
-- Add backend methods for tracking product views and sales, and retrieving sorted product lists
-- Update hero section with new background and motto about original handcrafted products
-- Create Shop Details tab in admin Dashboard for configuring contact email
-- Add backend storage and methods for shop details (getShopDetails, updateShopDetails)
-- Display configured contact email as mailto link in Footer's Connect section
+- Add increment (+) and decrement (-) buttons next to inventory counts in the product management table for quick stock adjustments
+- Display total inventory value card on the dashboard showing the sum of (price × inventory count) for all products
+- Create backend method to calculate total inventory value across all products
+- Create React Query hook to fetch and display total inventory value with automatic updates
 
-**User-visible outcome:** Customers see an engaging home page with dynamic product sections that automatically update with new products. The footer displays a clickable contact email. Admin can configure shop contact details through a new Dashboard tab.
+**User-visible outcome:** Admins can quickly adjust product stock counts with +/- buttons in the management table and see the total potential value of all inventory displayed on the dashboard.

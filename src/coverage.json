@@ -1,107 +1,72 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T11:23:10.051Z",
+  "generatedAt": "2026-02-22T12:21:39.918Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 7,
-    "implemented": 5,
+    "total": 4,
+    "implemented": 3,
     "items": [
       {
-        "id": "REQ-44",
-        "summary": "Redesign the Marketplace home page (frontend/src/pages/Marketplace.tsx) to display dynamic product sections including: featured products, most viewed products, most sold products, and newest designs. The page should automatically reflect newly uploaded products when customers visit without requiring manual refresh.",
+        "id": "REQ-59",
+        "summary": "Add quick stock adjustment controls to the ProductManagementTable component including increment (+) and decrement (-) buttons next to the inventory count field that modify stock by 1 per click without entering edit mode",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/Marketplace.tsx",
+          "frontend/src/components/ProductManagementTable.tsx",
           "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/pages/Marketplace.tsx",
+          "frontend/src/components/ProductManagementTable.tsx",
           "frontend/src/hooks/useQueries.ts"
         ]
       },
       {
-        "id": "REQ-45",
-        "summary": "Add backend methods to support home page product displays: getMostViewedProducts(), getBestSellingProducts(), and getNewestProducts(). Implement view tracking for products and sales tracking to support these queries.",
+        "id": "REQ-60",
+        "summary": "Add a total inventory value calculator section to the Dashboard page that displays the sum of (price × inventory count) for all listed products, showing the potential value of all stock",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/Dashboard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/Dashboard.tsx"
+        ]
+      },
+      {
+        "id": "REQ-61",
+        "summary": "Create backend helper method getTotalInventoryValue() that calculates and returns the sum of (price × inventory count) across all products in the system",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-46",
-        "summary": "Update the Marketplace home page hero section with a new background and motto text about selling original handcrafted products designed, produced, and sold by the trader. Include promotional elements to attract buyers.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Marketplace.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Marketplace.tsx"
-        ]
-      },
-      {
-        "id": "REQ-47",
-        "summary": "Create a new 'Shop Details' section in the admin Dashboard page (frontend/src/pages/Dashboard.tsx) as a separate tab where the trader can configure contact email address.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Dashboard.tsx",
-          "frontend/src/components/ShopDetailsSettings.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Dashboard.tsx",
-          "frontend/src/components/ShopDetailsSettings.tsx"
-        ]
-      },
-      {
-        "id": "REQ-48",
-        "summary": "Add backend data structure and methods to store and retrieve shop contact details including contact email. Create getShopDetails() and updateShopDetails() methods with admin authentication.",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-49",
-        "summary": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching shop details (useShopDetails) and updating shop details (useUpdateShopDetails) with admin authentication.",
+        "id": "REQ-62",
+        "summary": "Create React Query hook useTotalInventoryValue in useQueries.ts that fetches the total inventory value from the backend with automatic refetching when product data changes",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
           "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-50",
-        "summary": "Update the Footer component (frontend/src/components/Footer.tsx) to display the configured contact email from Shop Details as a mailto link in the 'Connect' section. Show 'Contact: email@example.com' or similar label.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/Footer.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/Footer.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
-    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/public/assets/generated/hero-background.dim_1920x600.png",
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
-    "frontend/src/components/Footer.tsx",
-    "frontend/src/components/ShopDetailsSettings.tsx",
+    "frontend/src/components/ProductManagementTable.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
     "frontend/src/pages/Dashboard.tsx",
-    "frontend/src/pages/Marketplace.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useGetProducts, useMostViewedProducts, useBestSellingProducts, useNewestProducts } from '../hooks/useQueries';
+import { useGetProducts, useMostViewedProducts, useBestSellingProducts, useNewestProducts, useHomepageConfig } from '../hooks/useQueries';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -12,10 +12,18 @@ export default function Marketplace() {
   const { data: mostViewedProducts = [], isLoading: mostViewedLoading } = useMostViewedProducts();
   const { data: bestSellingProducts = [], isLoading: bestSellingLoading } = useBestSellingProducts();
   const { data: newestProducts = [], isLoading: newestLoading } = useNewestProducts();
+  const { data: homepageConfig, isLoading: homepageLoading } = useHomepageConfig();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   // Featured products: first 6 from all products
   const featuredProducts = allProducts.slice(0, 6);
+
+  // Get hero configuration with fallbacks
+  const heroMotto = homepageConfig?.heroMotto || 'Discover Original Creations';
+  const promotionalText = homepageConfig?.promotionalText || 'Browse our collection of unique handcrafted items';
+  const heroBackgroundUrl = homepageConfig?.heroImage
+    ? homepageConfig.heroImage.getDirectURL()
+    : '/assets/generated/hero-background.dim_1920x600.png';
 
   const renderProductCard = (product: Product) => {
     const imageUrl = product.images.length > 0
@@ -86,7 +94,7 @@ export default function Marketplace() {
             <h2 className="font-serif text-3xl font-bold">{title}</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.slice(0, 4).map(renderProductCard)}
+            {products.slice(0, 8).map(renderProductCard)}
           </div>
         </div>
       </section>
@@ -96,44 +104,45 @@ export default function Marketplace() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[600px] overflow-hidden">
-        <img
-          src="/assets/generated/hero-background.dim_1920x600.png"
-          alt="Artisan crafts background"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/50 flex items-center">
-          <div className="container">
-            <div className="max-w-3xl">
-              <h1 className="font-serif text-5xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
-                Original Handcrafted Products
-              </h1>
-              <p className="text-xl md:text-2xl text-foreground/90 mb-4 font-medium">
-                Designed, Produced & Sold by Me
-              </p>
-              <p className="text-lg text-foreground/70 mb-8 max-w-2xl">
-                Discover one-of-a-kind artisan treasures, each piece lovingly crafted with passion and attention to detail. Every item tells a unique story of creativity and craftsmanship.
-              </p>
-              <Button size="lg" className="text-lg px-8 py-6">
-                Explore Collection
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </div>
+      <section
+        className="relative h-[400px] md:h-[500px] bg-cover bg-center flex items-center"
+        style={{ backgroundImage: `url(${heroBackgroundUrl})` }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/60" />
+        <div className="container relative z-10">
+          <div className="max-w-2xl">
+            {homepageLoading ? (
+              <>
+                <Skeleton className="h-12 w-3/4 mb-4" />
+                <Skeleton className="h-6 w-full mb-2" />
+                <Skeleton className="h-6 w-5/6 mb-6" />
+              </>
+            ) : (
+              <>
+                <h1 className="font-serif text-4xl md:text-6xl font-bold mb-4 text-foreground">
+                  {heroMotto}
+                </h1>
+                <p className="text-lg md:text-xl text-muted-foreground mb-6">
+                  {promotionalText}
+                </p>
+              </>
+            )}
+            <Button size="lg" className="gap-2">
+              Shop Now
+              <ArrowRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </section>
 
       {/* Featured Products */}
       {featuredProducts.length > 0 && (
-        <section className="py-16 bg-muted/30">
+        <section className="py-12 bg-muted/30">
           <div className="container">
-            <div className="flex items-center gap-3 mb-8">
+            <div className="flex items-center gap-3 mb-6">
               <Sparkles className="h-8 w-8 text-primary" />
-              <h2 className="font-serif text-4xl font-bold">Featured Products</h2>
+              <h2 className="font-serif text-3xl font-bold">Featured Creations</h2>
             </div>
-            <p className="text-muted-foreground text-lg mb-8 max-w-2xl">
-              Handpicked selections showcasing the finest craftsmanship and unique designs
-            </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {featuredProducts.map(renderProductCard)}
             </div>
@@ -166,23 +175,22 @@ export default function Marketplace() {
       )}
 
       {/* Call to Action */}
-      {allProducts.length > 0 && (
-        <section className="py-16 bg-primary/5">
-          <div className="container text-center">
-            <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4">
-              Ready to Find Your Perfect Piece?
-            </h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Browse our full collection of handcrafted treasures and discover something truly special
-            </p>
-            <Button size="lg" variant="outline" className="text-lg px-8 py-6">
-              View All Products
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
-        </section>
-      )}
+      <section className="py-16 bg-primary/5">
+        <div className="container text-center">
+          <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4">
+            Start Your Collection Today
+          </h2>
+          <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+            Every piece tells a story. Find the perfect original creation that speaks to you.
+          </p>
+          <Button size="lg" variant="outline" className="gap-2">
+            Browse All Products
+            <ArrowRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </section>
 
+      {/* Product Detail Modal */}
       <ProductDetailView
         product={selectedProduct}
         open={!!selectedProduct}

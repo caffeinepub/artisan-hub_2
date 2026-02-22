@@ -1,175 +1,107 @@
 {
   "kind": "build_request",
-  "title": "Enhance home page with dynamic product displays and add Shop Details admin section",
-  "projectName": "Artisan Hub",
+  "title": "Enhance product management with easier stock editing and total inventory value display",
+  "projectName": "Original Creations Hub",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-44",
-      "text": "Redesign the Marketplace home page (frontend/src/pages/Marketplace.tsx) to display dynamic product sections including: featured products, most viewed products, most sold products, and newest designs. The page should automatically reflect newly uploaded products when customers visit without requiring manual refresh.",
+      "id": "REQ-59",
+      "text": "Add quick stock adjustment controls to the ProductManagementTable component including increment (+) and decrement (-) buttons next to the inventory count field that modify stock by 1 per click without entering edit mode",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-latest"
         ],
         "quotes": [
-          "auto refresh home page with info about products",
-          "show featured products, most viewed products, and most sold, newest designs"
+          "Make the manage productos page easier to edit stock details"
         ]
       },
       "acceptanceCriteria": [
-        "Home page displays a 'Featured Products' section with product cards",
-        "Home page displays a 'Most Viewed Products' section with product cards",
-        "Home page displays a 'Best Sellers' section showing most sold products",
-        "Home page displays a 'Newest Designs' section showing recently added products",
-        "Newly uploaded products appear in the appropriate sections when customers visit the home page",
-        "Each product section shows product images, names, and prices with links to detail view"
+        "Increment (+) and decrement (-) buttons appear next to each product's inventory count in the table",
+        "Clicking increment increases stock by 1 and immediately saves via backend",
+        "Clicking decrement decreases stock by 1 (minimum 0) and immediately saves via backend",
+        "Stock changes update the product without requiring full row edit mode",
+        "Loading state shown during stock update operations",
+        "Toast notification displays success or error after stock change"
       ]
     },
     {
-      "id": "REQ-45",
-      "text": "Add backend methods to support home page product displays: getMostViewedProducts(), getBestSellingProducts(), and getNewestProducts(). Implement view tracking for products and sales tracking to support these queries.",
+      "id": "REQ-60",
+      "text": "Add a total inventory value calculator section to the Dashboard page that displays the sum of (price × inventory count) for all listed products, showing the potential value of all stock",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "reflect potential valie of all listed items"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Dashboard displays a new statistics card showing 'Total Inventory Value' alongside existing metrics",
+        "Value is calculated as the sum of (product price × inventory count) for all products",
+        "Display formats the value as currency (e.g., '$1,234.56')",
+        "Value updates automatically when products are added, edited, or deleted",
+        "Calculation includes all products regardless of their availability status"
+      ]
+    },
+    {
+      "id": "REQ-61",
+      "text": "Create backend helper method getTotalInventoryValue() that calculates and returns the sum of (price × inventory count) across all products in the system",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-latest"
         ],
         "quotes": [
-          "most viewed products",
-          "most sold"
+          "reflect potential valie of all listed items"
         ]
       },
       "acceptanceCriteria": [
-        "Backend provides getMostViewedProducts() method returning products sorted by view count",
-        "Backend provides getBestSellingProducts() method returning products sorted by total sales",
-        "Backend provides getNewestProducts() method returning products sorted by creation date descending",
-        "Product view count is tracked and persisted when products are viewed",
-        "Product sales count is tracked and persisted when purchases are completed"
+        "Method iterates through all products and calculates price × inventory for each",
+        "Returns the total sum as a Nat representing the monetary value",
+        "Method is accessible to authenticated admin users",
+        "Calculation handles products with zero inventory correctly",
+        "Performance remains acceptable even with large product catalogs"
       ]
     },
     {
-      "id": "REQ-46",
-      "text": "Update the Marketplace home page hero section with a new background and motto text about selling original handcrafted products designed, produced, and sold by the trader. Include promotional elements to attract buyers.",
+      "id": "REQ-62",
+      "text": "Create React Query hook useTotalInventoryValue in useQueries.ts that fetches the total inventory value from the backend with automatic refetching when product data changes",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-latest"
         ],
         "quotes": [
-          "make something up that has to do with selling original products designed, produced and sold by me",
-          "publicity tools for attracting buyers"
+          "reflect potential valie of all listed items"
         ]
       },
       "acceptanceCriteria": [
-        "Hero section displays a new background design with warm, artisan-appropriate colors",
-        "Hero section includes a compelling motto about original handcrafted products",
-        "Hero section includes promotional text encouraging buyers to explore unique designs",
-        "Visual design is cohesive with the existing artisan marketplace aesthetic"
-      ]
-    },
-    {
-      "id": "REQ-47",
-      "text": "Create a new 'Shop Details' section in the admin Dashboard page (frontend/src/pages/Dashboard.tsx) as a separate tab where the trader can configure contact email address.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "new separate \"Shop Details\"",
-          "contact details to send email, setup for this i can find in profile settings shop details"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Dashboard page includes a new 'Shop Details' tab alongside existing tabs",
-        "Shop Details tab contains a form with an email input field",
-        "Form includes a save button to persist shop contact details",
-        "Success/error feedback is displayed when saving shop details",
-        "Configured email is loaded and displayed when the tab is opened"
-      ]
-    },
-    {
-      "id": "REQ-48",
-      "text": "Add backend data structure and methods to store and retrieve shop contact details including contact email. Create getShopDetails() and updateShopDetails() methods with admin authentication.",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "shop details",
-          "contact details to send email"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend stores shop details configuration including contact email",
-        "Backend provides getShopDetails() method to retrieve current shop details",
-        "Backend provides updateShopDetails() method with admin-only access control",
-        "Shop details persist across canister upgrades",
-        "Empty/default shop details are returned when no configuration exists"
-      ]
-    },
-    {
-      "id": "REQ-49",
-      "text": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching shop details (useShopDetails) and updating shop details (useUpdateShopDetails) with admin authentication.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "shop details"
-        ]
-      },
-      "acceptanceCriteria": [
-        "useShopDetails hook fetches current shop details from backend",
-        "useUpdateShopDetails mutation hook updates shop details with admin authentication",
-        "Query cache is invalidated after successful shop details updates",
-        "Hooks handle loading and error states appropriately"
-      ]
-    },
-    {
-      "id": "REQ-50",
-      "text": "Update the Footer component (frontend/src/components/Footer.tsx) to display the configured contact email from Shop Details as a mailto link in the 'Connect' section. Show 'Contact: email@example.com' or similar label.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "at the footer it says connect, make this show contact details to send email",
-          "mailto link"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Footer displays contact email retrieved from shop details configuration",
-        "Email is rendered as a clickable mailto link",
-        "Contact section shows a label like 'Contact:' or 'Email:' before the email address",
-        "If no email is configured, the contact section is hidden or shows placeholder text",
-        "Clicking the mailto link opens the user's default email client"
+        "Hook fetches total inventory value from backend getTotalInventoryValue() method",
+        "Hook requires admin authentication via useActor",
+        "Query invalidates and refetches when products query invalidates",
+        "Returns loading, error, and data states for UI consumption",
+        "Integrates with existing React Query setup in the project"
       ]
     }
   ],
   "constraints": [
-    "Do not modify frontend/src/hooks/useInternetIdentity.ts or useInternetIdentity.tsx",
-    "Do not modify frontend/src/hooks/useActor.ts",
-    "Do not modify frontend/src/main.tsx",
-    "Do not modify frontend/src/components/ui components",
-    "Maintain single-actor architecture in backend/main.mo",
-    "Preserve existing Stripe checkout integration flow",
-    "Keep existing product management and bulk upload functionality intact"
+    "Maintain single-actor backend architecture in backend/main.mo",
+    "Do not modify read-only frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
+    "Use existing ProductManagementTable component structure without breaking current inline editing functionality",
+    "Follow existing authentication patterns using Internet Identity and admin token",
+    "Preserve existing React Query patterns and invalidation logic"
   ],
   "nonGoals": [
-    "Creating customer review functionality (explicitly dismissed)",
-    "Implementing real-time websocket updates for home page",
-    "Adding product filtering or search functionality",
-    "Creating separate shop details management outside admin dashboard",
-    "Modifying existing branding configuration structure"
+    "Modifying bulk upload functionality",
+    "Changing product pricing or inventory management outside the product management table",
+    "Adding customer-facing inventory value displays",
+    "Implementing inventory alerts or low-stock notifications",
+    "Modifying Stripe checkout or payment flows"
   ],
   "imageRequirements": {
-    "required": [
-      "Hero background image with warm artisan marketplace aesthetic featuring handcrafted items and creative workspace (hero-background.dim_1920x600.png)"
-    ],
+    "required": [],
     "edits": []
   }
 }

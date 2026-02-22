@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useGetProducts, useUpdateProduct, useReplaceProductImage, useIncrementInventory } from '../hooks/useQueries';
+import { useGetProducts, useUpdateProduct, useReplaceProductImage, useIncrementInventory, useDecrementInventory } from '../hooks/useQueries';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Pencil, Check, X, Upload, Plus } from 'lucide-react';
+import { Pencil, Check, X, Upload, Plus, Minus } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExternalBlob } from '../backend';
 import type { Product } from '../backend';
@@ -22,9 +22,10 @@ export default function ProductManagementTable() {
   const updateProduct = useUpdateProduct();
   const replaceImage = useReplaceProductImage();
   const incrementInventory = useIncrementInventory();
+  const decrementInventory = useDecrementInventory();
   const [editing, setEditing] = useState<EditingState>({ productId: null, field: null, value: '' });
   const [uploadingImage, setUploadingImage] = useState<bigint | null>(null);
-  const [incrementingProduct, setIncrementingProduct] = useState<bigint | null>(null);
+  const [adjustingInventory, setAdjustingInventory] = useState<bigint | null>(null);
 
   const startEdit = (product: Product, field: 'name' | 'shape' | 'price') => {
     let value = '';
@@ -76,15 +77,33 @@ export default function ProductManagementTable() {
   };
 
   const handleIncrementInventory = async (productId: bigint) => {
-    setIncrementingProduct(productId);
+    setAdjustingInventory(productId);
     try {
       await incrementInventory.mutateAsync(productId);
-      toast.success('Inventory incremented successfully');
+      toast.success('Inventory increased by 1');
     } catch (error) {
       toast.error('Failed to increment inventory');
       console.error(error);
     } finally {
-      setIncrementingProduct(null);
+      setAdjustingInventory(null);
+    }
+  };
+
+  const handleDecrementInventory = async (productId: bigint, currentCount: bigint) => {
+    if (currentCount <= BigInt(0)) {
+      toast.error('Inventory is already at 0');
+      return;
+    }
+    
+    setAdjustingInventory(productId);
+    try {
+      await decrementInventory.mutateAsync(productId);
+      toast.success('Inventory decreased by 1');
+    } catch (error) {
+      toast.error('Failed to decrement inventory');
+      console.error(error);
+    } finally {
+      setAdjustingInventory(null);
     }
   };
 
@@ -326,15 +345,27 @@ export default function ProductManagementTable() {
                     </TableCell>
 
                     <TableCell>
-                      <div className="flex gap-2 items-center">
-                        <span className="font-medium">{product.inventoryCount.toString()}</span>
+                      <div className="flex gap-1 items-center">
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleDecrementInventory(product.id, product.inventoryCount)}
+                          disabled={adjustingInventory === product.id || product.inventoryCount <= BigInt(0)}
+                          className="h-7 w-7"
+                          title="Decrease inventory by 1"
+                        >
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="font-medium min-w-[2rem] text-center">
+                          {product.inventoryCount.toString()}
+                        </span>
                         <Button
                           size="icon"
                           variant="ghost"
                           onClick={() => handleIncrementInventory(product.id)}
-                          disabled={incrementingProduct === product.id}
-                          className="h-6 w-6"
-                          title="Increment inventory by 1"
+                          disabled={adjustingInventory === product.id}
+                          className="h-7 w-7"
+                          title="Increase inventory by 1"
                         >
                           <Plus className="h-3 w-3" />
                         </Button>

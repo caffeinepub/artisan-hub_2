@@ -29,7 +29,7 @@ export default function Layout() {
     }
   };
 
-  const siteName = brandingConfig?.siteName || 'Artisan Market';
+  const siteName = brandingConfig?.siteName || 'Original Creations Market';
   const logoUrl = brandingConfig?.logo?.getDirectURL();
 
   return (

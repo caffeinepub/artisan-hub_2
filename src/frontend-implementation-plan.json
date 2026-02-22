@@ -1,104 +1,65 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Enhance home page with dynamic product displays and add Shop Details admin section",
+  "title": "Enhance product management with easier stock editing and total inventory value display",
   "requirements": [
     {
-      "id": "REQ-44",
-      "summary": "Redesign Marketplace home page to display dynamic product sections (featured, most viewed, best sellers, newest designs) with automatic updates when new products are uploaded",
+      "id": "REQ-59",
+      "summary": "Add quick stock adjustment controls (+/-) to ProductManagementTable for immediate inventory updates",
       "acceptanceCriteria": [
-        "Home page displays a 'Featured Products' section with product cards",
-        "Home page displays a 'Most Viewed Products' section with product cards",
-        "Home page displays a 'Best Sellers' section showing most sold products",
-        "Home page displays a 'Newest Designs' section showing recently added products",
-        "Newly uploaded products appear in the appropriate sections when customers visit the home page",
-        "Each product section shows product images, names, and prices with links to detail view"
+        "Increment (+) and decrement (-) buttons appear next to each product's inventory count in the table",
+        "Clicking increment increases stock by 1 and immediately saves via backend",
+        "Clicking decrement decreases stock by 1 (minimum 0) and immediately saves via backend",
+        "Stock changes update the product without requiring full row edit mode",
+        "Loading state shown during stock update operations",
+        "Toast notification displays success or error after stock change"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Marketplace.tsx",
+          "path": "frontend/src/components/ProductManagementTable.tsx",
           "operation": "modify",
-          "description": "Redesign the Marketplace home page to include four distinct product sections: Featured Products, Most Viewed Products, Best Sellers, and Newest Designs. Each section should display product cards in a horizontal scrollable or grid layout. Use the backend methods getMostViewedProducts(), getBestSellingProducts(), and getNewestProducts() via React Query hooks. For Featured Products, use getProducts() and select featured items (e.g., first 4-6 products). Ensure each product card displays the product image, name, shape, and price, and is clickable to open the ProductDetailView modal. Remove or update the existing static product grid to accommodate the new sectioned layout."
+          "description": "Add increment and decrement button controls next to the inventory count field in each product row. Create inline handlers that call the updateInventoryCount backend method with productId and new inventory value (current ± 1, with minimum 0). Display loading state during the mutation and show toast notifications on success or error. Ensure buttons are disabled during loading and that the table refetches product data after successful updates."
         },
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add three new React Query hooks: useMostViewedProducts(), useBestSellingProducts(), and useNewestProducts(). Each hook should call the corresponding backend method (getMostViewedProducts, getBestSellingProducts, getNewestProducts) and return the product arrays with proper loading and error states. Use query keys ['products', 'mostViewed'], ['products', 'bestSelling'], and ['products', 'newest'] respectively. Ensure these queries are invalidated when products are added or updated to reflect newly uploaded products automatically."
+          "description": "Add useUpdateInventoryCount mutation hook that calls actor.updateInventoryCount(productId, newCount). Configure the mutation to invalidate the products query on success to trigger automatic refetch of the product list. Return loading, error, and mutate states for UI consumption."
         }
       ]
     },
     {
-      "id": "REQ-46",
-      "summary": "Update Marketplace home page hero section with new background image and compelling motto about original handcrafted products to attract buyers",
+      "id": "REQ-60",
+      "summary": "Display total inventory value on Dashboard showing sum of (price × inventory) for all products",
       "acceptanceCriteria": [
-        "Hero section displays a new background design with warm, artisan-appropriate colors",
-        "Hero section includes a compelling motto about original handcrafted products",
-        "Hero section includes promotional text encouraging buyers to explore unique designs",
-        "Visual design is cohesive with the existing artisan marketplace aesthetic"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Marketplace.tsx",
-          "operation": "modify",
-          "description": "Update the hero section at the top of the Marketplace page to use the generated hero background image located at frontend/public/assets/generated/hero-background.dim_1920x600.png. Replace any existing hero banner with a new design featuring this background image. Add a prominent motto headline such as 'Original Handcrafted Products, Designed & Created by Me' or similar compelling text emphasizing originality and craftsmanship. Include a subheading or promotional text encouraging buyers to explore unique, one-of-a-kind designs. Use warm, artisan-appropriate typography and overlay styling that ensures text readability over the background. Maintain cohesion with the existing terracotta and earthy color palette defined in the global styles."
-        }
-      ]
-    },
-    {
-      "id": "REQ-47",
-      "summary": "Create a new 'Shop Details' tab in the admin Dashboard where the trader can configure shop contact email address",
-      "acceptanceCriteria": [
-        "Dashboard page includes a new 'Shop Details' tab alongside existing tabs",
-        "Shop Details tab contains a form with an email input field",
-        "Form includes a save button to persist shop contact details",
-        "Success/error feedback is displayed when saving shop details",
-        "Configured email is loaded and displayed when the tab is opened"
+        "Dashboard displays a new statistics card showing 'Total Inventory Value' alongside existing metrics",
+        "Value is calculated as the sum of (product price × inventory count) for all products",
+        "Display formats the value as currency (e.g., '$1,234.56')",
+        "Value updates automatically when products are added, edited, or deleted",
+        "Calculation includes all products regardless of their availability status"
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/Dashboard.tsx",
           "operation": "modify",
-          "description": "Add a new tab labeled 'Shop Details' to the existing Tabs component in the Dashboard page, alongside the current tabs (Product Management, Bulk Upload, Stripe Configuration, Branding). The Shop Details tab should render a new ShopDetailsSettings component (to be created). Ensure the tab is only accessible to admin users (consistent with existing admin-only dashboard access control). Wire the new tab into the Tabs structure so it can be navigated to and from other tabs."
-        },
-        {
-          "path": "frontend/src/components/ShopDetailsSettings.tsx",
-          "operation": "create",
-          "description": "Create a new component that displays a form for configuring shop contact details. Include an email input field with proper validation (email format). Add a 'Save' button that triggers the useUpdateShopDetails mutation hook. Display the current shop email by fetching data using the useShopDetails query hook. Show success toast notifications on successful save and error messages on failure. Use form state management (e.g., useState) to track email input changes. Style the form consistently with other admin settings components (BrandingSettings, StripeSetup) using Tailwind CSS and shadcn/ui components like Input, Button, and Label."
+          "description": "Add a new statistics card to the dashboard grid that displays 'Total Inventory Value'. Use the useTotalInventoryValue hook to fetch the total value from the backend. Format the value as currency using a formatter (e.g., new Intl.NumberFormat with currency style). Display loading state while fetching and handle errors gracefully. Position the card alongside existing product count and revenue metrics in the statistics section."
         }
       ]
     },
     {
-      "id": "REQ-49",
-      "summary": "Create React Query hooks for fetching and updating shop details with admin authentication",
+      "id": "REQ-62",
+      "summary": "Create React Query hook useTotalInventoryValue for fetching total inventory value with automatic refetching",
       "acceptanceCriteria": [
-        "useShopDetails hook fetches current shop details from backend",
-        "useUpdateShopDetails mutation hook updates shop details with admin authentication",
-        "Query cache is invalidated after successful shop details updates",
-        "Hooks handle loading and error states appropriately"
+        "Hook fetches total inventory value from backend getTotalInventoryValue() method",
+        "Hook requires admin authentication via useActor",
+        "Query invalidates and refetches when products query invalidates",
+        "Returns loading, error, and data states for UI consumption",
+        "Integrates with existing React Query setup in the project"
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add two new React Query hooks: useShopDetails() and useUpdateShopDetails(). The useShopDetails hook should call actor.getShopDetails() with query key ['shopDetails'], returning the ShopDetails object or null with proper loading and error states. The useUpdateShopDetails mutation hook should call actor.updateShopDetails(details) with the ShopDetails object as input, and on success, invalidate the ['shopDetails'] query key to refresh the cached data. Ensure both hooks check for actor availability and handle errors gracefully. Follow the existing patterns used in other query hooks in this file."
-        }
-      ]
-    },
-    {
-      "id": "REQ-50",
-      "summary": "Update Footer component to display configured contact email from Shop Details as a mailto link in the 'Connect' section",
-      "acceptanceCriteria": [
-        "Footer displays contact email retrieved from shop details configuration",
-        "Email is rendered as a clickable mailto link",
-        "Contact section shows a label like 'Contact:' or 'Email:' before the email address",
-        "If no email is configured, the contact section is hidden or shows placeholder text",
-        "Clicking the mailto link opens the user's default email client"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/Footer.tsx",
-          "operation": "modify",
-          "description": "Update the Footer component to fetch shop details using the useShopDetails hook. In the 'Connect' section (or create a new contact section if 'Connect' doesn't exist), display the contact email retrieved from shopDetails.contactDetails.email. Render the email as a clickable mailto link (e.g., <a href='mailto:{email}'>{email}</a>). Add a label such as 'Contact:' or 'Email:' before the email address for clarity. If shopDetails is null or email is empty, hide the contact section or display placeholder text like 'Contact information not configured'. Ensure the styling is consistent with the existing footer design and uses Tailwind CSS classes."
+          "description": "Add useTotalInventoryValue query hook that fetches the total inventory value by calling actor.getTotalInventoryValue(). Use queryKey ['totalInventoryValue'] and enable the query only when actor is available. Configure the hook to automatically refetch when the products query is invalidated by including appropriate query key dependencies. Return loading, error, and data (bigint) states for consumption by the Dashboard component."
         }
       ]
     }

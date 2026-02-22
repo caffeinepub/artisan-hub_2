@@ -25,7 +25,7 @@ interface ProductPreview {
   inventoryCount: string;
 }
 
-const DEFAULT_DESCRIPTION = 'Handcrafted 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike';
+const DEFAULT_DESCRIPTION = 'Original 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike';
 
 export default function BulkProductUpload({ onComplete }: BulkProductUploadProps) {
   const addProduct = useAddProduct();
@@ -80,7 +80,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
     const priceValue = parseFloat(price);
     const priceText = !isNaN(priceValue) && priceValue > 0 ? ` priced at $${priceValue.toFixed(2)}` : '';
     
-    return `Beautiful handcrafted ${title.toLowerCase()} in ${shape.toLowerCase()} shape. This unique piece${priceText} is carefully made with attention to detail and quality craftsmanship. Each item is one-of-a-kind and perfect for adding artisan charm to your collection.`;
+    return `Original ${title.toLowerCase()} in ${shape.toLowerCase()} shape. This unique piece${priceText} is carefully crafted with attention to detail and quality. Each item is one-of-a-kind and perfect for adding distinctive character to your collection.`;
   };
 
   const handleGenerateDescription = (index: number) => {
