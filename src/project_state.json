@@ -1,0 +1,430 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 15,
+  "summary": "Artisan Hub marketplace for a sole trader to sell handmade products with bulk image upload, AI-generated descriptions, and Stripe payment processing",
+  "architectural_notes": [
+    "Direct Stripe integration without commission handling",
+    "Each uploaded image becomes a separate product listing",
+    "Focus on product management, no customer management features",
+    "Inline editing in dashboard list view for product management",
+    "Shopping basket uses temporary cart/session storage for multi-item purchases",
+    "Stripe integration supports both single-item and multi-item checkout flows",
+    "Bulk upload uses manual description input by default, with AI generation as optional feature",
+    "Bulk upload auto-copy feature copies title, price, inventory count, and category from first item to subsequent items, triggered by user control (button/checkbox)"
+  ],
+  "known_issues": [
+    "Images fail to persist when creating products through bulk upload interface",
+    "Buy Now button redirects to 'no products selected' page instead of Stripe checkout"
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-create-bulk-image-upload-interface-that-allows-uploading-multiple-images-at-once-assigns-all-images-to-a-single-selected-category-and-automatically-creates-one-product-per-uploaded-image",
+      "title": "Create bulk image upload interface that allows uploading multiple images at once, assigns all images to a single selected category, and automatically creates one product per uploaded image",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-product-management-dashboard-showing-all-product-listings-with-ability-to-edit-delete-and-view-product-details-including-images-descriptions-pricing-and-inventory-status",
+      "title": "Build product management dashboard showing all product listings with ability to edit, delete, and view product details including images, descriptions, pricing, and inventory status",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-sales-and-earnings-tracking-dashboard-displaying-total-sales-revenue-and-transaction-history-without-customer-management-features",
+      "title": "Create sales and earnings tracking dashboard displaying total sales, revenue, and transaction history without customer management features",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-immediate-checkout-flow-for-customers-that-allows-selecting-a-product-entering-shipping-information-and-completing-payment-via-stripe-without-requiring-account-creation",
+      "title": "Build immediate checkout flow for customers that allows selecting a product, entering shipping information, and completing payment via Stripe without requiring account creation",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-public-marketplace-storefront-displaying-all-available-products-with-images-titles-categories-prices-and-the-ability-for-customers-to-browse-and-select-products-for-purchase",
+      "title": "Create public marketplace storefront displaying all available products with images, titles, categories, prices, and the ability for customers to browse and select products for purchase",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-terms-and-conditions-page-and-privacy-policy-page-with-footer-component-that-links-to-both-pages-from-all-site-pages",
+      "title": "Create Terms and Conditions page and Privacy Policy page with footer component that links to both pages from all site pages",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-a-creative-visual-theme-with-distinctive-colors-typography-and-layout-style-that-reflects-an-artisan-handmade-marketplace-aesthetic-and-apply-it-consistently-across-all-pages",
+      "title": "Design a creative visual theme with distinctive colors, typography, and layout style that reflects an artisan handmade marketplace aesthetic and apply it consistently across all pages",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-bulk-upload-image-persistence-bug-where-product-images-fail-to-save-when-creating-new-products-through-the-bulk-upload-interface-ensure-images-are-properly-stored-in-the-backend-blob-storage-and-associated-with-newly-created-products",
+      "title": "Fix the bulk upload image persistence bug where product images fail to save when creating new products through the bulk upload interface. Ensure images are properly stored in the backend blob storage and associated with newly created products.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-editing-capability-in-the-product-management-dashboard-list-view-to-edit-product-title-directly-in-the-table-row-with-save-cancel-controls",
+      "title": "Add inline editing capability in the product management dashboard list view to edit product title directly in the table row with save/cancel controls.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-editing-capability-in-the-product-management-dashboard-list-view-to-edit-product-description-directly-with-save-cancel-controls",
+      "title": "Add inline editing capability in the product management dashboard list view to edit product description directly with save/cancel controls.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-editing-capability-in-the-product-management-dashboard-list-view-to-edit-product-price-with-validation-and-save-cancel-controls",
+      "title": "Add inline editing capability in the product management dashboard list view to edit product price with validation and save/cancel controls.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-editing-capability-in-the-product-management-dashboard-list-view-to-edit-product-inventory-count-with-validation-and-save-cancel-controls",
+      "title": "Add inline editing capability in the product management dashboard list view to edit product inventory count with validation and save/cancel controls.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-editing-capability-in-the-product-management-dashboard-list-view-to-change-the-product-category-via-dropdown-selector-with-save-cancel-controls",
+      "title": "Add inline editing capability in the product management dashboard list view to change the product category via dropdown selector with save/cancel controls.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-capability-in-the-product-management-dashboard-list-view-to-replace-or-add-additional-images-to-existing-products-with-image-upload-controls",
+      "title": "Add inline capability in the product management dashboard list view to replace or add additional images to existing products with image upload controls.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-buy-now-button-in-productdetailview-component-to-properly-store-the-selected-product-in-sessionstorage-and-redirect-to-the-checkout-page-without-showing-no-products-selected-error",
+      "title": "Fix the Buy Now button in ProductDetailView component to properly store the selected product in sessionStorage and redirect to the checkout page without showing 'no products selected' error",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-add-to-basket-button-to-productcard-and-productdetailview-components-that-calls-the-backend-addtocart-method-and-shows-a-success-toast-notification",
+      "title": "Add 'Add to Basket' button to ProductCard and ProductDetailView components that calls the backend addToCart method and shows a success toast notification",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-shopping-basket-page-or-modal-that-displays-all-cart-items-with-product-images-names-prices-quantities-allows-editing-quantities-removing-items-shows-the-total-price-and-includes-a-checkout-button",
+      "title": "Create a shopping basket page or modal that displays all cart items with product images, names, prices, quantities, allows editing quantities, removing items, shows the total price, and includes a Checkout button",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-basket-icon-with-item-count-badge-to-the-header-navigation-that-opens-the-shopping-basket-when-clicked",
+      "title": "Add a basket icon with item count badge to the header navigation that opens the shopping basket when clicked",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-checkout-page-to-handle-both-single-product-purchases-from-buy-now-and-multi-item-purchases-from-shopping-basket-passing-all-items-to-the-stripe-checkout-session",
+      "title": "Update the Checkout page to handle both single-product purchases (from Buy Now) and multi-item purchases (from shopping basket), passing all items to the Stripe checkout session",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-clear-the-shopping-cart-after-successful-payment-completion-on-the-paymentsuccess-page",
+      "title": "Clear the shopping cart after successful payment completion on the PaymentSuccess page",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-bulk-upload-interface-bulkproductupload-tsx-to-replace-automatic-ai-description-generation-with-manual-text-input-fields-for-each-uploaded-image-allowing-the-trader-to-type-or-edit-product-descriptions-directly",
+      "title": "Update the bulk upload interface (BulkProductUpload.tsx) to replace automatic AI description generation with manual text input fields for each uploaded image, allowing the trader to type or edit product descriptions directly",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-optional-generate-ai-description-button-for-each-product-in-the-bulk-upload-flow-that-when-clicked-generates-an-ai-description-and-populates-the-manual-description-field-with-the-generated-text",
+      "title": "Add an optional 'Generate AI Description' button for each product in the bulk upload flow that, when clicked, generates an AI description and populates the manual description field with the generated text",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-pre-populate-description-fields-in-the-bulk-upload-flow-with-the-default-template-handcrafted-3d-printed-dolphin-ocarina-uniquely-designed-and-precision-crafted-for-beautiful-sound-and-artisan-appeal-this-one-of-a-kind-piece-combines-intricate-detail-with-functional-artistry-perfect-for-collectors-and-music-enthusiasts-alike",
+      "title": "Pre-populate description fields in the bulk upload flow with the default template: 'Handcrafted 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike'",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-total-product-count-display-to-the-admin-dashboard-showing-the-number-of-products-currently-in-the-system",
+      "title": "Add a total product count display to the admin dashboard showing the number of products currently in the system",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-branding-tab-to-the-admin-dashboard-page-with-a-settings-form-for-configuring-site-name-uploading-logo-image-and-uploading-favicon-icon-image",
+      "title": "Add a new 'Branding' tab to the admin Dashboard page with a settings form for configuring site name, uploading logo image, and uploading favicon/icon image",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-in-usequeries-ts-for-fetching-current-branding-configuration-and-mutating-branding-settings-with-admin-authentication",
+      "title": "Create React Query hooks in useQueries.ts for fetching current branding configuration and mutating branding settings with admin authentication",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-layout-component-header-to-display-the-configured-site-logo-and-use-the-configured-site-name-instead-of-hardcoded-artisan-hub-text",
+      "title": "Update the Layout component header to display the configured site logo and use the configured site name instead of hardcoded 'Artisan Hub' text",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-frontend-index-html-to-dynamically-set-the-favicon-and-page-title-based-on-branding-configuration",
+      "title": "Update frontend/index.html to dynamically set the favicon and page title based on branding configuration",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-checkbox-or-toggle-button-in-the-bulkproductupload-component-to-enable-disable-auto-copy-behavior-that-copies-all-fields-title-price-inventory-count-category-from-the-first-uploaded-item-to-all-subsequent-items-excluding-the-image-field",
+      "title": "Add a checkbox or toggle button in the BulkProductUpload component to enable/disable auto-copy behavior that copies all fields (title, price, inventory count, category) from the first uploaded item to all subsequent items, excluding the image field",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-auto-copy-logic-in-bulkproductupload-that-when-enabled-automatically-populates-title-price-inventory-count-and-category-fields-for-items-2-n-with-the-values-from-the-first-item-leaving-image-fields-independent",
+      "title": "Implement the auto-copy logic in BulkProductUpload that, when enabled, automatically populates title, price, inventory count, and category fields for items 2-N with the values from the first item, leaving image fields independent",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-existing-generate-ai-description-button-functionality-in-bulkproductupload-to-generate-smart-ai-descriptions-based-on-the-user-provided-title-category-and-other-product-details-when-manually-triggered",
+      "title": "Update the existing 'Generate AI Description' button functionality in BulkProductUpload to generate smart AI descriptions based on the user-provided title, category, and other product details when manually triggered",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-increment-button-next-to-the-inventory-count-in-the-productmanagementtable-component-that-increases-the-stock-quantity-by-1-for-each-click",
+      "title": "Add a '+' increment button next to the inventory count in the ProductManagementTable component that increases the stock quantity by 1 for each click",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Bulk image upload with category assignment and auto-product creation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "AI-generated product descriptions based on title, category, and shape",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Product management dashboard with listings, sales tracking, and earnings",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Direct Stripe payment integration to trader's account",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Immediate checkout flow for customers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Terms and Privacy Policy pages with footer links",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Implement predefined product categories (e.g., Crafts, Art, Jewelry) with the ability to add new custom categories",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Generate AI-powered product descriptions using title, category, and shape inputs provided by the trader for each product",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Integrate Stripe payment processing with direct payments to the trader's Stripe account without any commission deduction or handling",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Fix image persistence bug in bulk upload interface where images fail to save when creating new products",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Add inline editing capabilities in product management dashboard to edit title, description, price, inventory, replace/add images, and change categories",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Create or update the backend updateProduct function to handle partial updates for product title, description, price, inventory, category, and image references.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Fix Buy Now button to properly redirect to Stripe checkout for single-item purchases",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Implement shopping basket feature with Add to Basket button, basket review/edit functionality, and multi-item Stripe checkout",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Create backend shopping cart functionality with methods to add items, remove items, update quantities, retrieve cart contents, and clear the cart, storing cart data per user principal",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Update bulk upload flow to use manual text input for product descriptions with optional AI generation button",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Add total product count display to admin dashboard",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Create admin settings page for site branding configuration including logo, icon, and other site-wide branding options",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Create a backend data structure to store site branding configuration including site name, logo image reference, favicon/icon image reference, and any other branding metadata",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Add auto-copy functionality in bulk upload that copies all fields (title, price, inventory, category) except image from the first item to all other items, controlled by a button or checkbox",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Add increment button to product management dashboard to quickly increase stock quantities by 1 for administrative inventory management",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-34",
+      "summary": "Ensure the backend updateProduct function supports updating only the inventory count field without requiring other product fields",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Artisan Hub",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --radius: 0.5rem;
+        /* Warm terracotta and earthy tones */
+        --background: 0.98 0.01 40;
+        --foreground: 0.25 0.02 30;
+        --card: 1 0 0;
+        --card-foreground: 0.25 0.02 30;
+        --popover: 1 0 0;
+        --popover-foreground: 0.25 0.02 30;
+        /* Rich terracotta primary */
+        --primary: 0.55 0.15 25;
+        --primary-foreground: 0.98 0.01 40;
+        /* Warm cream secondary */
+        --secondary: 0.95 0.02 60;
+        --secondary-foreground: 0.35 0.03 30;
+        /* Soft sage muted */
+        --muted: 0.93 0.02 120;
+        --muted-foreground: 0.50 0.03 30;
+        /* Warm amber accent */
+        --accent: 0.75 0.12 50;
+        --accent-foreground: 0.25 0.02 30;
+        --destructive: 0.55 0.20 15;
+        --destructive-foreground: 0.98 0.01 40;
+        --border: 0.88 0.02 40;
+        --input: 0.88 0.02 40;
+        --ring: 0.55 0.15 25;
+        --chart-1: 0.55 0.15 25;
+        --chart-2: 0.65 0.12 120;
+        --chart-3: 0.75 0.12 50;
+        --chart-4: 0.45 0.10 200;
+        --chart-5: 0.70 0.14 35;
+    }
+
+    .dark {
+        /* Dark warm browns and creams */
+        --background: 0.20 0.02 30;
+        --foreground: 0.95 0.02 40;
+        --card: 0.25 0.02 30;
+        --card-foreground: 0.95 0.02 40;
+        --popover: 0.22 0.02 30;
+        --popover-foreground: 0.95 0.02 40;
+        /* Lighter terracotta for dark mode */
+        --primary: 0.70 0.14 30;
+        --primary-foreground: 0.20 0.02 30;
+        --secondary: 0.30 0.02 40;
+        --secondary-foreground: 0.95 0.02 40;
+        --muted: 0.28 0.02 30;
+        --muted-foreground: 0.70 0.03 40;
+        --accent: 0.65 0.12 45;
+        --accent-foreground: 0.95 0.02 40;
+        --destructive: 0.60 0.18 20;
+        --destructive-foreground: 0.95 0.02 40;
+        --border: 0.35 0.02 30;
+        --input: 0.35 0.02 30;
+        --ring: 0.70 0.14 30;
+        --chart-1: 0.70 0.14 30;
+        --chart-2: 0.60 0.10 120;
+        --chart-3: 0.65 0.12 45;
+        --chart-4: 0.55 0.10 200;
+        --chart-5: 0.75 0.12 35;
+    }
+
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+}
+
+@layer base {
+    /* Import Google Fonts for artisan aesthetic */
+    @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+}

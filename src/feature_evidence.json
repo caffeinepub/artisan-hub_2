@@ -1,0 +1,27 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-a-increment-button-next-to-the-inventory-count-in-the-productmanagementtable-component-that-increases-the-stock-quantity-by-1-for-each-click",
+      "featureTitle": "Add a '+' increment button next to the inventory count in the ProductManagementTable component that increases the stock quantity by 1 for each click",
+      "files": [
+        "frontend/src/components/ProductManagementTable.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-38"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

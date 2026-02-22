@@ -1,0 +1,57 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-22T10:31:51.898Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 2,
+    "implemented": 1,
+    "items": [
+      {
+        "id": "REQ-38",
+        "summary": "Add a '+' increment button next to the inventory count in the ProductManagementTable component that increases the stock quantity by 1 for each click",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ]
+      },
+      {
+        "id": "REQ-39",
+        "summary": "Ensure the backend updateProduct function supports updating only the inventory count field without requiring other product fields",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/BulkProductUpload.tsx",
+    "frontend/src/components/ProductCard.tsx",
+    "frontend/src/components/ProductDetailView.tsx",
+    "frontend/src/components/ProductManagementTable.tsx",
+    "frontend/src/components/StripeSetup.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/Dashboard.tsx",
+    "frontend/src/pages/Marketplace.tsx",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

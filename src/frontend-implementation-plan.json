@@ -1,0 +1,26 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Add stock quantity increment button in product management dashboard",
+  "requirements": [
+    {
+      "id": "REQ-38",
+      "summary": "Add '+' increment button next to inventory count in ProductManagementTable that increases stock quantity by 1",
+      "acceptanceCriteria": [
+        "A '+' button appears next to the inventory count in each product row in the ProductManagementTable",
+        "Clicking the '+' button increments the inventory count by 1",
+        "The increment action immediately saves to the backend using the updateProduct function",
+        "A success toast notification appears after successful increment",
+        "The button shows a loading state while the update is in progress",
+        "The inventory count updates in the UI after successful increment"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductManagementTable.tsx",
+          "operation": "modify",
+          "description": "Add a '+' button next to the inventory count display in each product row. Implement click handler that calls the updateProduct backend function with only the inventoryCount field incremented by 1. Show loading state on the button during the mutation. Display success toast notification on successful increment. Ensure the table re-renders with updated inventory count after successful save. The button should be positioned inline with the inventory count cell and use appropriate styling consistent with the existing table design."
+        }
+      ]
+    }
+  ]
+}
