@@ -27,6 +27,13 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   };
 
+  const formatPrice = (priceInCents: bigint) => {
+    return new Intl.NumberFormat('en-AU', {
+      style: 'currency',
+      currency: 'AUD',
+    }).format(Number(priceInCents) / 100);
+  };
+
   return (
     <Card className="overflow-hidden">
       <div className="aspect-square overflow-hidden bg-muted">
@@ -40,7 +47,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <h3 className="font-serif font-semibold text-lg mb-1 line-clamp-1">{product.name}</h3>
         <p className="text-sm text-muted-foreground mb-2 line-clamp-1">{product.shape}</p>
         <div className="flex items-center justify-between">
-          <p className="font-semibold text-lg">${(Number(product.price) / 100).toFixed(2)}</p>
+          <p className="font-semibold text-lg">{formatPrice(product.price)}</p>
           <Button 
             size="sm" 
             variant="outline" 

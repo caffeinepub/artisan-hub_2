@@ -2,11 +2,38 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-quick-stock-adjustment-controls-to-the-productmanagementtable-component-including-increment-and-decrement-buttons-next-to-the-inventory-count-field-that-modify-stock-by-1-per-click-without-entering-edit-mode",
-      "featureTitle": "Add quick stock adjustment controls to the ProductManagementTable component including increment (+) and decrement (-) buttons next to the inventory count field that modify stock by 1 per click without entering edit mode",
+      "featureId": "feature-update-the-auto-copy-functionality-in-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-include-the-description-field-when-copying-from-the-first-item-to-subsequent-items-when-auto-copy-is-enabled-the-description-from-the-first-product-should-be-copied-to-all-other-products-along-with-title-price-inventory-count-and-category",
+      "featureTitle": "Update the auto-copy functionality in the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include the description field when copying from the first item to subsequent items. When auto-copy is enabled, the description from the first product should be copied to all other products along with title, price, inventory count, and category.",
       "files": [
+        "frontend/src/components/BulkProductUpload.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-63"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-change-the-platform-currency-from-the-current-default-to-australian-dollars-aud-across-all-components-displaying-prices-including-productcard-productdetailview-productmanagementtable-checkout-shoppingbasket-and-dashboard-components-update-price-formatting-to-use-aud-currency-symbol-with-aud-label-where-appropriate",
+      "featureTitle": "Change the platform currency from the current default to Australian dollars (AUD) across all components displaying prices, including ProductCard, ProductDetailView, ProductManagementTable, Checkout, ShoppingBasket, and Dashboard components. Update price formatting to use AUD currency symbol ($) with 'AUD' label where appropriate.",
+      "files": [
+        "frontend/src/components/BulkProductUpload.tsx",
+        "frontend/src/components/ProductCard.tsx",
+        "frontend/src/components/ProductDetailView.tsx",
         "frontend/src/components/ProductManagementTable.tsx",
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/pages/Checkout.tsx",
+        "frontend/src/pages/Dashboard.tsx",
+        "frontend/src/pages/ShoppingBasket.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -20,51 +47,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-59"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-total-inventory-value-calculator-section-to-the-dashboard-page-that-displays-the-sum-of-price-inventory-count-for-all-listed-products-showing-the-potential-value-of-all-stock",
-      "featureTitle": "Add a total inventory value calculator section to the Dashboard page that displays the sum of (price × inventory count) for all listed products, showing the potential value of all stock",
-      "files": [
-        "frontend/src/pages/Dashboard.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-60"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-react-query-hook-usetotalinventoryvalue-in-usequeries-ts-that-fetches-the-total-inventory-value-from-the-backend-with-automatic-refetching-when-product-data-changes",
-      "featureTitle": "Create React Query hook useTotalInventoryValue in useQueries.ts that fetches the total inventory value from the backend with automatic refetching when product data changes",
-      "files": [
-        "frontend/src/hooks/useQueries.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-62"
+        "REQ-64"
       ],
       "confidence": "high"
     }

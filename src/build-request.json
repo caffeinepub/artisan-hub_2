@@ -1,104 +1,77 @@
 {
   "kind": "build_request",
-  "title": "Enhance product management with easier stock editing and total inventory value display",
+  "title": "Add description auto-copy and change currency to Australian dollars",
   "projectName": "Original Creations Hub",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-59",
-      "text": "Add quick stock adjustment controls to the ProductManagementTable component including increment (+) and decrement (-) buttons next to the inventory count field that modify stock by 1 per click without entering edit mode",
+      "id": "REQ-63",
+      "text": "Update the auto-copy functionality in the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include the description field when copying from the first item to subsequent items. When auto-copy is enabled, the description from the first product should be copied to all other products along with title, price, inventory count, and category.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-user-final"
         ],
         "quotes": [
-          "Make the manage productos page easier to edit stock details"
+          "Make item description copy from first item also when uploading"
         ]
       },
       "acceptanceCriteria": [
-        "Increment (+) and decrement (-) buttons appear next to each product's inventory count in the table",
-        "Clicking increment increases stock by 1 and immediately saves via backend",
-        "Clicking decrement decreases stock by 1 (minimum 0) and immediately saves via backend",
-        "Stock changes update the product without requiring full row edit mode",
-        "Loading state shown during stock update operations",
-        "Toast notification displays success or error after stock change"
+        "When auto-copy is enabled in BulkProductUpload, the description field from the first product is automatically copied to all subsequent products",
+        "The description field updates in real-time when the first product's description changes",
+        "Image fields remain independent and are not copied",
+        "Manual edits to individual product descriptions are still possible after auto-copy"
       ]
     },
     {
-      "id": "REQ-60",
-      "text": "Add a total inventory value calculator section to the Dashboard page that displays the sum of (price × inventory count) for all listed products, showing the potential value of all stock",
+      "id": "REQ-64",
+      "text": "Change the platform currency from the current default to Australian dollars (AUD) across all components displaying prices, including ProductCard, ProductDetailView, ProductManagementTable, Checkout, ShoppingBasket, and Dashboard components. Update price formatting to use AUD currency symbol ($) with 'AUD' label where appropriate.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-user-final"
         ],
         "quotes": [
-          "reflect potential valie of all listed items"
+          "2 currency is Australian dollars"
         ]
       },
       "acceptanceCriteria": [
-        "Dashboard displays a new statistics card showing 'Total Inventory Value' alongside existing metrics",
-        "Value is calculated as the sum of (product price × inventory count) for all products",
-        "Display formats the value as currency (e.g., '$1,234.56')",
-        "Value updates automatically when products are added, edited, or deleted",
-        "Calculation includes all products regardless of their availability status"
+        "All price displays show Australian dollar formatting with '$' symbol",
+        "Currency is labeled as 'AUD' where appropriate (e.g., in checkout summaries)",
+        "Price inputs and displays are consistent across all frontend components",
+        "Existing price values are preserved and only the display format changes"
       ]
     },
     {
-      "id": "REQ-61",
-      "text": "Create backend helper method getTotalInventoryValue() that calculates and returns the sum of (price × inventory count) across all products in the system",
+      "id": "REQ-65",
+      "text": "Update the backend createStripeCheckoutSession method in backend/main.mo to configure Stripe checkout sessions with Australian dollars (AUD) as the currency instead of the current default currency.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-user-final"
         ],
         "quotes": [
-          "reflect potential valie of all listed items"
+          "2 currency is Australian dollars"
         ]
       },
       "acceptanceCriteria": [
-        "Method iterates through all products and calculates price × inventory for each",
-        "Returns the total sum as a Nat representing the monetary value",
-        "Method is accessible to authenticated admin users",
-        "Calculation handles products with zero inventory correctly",
-        "Performance remains acceptable even with large product catalogs"
-      ]
-    },
-    {
-      "id": "REQ-62",
-      "text": "Create React Query hook useTotalInventoryValue in useQueries.ts that fetches the total inventory value from the backend with automatic refetching when product data changes",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "reflect potential valie of all listed items"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Hook fetches total inventory value from backend getTotalInventoryValue() method",
-        "Hook requires admin authentication via useActor",
-        "Query invalidates and refetches when products query invalidates",
-        "Returns loading, error, and data states for UI consumption",
-        "Integrates with existing React Query setup in the project"
+        "Stripe checkout sessions are created with currency set to 'aud'",
+        "All payment amounts are processed in Australian dollars",
+        "Existing Stripe integration continues to work with the new currency",
+        "Currency configuration is applied to all checkout flows (single product and multi-item)"
       ]
     }
   ],
   "constraints": [
-    "Maintain single-actor backend architecture in backend/main.mo",
-    "Do not modify read-only frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
-    "Use existing ProductManagementTable component structure without breaking current inline editing functionality",
-    "Follow existing authentication patterns using Internet Identity and admin token",
-    "Preserve existing React Query patterns and invalidation logic"
+    "Do not modify the backend single-actor architecture",
+    "Do not edit files in frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui",
+    "Preserve all existing auto-copy functionality for other fields (title, price, inventory count, category)"
   ],
   "nonGoals": [
-    "Modifying bulk upload functionality",
-    "Changing product pricing or inventory management outside the product management table",
-    "Adding customer-facing inventory value displays",
-    "Implementing inventory alerts or low-stock notifications",
-    "Modifying Stripe checkout or payment flows"
+    "Adding support for multiple currencies or currency selection",
+    "Changing the pricing model or calculation logic",
+    "Modifying how prices are stored in the backend",
+    "Adding currency conversion features"
   ],
   "imageRequirements": {
     "required": [],

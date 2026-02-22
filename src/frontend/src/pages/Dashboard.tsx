@@ -75,9 +75,9 @@ export default function Dashboard() {
   }, 0);
 
   const formatCurrency = (value: bigint) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-AU', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'AUD',
     }).format(Number(value) / 100);
   };
 
@@ -149,7 +149,7 @@ export default function Dashboard() {
               <div className="text-2xl font-bold">
                 {totalInventory > 0
                   ? formatCurrency(totalInventoryValue / BigInt(totalInventory))
-                  : '$0.00'}
+                  : formatCurrency(BigInt(0))}
               </div>
             )}
             <p className="text-xs text-muted-foreground mt-1">

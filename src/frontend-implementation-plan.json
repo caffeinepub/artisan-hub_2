@@ -1,65 +1,69 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Enhance product management with easier stock editing and total inventory value display",
+  "title": "Add description auto-copy and change currency to Australian dollars",
   "requirements": [
     {
-      "id": "REQ-59",
-      "summary": "Add quick stock adjustment controls (+/-) to ProductManagementTable for immediate inventory updates",
+      "id": "REQ-63",
+      "summary": "Update auto-copy functionality in BulkProductUpload to include description field",
       "acceptanceCriteria": [
-        "Increment (+) and decrement (-) buttons appear next to each product's inventory count in the table",
-        "Clicking increment increases stock by 1 and immediately saves via backend",
-        "Clicking decrement decreases stock by 1 (minimum 0) and immediately saves via backend",
-        "Stock changes update the product without requiring full row edit mode",
-        "Loading state shown during stock update operations",
-        "Toast notification displays success or error after stock change"
+        "When auto-copy is enabled in BulkProductUpload, the description field from the first product is automatically copied to all subsequent products",
+        "The description field updates in real-time when the first product's description changes",
+        "Image fields remain independent and are not copied",
+        "Manual edits to individual product descriptions are still possible after auto-copy"
       ],
       "file_operations": [
+        {
+          "path": "frontend/src/components/BulkProductUpload.tsx",
+          "operation": "modify",
+          "description": "Extend the auto-copy functionality to include the description field. When the autoCopy state is true, update the handleInputChange function to copy the description value from the first product (products[0].description) to all other products in the array whenever the description field changes in the first product. Preserve existing auto-copy behavior for title, price, inventoryCount, and category fields. Ensure image fields remain independent and are not copied. Allow manual edits to individual product descriptions after auto-copy has been applied."
+        }
+      ]
+    },
+    {
+      "id": "REQ-64",
+      "summary": "Change platform currency display to Australian dollars (AUD) across all frontend components",
+      "acceptanceCriteria": [
+        "All price displays show Australian dollar formatting with '$' symbol",
+        "Currency is labeled as 'AUD' where appropriate (e.g., in checkout summaries)",
+        "Price inputs and displays are consistent across all frontend components",
+        "Existing price values are preserved and only the display format changes"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Update the price display to show Australian dollar formatting. Format the price value with the '$' symbol and add 'AUD' label where appropriate. Ensure the formatting is consistent with other components displaying prices. Use Intl.NumberFormat with currency 'AUD' or equivalent formatting approach."
+        },
+        {
+          "path": "frontend/src/components/ProductDetailView.tsx",
+          "operation": "modify",
+          "description": "Update the price display in the product detail modal to show Australian dollar formatting with '$' symbol and 'AUD' label. Maintain consistent formatting with ProductCard and other price displays throughout the application."
+        },
         {
           "path": "frontend/src/components/ProductManagementTable.tsx",
           "operation": "modify",
-          "description": "Add increment and decrement button controls next to the inventory count field in each product row. Create inline handlers that call the updateInventoryCount backend method with productId and new inventory value (current ± 1, with minimum 0). Display loading state during the mutation and show toast notifications on success or error. Ensure buttons are disabled during loading and that the table refetches product data after successful updates."
+          "description": "Update the price column display and inline price editing to use Australian dollar formatting with '$' symbol. Ensure price inputs and displays are formatted consistently as AUD. Add 'AUD' label in appropriate locations (e.g., column headers or input hints)."
         },
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/pages/Checkout.tsx",
           "operation": "modify",
-          "description": "Add useUpdateInventoryCount mutation hook that calls actor.updateInventoryCount(productId, newCount). Configure the mutation to invalidate the products query on success to trigger automatic refetch of the product list. Return loading, error, and mutate states for UI consumption."
-        }
-      ]
-    },
-    {
-      "id": "REQ-60",
-      "summary": "Display total inventory value on Dashboard showing sum of (price × inventory) for all products",
-      "acceptanceCriteria": [
-        "Dashboard displays a new statistics card showing 'Total Inventory Value' alongside existing metrics",
-        "Value is calculated as the sum of (product price × inventory count) for all products",
-        "Display formats the value as currency (e.g., '$1,234.56')",
-        "Value updates automatically when products are added, edited, or deleted",
-        "Calculation includes all products regardless of their availability status"
-      ],
-      "file_operations": [
+          "description": "Update all price displays in the checkout flow to show Australian dollar formatting with '$' symbol. Add 'AUD' label to the total amount and any price summaries. Ensure currency formatting is consistent throughout the checkout experience, including individual item prices and grand total."
+        },
+        {
+          "path": "frontend/src/pages/ShoppingBasket.tsx",
+          "operation": "modify",
+          "description": "Update price displays in the shopping basket to show Australian dollar formatting with '$' symbol. Add 'AUD' label where appropriate (e.g., subtotal, item prices). Ensure consistent AUD formatting across all price-related UI elements in the basket."
+        },
         {
           "path": "frontend/src/pages/Dashboard.tsx",
           "operation": "modify",
-          "description": "Add a new statistics card to the dashboard grid that displays 'Total Inventory Value'. Use the useTotalInventoryValue hook to fetch the total value from the backend. Format the value as currency using a formatter (e.g., new Intl.NumberFormat with currency style). Display loading state while fetching and handle errors gracefully. Position the card alongside existing product count and revenue metrics in the statistics section."
-        }
-      ]
-    },
-    {
-      "id": "REQ-62",
-      "summary": "Create React Query hook useTotalInventoryValue for fetching total inventory value with automatic refetching",
-      "acceptanceCriteria": [
-        "Hook fetches total inventory value from backend getTotalInventoryValue() method",
-        "Hook requires admin authentication via useActor",
-        "Query invalidates and refetches when products query invalidates",
-        "Returns loading, error, and data states for UI consumption",
-        "Integrates with existing React Query setup in the project"
-      ],
-      "file_operations": [
+          "description": "Update any price or inventory value displays in the dashboard (e.g., total inventory value statistics) to show Australian dollar formatting with '$' symbol and 'AUD' label where appropriate. Ensure consistency with other components displaying monetary values."
+        },
         {
-          "path": "frontend/src/hooks/useQueries.ts",
+          "path": "frontend/src/components/BulkProductUpload.tsx",
           "operation": "modify",
-          "description": "Add useTotalInventoryValue query hook that fetches the total inventory value by calling actor.getTotalInventoryValue(). Use queryKey ['totalInventoryValue'] and enable the query only when actor is available. Configure the hook to automatically refetch when the products query is invalidated by including appropriate query key dependencies. Return loading, error, and data (bigint) states for consumption by the Dashboard component."
+          "description": "Update price input fields and any price displays in the bulk upload component to indicate Australian dollar currency. Add input hints, labels, or placeholders showing 'AUD' or '$' symbol to clarify the expected currency for price entries."
         }
       ]
     }

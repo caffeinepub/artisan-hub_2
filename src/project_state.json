@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 25,
+  "projectStateVersion": 27,
   "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -413,6 +413,22 @@
         "REQ-62"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-auto-copy-functionality-in-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-include-the-description-field-when-copying-from-the-first-item-to-subsequent-items-when-auto-copy-is-enabled-the-description-from-the-first-product-should-be-copied-to-all-other-products-along-with-title-price-inventory-count-and-category",
+      "title": "Update the auto-copy functionality in the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include the description field when copying from the first item to subsequent items. When auto-copy is enabled, the description from the first product should be copied to all other products along with title, price, inventory count, and category.",
+      "reqIds": [
+        "REQ-63"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-the-platform-currency-from-the-current-default-to-australian-dollars-aud-across-all-components-displaying-prices-including-productcard-productdetailview-productmanagementtable-checkout-shoppingbasket-and-dashboard-components-update-price-formatting-to-use-aud-currency-symbol-with-aud-label-where-appropriate",
+      "title": "Change the platform currency from the current default to Australian dollars (AUD) across all components displaying prices, including ProductCard, ProductDetailView, ProductManagementTable, Checkout, ShoppingBasket, and Dashboard components. Update price formatting to use AUD currency symbol ($) with 'AUD' label where appropriate.",
+      "reqIds": [
+        "REQ-64"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -667,6 +683,26 @@
       "summary": "Create backend helper method getTotalInventoryValue() that calculates and returns the sum of (price × inventory count) across all products in the system",
       "reqIds": [
         "REQ-61"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-58",
+      "summary": "Update auto-copy feature in bulk upload to include product description field along with title, price, inventory, and category",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-59",
+      "summary": "Change platform currency from default to Australian dollars (AUD) for product pricing and Stripe checkout",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-62",
+      "summary": "Update the backend createStripeCheckoutSession method in backend/main.mo to configure Stripe checkout sessions with Australian dollars (AUD) as the currency instead of the current default currency.",
+      "reqIds": [
+        "REQ-65"
       ],
       "status": "pending"
     }

@@ -50,7 +50,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
     }
   };
 
-  // Auto-copy effect: when enabled, sync fields from first item to all others
+  // Auto-copy effect: when enabled, sync fields from first item to all others (including description)
   useEffect(() => {
     if (autoCopyEnabled && products.length > 1) {
       const firstProduct = products[0];
@@ -61,6 +61,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
             : {
                 ...product,
                 name: firstProduct.name,
+                description: firstProduct.description,
                 shape: firstProduct.shape,
                 price: firstProduct.price,
                 inventoryCount: firstProduct.inventoryCount,
@@ -71,6 +72,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
   }, [
     autoCopyEnabled,
     products.length > 0 ? products[0]?.name : '',
+    products.length > 0 ? products[0]?.description : '',
     products.length > 0 ? products[0]?.shape : '',
     products.length > 0 ? products[0]?.price : '',
     products.length > 0 ? products[0]?.inventoryCount : '',
@@ -78,7 +80,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
 
   const generateDescription = (title: string, shape: string, price: string): string => {
     const priceValue = parseFloat(price);
-    const priceText = !isNaN(priceValue) && priceValue > 0 ? ` priced at $${priceValue.toFixed(2)}` : '';
+    const priceText = !isNaN(priceValue) && priceValue > 0 ? ` priced at $${priceValue.toFixed(2)} AUD` : '';
     
     return `Original ${title.toLowerCase()} in ${shape.toLowerCase()} shape. This unique piece${priceText} is carefully crafted with attention to detail and quality. Each item is one-of-a-kind and perfect for adding distinctive character to your collection.`;
   };
@@ -225,7 +227,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                 Auto-copy fields from first item
               </Label>
               <p className="text-xs text-muted-foreground">
-                Automatically copy name, shape, price, and inventory from the first product to all others
+                Automatically copy name, description, shape, price, and inventory from the first product to all others
               </p>
             </div>
             <Switch
@@ -282,7 +284,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
 
                     <div className="space-y-1">
                       <Label htmlFor={`price-${index}`} className="text-xs">
-                        Price (USD) {index === 0 && autoCopyEnabled && products.length > 1 && (
+                        Price (AUD) {index === 0 && autoCopyEnabled && products.length > 1 && (
                           <span className="text-primary">(Master)</span>
                         )}
                       </Label>
@@ -317,7 +319,11 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
 
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
-                        <Label htmlFor={`desc-${index}`} className="text-xs">Description</Label>
+                        <Label htmlFor={`desc-${index}`} className="text-xs">
+                          Description {index === 0 && autoCopyEnabled && products.length > 1 && (
+                            <span className="text-primary">(Master)</span>
+                          )}
+                        </Label>
                         <Button
                           type="button"
                           variant="ghost"
@@ -327,7 +333,8 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                             uploading ||
                             product.generatingDescription ||
                             !product.shape.trim() ||
-                            !product.name.trim()
+                            !product.name.trim() ||
+                            (autoCopyEnabled && index > 0)
                           }
                           className="h-7 gap-1 text-xs"
                         >
@@ -340,7 +347,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                         value={product.description}
                         onChange={(e) => updateProductField(index, 'description', e.target.value)}
                         placeholder="Enter product description"
-                        disabled={uploading}
+                        disabled={uploading || (autoCopyEnabled && index > 0)}
                         rows={3}
                         className="text-sm"
                       />

@@ -30,14 +30,14 @@ export default function Checkout() {
         productDescription: product.stripeProductDescription,
         priceInCents: product.price,
         quantity: BigInt(1),
-        currency: 'eur',
+        currency: 'aud',
       }]
     : cart.map(item => ({
         productName: item.product.name,
         productDescription: item.product.stripeProductDescription,
         priceInCents: item.product.price,
         quantity: item.quantity,
-        currency: 'eur',
+        currency: 'aud',
       }));
 
   const total = items.reduce((sum, item) => {
@@ -78,6 +78,13 @@ export default function Checkout() {
     }
   };
 
+  const formatPrice = (priceInCents: number) => {
+    return new Intl.NumberFormat('en-AU', {
+      style: 'currency',
+      currency: 'AUD',
+    }).format(priceInCents / 100);
+  };
+
   if (items.length === 0) {
     return (
       <div className="container py-16 text-center">
@@ -106,13 +113,13 @@ export default function Checkout() {
                   <p className="text-sm text-muted-foreground">Quantity: {item.quantity.toString()}</p>
                 </div>
                 <p className="font-semibold">
-                  ${((Number(item.priceInCents) * Number(item.quantity)) / 100).toFixed(2)}
+                  {formatPrice(Number(item.priceInCents) * Number(item.quantity))}
                 </p>
               </div>
             ))}
             <div className="flex justify-between items-center pt-4 border-t-2">
-              <p className="text-lg font-bold">Total</p>
-              <p className="text-2xl font-bold">${(total / 100).toFixed(2)}</p>
+              <p className="text-lg font-bold">Total (AUD)</p>
+              <p className="text-2xl font-bold">{formatPrice(total)}</p>
             </div>
           </div>
         </CardContent>

@@ -449,14 +449,26 @@ actor {
   };
 
   public shared ({ caller }) func createCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
-    await Stripe.createCheckoutSession(getStripeConfiguration(), caller, items, successUrl, cancelUrl, transform);
+    // Automatically map all items to AUD
+    let audItems = items.map(
+      func(item) {
+        { item with currency = "aud" };
+      }
+    );
+    await Stripe.createCheckoutSession(getStripeConfiguration(), caller, audItems, successUrl, cancelUrl, transform);
   };
 
   public shared ({ caller }) func createNoShippingCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can create checkout sessions");
     };
-    await Stripe.createCheckoutSession(getStripeConfiguration(), caller, items, successUrl, cancelUrl, transform);
+
+    let audItems = items.map(
+      func(item) {
+        { item with currency = "aud" };
+      }
+    );
+    await Stripe.createCheckoutSession(getStripeConfiguration(), caller, audItems, successUrl, cancelUrl, transform);
   };
 
   public query func transform(input : OutCall.TransformationInput) : async OutCall.TransformationOutput {
@@ -530,7 +542,7 @@ actor {
       func(cartItem) {
         {
           cartItem with
-          currency = "eur";
+          currency = "aud";
           productName = cartItem.product.name;
           productDescription = cartItem.product.stripeProductDescription;
           priceInCents = cartItem.product.price;

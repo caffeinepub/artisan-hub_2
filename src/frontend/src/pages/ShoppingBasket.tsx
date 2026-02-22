@@ -39,6 +39,13 @@ export default function ShoppingBasket() {
     navigate({ to: '/checkout' });
   };
 
+  const formatPrice = (priceInCents: bigint) => {
+    return new Intl.NumberFormat('en-AU', {
+      style: 'currency',
+      currency: 'AUD',
+    }).format(Number(priceInCents) / 100);
+  };
+
   if (isLoading) {
     return (
       <div className="container py-8 max-w-4xl">
@@ -85,7 +92,7 @@ export default function ShoppingBasket() {
                     <div className="flex-1">
                       <h3 className="font-serif font-semibold text-lg mb-1">{item.product.name}</h3>
                       <p className="text-sm text-muted-foreground mb-2">{item.product.shape}</p>
-                      <p className="font-semibold">${(Number(item.product.price) / 100).toFixed(2)}</p>
+                      <p className="font-semibold">{formatPrice(item.product.price)}</p>
                     </div>
                     <div className="flex flex-col items-end justify-between">
                       <Button
@@ -133,11 +140,11 @@ export default function ShoppingBasket() {
             <CardContent className="space-y-4">
               <div className="flex justify-between items-center text-lg">
                 <span>Subtotal</span>
-                <span className="font-semibold">${(Number(total) / 100).toFixed(2)}</span>
+                <span className="font-semibold">{formatPrice(total)}</span>
               </div>
               <div className="flex justify-between items-center text-2xl font-bold border-t pt-4">
-                <span>Total</span>
-                <span>${(Number(total) / 100).toFixed(2)}</span>
+                <span>Total (AUD)</span>
+                <span>{formatPrice(total)}</span>
               </div>
               <Button onClick={handleCheckout} className="w-full" size="lg">
                 Proceed to Checkout

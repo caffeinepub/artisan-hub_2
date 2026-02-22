@@ -1,109 +1,49 @@
 import { useState } from 'react';
-import { useGetProducts, useUpdateProduct, useReplaceProductImage, useIncrementInventory, useDecrementInventory } from '../hooks/useQueries';
+import { useGetProducts, useUpdateProduct, useUpdateInventoryCount } from '../hooks/useQueries';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Pencil, Check, X, Upload, Plus, Minus } from 'lucide-react';
+import { Edit, Save, X, Upload, Plus, Minus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExternalBlob } from '../backend';
-import type { Product } from '../backend';
 
-interface EditingState {
-  productId: bigint | null;
-  field: 'name' | 'shape' | 'price' | null;
-  value: string;
+interface EditingProduct {
+  id: bigint;
+  name: string;
+  description: string;
+  price: string;
+  imageFile: File | null;
+  uploadProgress: number;
 }
 
 export default function ProductManagementTable() {
-  const { data: products = [], isLoading: productsLoading } = useGetProducts();
+  const { data: products = [], isLoading } = useGetProducts();
   const updateProduct = useUpdateProduct();
-  const replaceImage = useReplaceProductImage();
-  const incrementInventory = useIncrementInventory();
-  const decrementInventory = useDecrementInventory();
-  const [editing, setEditing] = useState<EditingState>({ productId: null, field: null, value: '' });
-  const [uploadingImage, setUploadingImage] = useState<bigint | null>(null);
-  const [adjustingInventory, setAdjustingInventory] = useState<bigint | null>(null);
+  const updateInventoryCount = useUpdateInventoryCount();
+  const [editingProduct, setEditingProduct] = useState<EditingProduct | null>(null);
+  const [inventoryLoading, setInventoryLoading] = useState<{ [key: string]: boolean }>({});
 
-  const startEdit = (product: Product, field: 'name' | 'shape' | 'price') => {
-    let value = '';
-    if (field === 'name') value = product.name;
-    else if (field === 'shape') value = product.shape;
-    else if (field === 'price') value = (Number(product.price) / 100).toFixed(2);
-
-    setEditing({ productId: product.id, field, value });
+  const handleEdit = (product: any) => {
+    setEditingProduct({
+      id: product.id,
+      name: product.name,
+      description: product.stripeProductDescription,
+      price: (Number(product.price) / 100).toFixed(2),
+      imageFile: null,
+      uploadProgress: 0,
+    });
   };
 
-  const cancelEdit = () => {
-    setEditing({ productId: null, field: null, value: '' });
+  const handleCancel = () => {
+    setEditingProduct(null);
   };
 
-  const saveEdit = async (product: Product) => {
-    if (!editing.field || editing.productId !== product.id) return;
-
-    try {
-      const updates: any = { productId: product.id };
-
-      if (editing.field === 'name') {
-        if (!editing.value.trim()) {
-          toast.error('Product name cannot be empty');
-          return;
-        }
-        updates.name = editing.value.trim();
-      } else if (editing.field === 'shape') {
-        if (!editing.value.trim()) {
-          toast.error('Shape cannot be empty');
-          return;
-        }
-        updates.shape = editing.value.trim();
-      } else if (editing.field === 'price') {
-        const priceInCents = Math.round(parseFloat(editing.value) * 100);
-        if (isNaN(priceInCents) || priceInCents <= 0) {
-          toast.error('Please enter a valid price');
-          return;
-        }
-        updates.price = BigInt(priceInCents);
-      }
-
-      await updateProduct.mutateAsync(updates);
-      toast.success('Product updated successfully');
-      cancelEdit();
-    } catch (error) {
-      toast.error('Failed to update product');
-      console.error(error);
-    }
-  };
-
-  const handleIncrementInventory = async (productId: bigint) => {
-    setAdjustingInventory(productId);
-    try {
-      await incrementInventory.mutateAsync(productId);
-      toast.success('Inventory increased by 1');
-    } catch (error) {
-      toast.error('Failed to increment inventory');
-      console.error(error);
-    } finally {
-      setAdjustingInventory(null);
-    }
-  };
-
-  const handleDecrementInventory = async (productId: bigint, currentCount: bigint) => {
-    if (currentCount <= BigInt(0)) {
-      toast.error('Inventory is already at 0');
-      return;
-    }
-    
-    setAdjustingInventory(productId);
-    try {
-      await decrementInventory.mutateAsync(productId);
-      toast.success('Inventory decreased by 1');
-    } catch (error) {
-      toast.error('Failed to decrement inventory');
-      console.error(error);
-    } finally {
-      setAdjustingInventory(null);
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setEditingProduct((prev) => (prev ? { ...prev, imageFile: e.target.files![0] } : null));
     }
   };
 
@@ -119,36 +59,73 @@ export default function ProductManagementTable() {
     });
   };
 
-  const handleImageUpload = async (product: Product, event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const handleSave = async () => {
+    if (!editingProduct) return;
 
-    setUploadingImage(product.id);
     try {
-      const imageBytes = await fileToBytes(file);
-      const imageBlob = ExternalBlob.fromBytes(imageBytes);
+      const priceInCents = Math.round(parseFloat(editingProduct.price) * 100);
+      if (isNaN(priceInCents) || priceInCents <= 0) {
+        toast.error('Please enter a valid price');
+        return;
+      }
 
-      await replaceImage.mutateAsync({
-        productId: product.id,
-        imageIndex: BigInt(0),
-        newImage: imageBlob,
+      let imageBlob: ExternalBlob | undefined = undefined;
+      if (editingProduct.imageFile) {
+        const imageBytes = await fileToBytes(editingProduct.imageFile);
+        imageBlob = ExternalBlob.fromBytes(imageBytes).withUploadProgress((percentage) => {
+          setEditingProduct((prev) => (prev ? { ...prev, uploadProgress: percentage } : null));
+        });
+      }
+
+      await updateProduct.mutateAsync({
+        productId: editingProduct.id,
+        name: editingProduct.name,
+        price: BigInt(priceInCents),
+        stripeProductDescription: editingProduct.description,
+        images: imageBlob ? [imageBlob] : undefined,
       });
 
-      toast.success('Image updated successfully');
+      toast.success('Product updated successfully');
+      setEditingProduct(null);
     } catch (error) {
-      toast.error('Failed to update image');
+      toast.error('Failed to update product');
       console.error(error);
-    } finally {
-      setUploadingImage(null);
-      event.target.value = '';
     }
   };
 
-  if (productsLoading) {
+  const handleInventoryChange = async (productId: bigint, currentCount: bigint, delta: number) => {
+    const newCount = Number(currentCount) + delta;
+    if (newCount < 0) return;
+
+    const key = productId.toString();
+    setInventoryLoading((prev) => ({ ...prev, [key]: true }));
+
+    try {
+      await updateInventoryCount.mutateAsync({
+        productId,
+        inventoryCount: BigInt(newCount),
+      });
+      toast.success('Inventory updated');
+    } catch (error) {
+      toast.error('Failed to update inventory');
+      console.error(error);
+    } finally {
+      setInventoryLoading((prev) => ({ ...prev, [key]: false }));
+    }
+  };
+
+  const formatPrice = (priceInCents: bigint) => {
+    return new Intl.NumberFormat('en-AU', {
+      style: 'currency',
+      currency: 'AUD',
+    }).format(Number(priceInCents) / 100);
+  };
+
+  if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Manage Products</CardTitle>
+          <CardTitle>Product Management</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -165,12 +142,10 @@ export default function ProductManagementTable() {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Manage Products</CardTitle>
+          <CardTitle>Product Management</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-center py-8">
-            No products yet. Upload your first product to get started.
-          </p>
+          <p className="text-muted-foreground text-center py-8">No products found. Upload some products to get started.</p>
         </CardContent>
       </Card>
     );
@@ -179,201 +154,162 @@ export default function ProductManagementTable() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Manage Products</CardTitle>
+        <CardTitle>Product Management</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-24">Image</TableHead>
+                <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
-                <TableHead>Price</TableHead>
+                <TableHead>Price (AUD)</TableHead>
                 <TableHead>Inventory</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {products.map((product) => {
-                const isEditing = editing.productId === product.id;
+                const isEditing = editingProduct?.id === product.id;
                 const imageUrl = product.images.length > 0
                   ? product.images[0].getDirectURL()
                   : '/assets/generated/product-placeholder.dim_400x400.png';
+                const isInventoryLoading = inventoryLoading[product.id.toString()];
 
                 return (
                   <TableRow key={product.id.toString()}>
                     <TableCell>
-                      <div className="relative group">
-                        <img
-                          src={imageUrl}
-                          alt={product.name}
-                          className="w-16 h-16 object-cover rounded"
+                      {isEditing && editingProduct.imageFile ? (
+                        <div className="relative">
+                          <img
+                            src={URL.createObjectURL(editingProduct.imageFile)}
+                            alt="Preview"
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                          {editingProduct.uploadProgress > 0 && editingProduct.uploadProgress < 100 && (
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded">
+                              <span className="text-white text-xs">{Math.round(editingProduct.uploadProgress)}%</span>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <img src={imageUrl} alt={product.name} className="w-16 h-16 object-cover rounded" />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {isEditing ? (
+                        <Input
+                          value={editingProduct.name}
+                          onChange={(e) =>
+                            setEditingProduct((prev) => (prev ? { ...prev, name: e.target.value } : null))
+                          }
+                          className="max-w-xs"
                         />
-                        <label
-                          htmlFor={`image-upload-${product.id}`}
-                          className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer flex items-center justify-center rounded"
-                        >
-                          <Upload className="h-5 w-5 text-white" />
-                        </label>
-                        <input
-                          id={`image-upload-${product.id}`}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleImageUpload(product, e)}
-                          disabled={uploadingImage === product.id}
+                      ) : (
+                        <span className="font-medium">{product.name}</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {isEditing ? (
+                        <Textarea
+                          value={editingProduct.description}
+                          onChange={(e) =>
+                            setEditingProduct((prev) => (prev ? { ...prev, description: e.target.value } : null))
+                          }
+                          className="max-w-md"
+                          rows={2}
                         />
-                      </div>
-                    </TableCell>
-
-                    <TableCell>
-                      {isEditing && editing.field === 'name' ? (
-                        <div className="flex gap-2 items-center">
-                          <Input
-                            value={editing.value}
-                            onChange={(e) => setEditing({ ...editing, value: e.target.value })}
-                            className="max-w-xs"
-                            autoFocus
-                          />
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => saveEdit(product)}
-                            disabled={updateProduct.isPending}
-                          >
-                            <Check className="h-4 w-4" />
-                          </Button>
-                          <Button size="icon" variant="ghost" onClick={cancelEdit}>
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
                       ) : (
-                        <div className="flex gap-2 items-center">
-                          <span className="font-medium">{product.name}</span>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => startEdit(product, 'name')}
-                            className="h-6 w-6"
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                        </div>
+                        <span className="text-sm line-clamp-2 max-w-md">{product.stripeProductDescription}</span>
                       )}
                     </TableCell>
-
                     <TableCell>
-                      {isEditing && editing.field === 'shape' ? (
-                        <div className="flex gap-2 items-center">
-                          <Textarea
-                            value={editing.value}
-                            onChange={(e) => setEditing({ ...editing, value: e.target.value })}
-                            className="max-w-md min-h-[60px]"
-                            autoFocus
-                          />
-                          <div className="flex flex-col gap-1">
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              onClick={() => saveEdit(product)}
-                              disabled={updateProduct.isPending}
-                            >
-                              <Check className="h-4 w-4" />
-                            </Button>
-                            <Button size="icon" variant="ghost" onClick={cancelEdit}>
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
+                      {isEditing ? (
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={editingProduct.price}
+                          onChange={(e) =>
+                            setEditingProduct((prev) => (prev ? { ...prev, price: e.target.value } : null))
+                          }
+                          className="max-w-[120px]"
+                        />
                       ) : (
-                        <div className="flex gap-2 items-center">
-                          <span className="text-sm text-muted-foreground line-clamp-2 max-w-md">
-                            {product.shape}
-                          </span>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => startEdit(product, 'shape')}
-                            className="h-6 w-6 flex-shrink-0"
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                        </div>
+                        <span className="font-semibold">{formatPrice(product.price)}</span>
                       )}
                     </TableCell>
-
                     <TableCell>
-                      {isEditing && editing.field === 'price' ? (
-                        <div className="flex gap-2 items-center">
-                          <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            value={editing.value}
-                            onChange={(e) => setEditing({ ...editing, value: e.target.value })}
-                            className="w-24"
-                            autoFocus
-                          />
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => saveEdit(product)}
-                            disabled={updateProduct.isPending}
-                          >
-                            <Check className="h-4 w-4" />
-                          </Button>
-                          <Button size="icon" variant="ghost" onClick={cancelEdit}>
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <div className="flex gap-2 items-center">
-                          <span className="font-semibold">
-                            ${(Number(product.price) / 100).toFixed(2)}
-                          </span>
-                          <Button
-                            size="icon"
-                            variant="ghost"
-                            onClick={() => startEdit(product, 'price')}
-                            className="h-6 w-6"
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      )}
-                    </TableCell>
-
-                    <TableCell>
-                      <div className="flex gap-1 items-center">
+                      <div className="flex items-center gap-2">
                         <Button
+                          variant="outline"
                           size="icon"
-                          variant="ghost"
-                          onClick={() => handleDecrementInventory(product.id, product.inventoryCount)}
-                          disabled={adjustingInventory === product.id || product.inventoryCount <= BigInt(0)}
                           className="h-7 w-7"
-                          title="Decrease inventory by 1"
+                          onClick={() => handleInventoryChange(product.id, product.inventoryCount, -1)}
+                          disabled={Number(product.inventoryCount) <= 0 || isInventoryLoading}
                         >
-                          <Minus className="h-3 w-3" />
+                          {isInventoryLoading ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Minus className="h-3 w-3" />
+                          )}
                         </Button>
-                        <span className="font-medium min-w-[2rem] text-center">
-                          {product.inventoryCount.toString()}
-                        </span>
+                        <span className="w-12 text-center font-medium">{product.inventoryCount.toString()}</span>
                         <Button
+                          variant="outline"
                           size="icon"
-                          variant="ghost"
-                          onClick={() => handleIncrementInventory(product.id)}
-                          disabled={adjustingInventory === product.id}
                           className="h-7 w-7"
-                          title="Increase inventory by 1"
+                          onClick={() => handleInventoryChange(product.id, product.inventoryCount, 1)}
+                          disabled={isInventoryLoading}
                         >
-                          <Plus className="h-3 w-3" />
+                          {isInventoryLoading ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Plus className="h-3 w-3" />
+                          )}
                         </Button>
                       </div>
                     </TableCell>
-
-                    <TableCell className="text-right">
-                      <span className="text-xs text-muted-foreground">ID: {product.id.toString()}</span>
+                    <TableCell>
+                      {isEditing ? (
+                        <div className="flex gap-2">
+                          <label htmlFor={`image-${product.id}`}>
+                            <Button variant="outline" size="sm" className="gap-1" asChild>
+                              <span>
+                                <Upload className="h-3 w-3" />
+                                Image
+                              </span>
+                            </Button>
+                          </label>
+                          <input
+                            id={`image-${product.id}`}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="hidden"
+                          />
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={handleSave}
+                            disabled={updateProduct.isPending}
+                            className="gap-1"
+                          >
+                            <Save className="h-3 w-3" />
+                            Save
+                          </Button>
+                          <Button variant="ghost" size="sm" onClick={handleCancel} className="gap-1">
+                            <X className="h-3 w-3" />
+                            Cancel
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button variant="outline" size="sm" onClick={() => handleEdit(product)} className="gap-1">
+                          <Edit className="h-3 w-3" />
+                          Edit
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 );

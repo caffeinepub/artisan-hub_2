@@ -1,56 +1,55 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T12:21:39.918Z",
+  "generatedAt": "2026-02-22T12:44:53.468Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 3,
+    "total": 3,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-59",
-        "summary": "Add quick stock adjustment controls to the ProductManagementTable component including increment (+) and decrement (-) buttons next to the inventory count field that modify stock by 1 per click without entering edit mode",
+        "id": "REQ-63",
+        "summary": "Update the auto-copy functionality in the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include the description field when copying from the first item to subsequent items. When auto-copy is enabled, the description from the first product should be copied to all other products along with title, price, inventory count, and category.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/ProductManagementTable.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/BulkProductUpload.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/ProductManagementTable.tsx",
-          "frontend/src/hooks/useQueries.ts"
+          "frontend/src/components/BulkProductUpload.tsx"
         ]
       },
       {
-        "id": "REQ-60",
-        "summary": "Add a total inventory value calculator section to the Dashboard page that displays the sum of (price × inventory count) for all listed products, showing the potential value of all stock",
+        "id": "REQ-64",
+        "summary": "Change the platform currency from the current default to Australian dollars (AUD) across all components displaying prices, including ProductCard, ProductDetailView, ProductManagementTable, Checkout, ShoppingBasket, and Dashboard components. Update price formatting to use AUD currency symbol ($) with 'AUD' label where appropriate.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/Dashboard.tsx"
+          "frontend/src/components/ProductCard.tsx",
+          "frontend/src/components/ProductDetailView.tsx",
+          "frontend/src/components/ProductManagementTable.tsx",
+          "frontend/src/pages/Checkout.tsx",
+          "frontend/src/pages/ShoppingBasket.tsx",
+          "frontend/src/pages/Dashboard.tsx",
+          "frontend/src/components/BulkProductUpload.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/pages/Dashboard.tsx"
+          "frontend/src/components/ProductCard.tsx",
+          "frontend/src/components/ProductDetailView.tsx",
+          "frontend/src/components/ProductManagementTable.tsx",
+          "frontend/src/pages/Checkout.tsx",
+          "frontend/src/pages/ShoppingBasket.tsx",
+          "frontend/src/pages/Dashboard.tsx",
+          "frontend/src/components/BulkProductUpload.tsx"
         ]
       },
       {
-        "id": "REQ-61",
-        "summary": "Create backend helper method getTotalInventoryValue() that calculates and returns the sum of (price × inventory count) across all products in the system",
+        "id": "REQ-65",
+        "summary": "Update the backend createStripeCheckoutSession method in backend/main.mo to configure Stripe checkout sessions with Australian dollars (AUD) as the currency instead of the current default currency.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
-      },
-      {
-        "id": "REQ-62",
-        "summary": "Create React Query hook useTotalInventoryValue in useQueries.ts that fetches the total inventory value from the backend with automatic refetching when product data changes",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts"
-        ]
       }
     ]
   },
@@ -60,13 +59,13 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
+    "frontend/src/components/BulkProductUpload.tsx",
+    "frontend/src/components/ProductCard.tsx",
+    "frontend/src/components/ProductDetailView.tsx",
     "frontend/src/components/ProductManagementTable.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/pages/Checkout.tsx",
     "frontend/src/pages/Dashboard.tsx",
+    "frontend/src/pages/ShoppingBasket.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
