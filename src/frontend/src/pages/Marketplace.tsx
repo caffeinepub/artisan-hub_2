@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useGetProducts, useMostViewedProducts, useBestSellingProducts, useNewestProducts, useHomepageConfig } from '../hooks/useQueries';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, TrendingUp, ShoppingBag, Clock } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ArrowRight, Sparkles, TrendingUp, ShoppingBag, Clock, X } from 'lucide-react';
 import ProductDetailView from '../components/ProductDetailView';
 import type { Product } from '../backend';
 
@@ -14,9 +15,63 @@ export default function Marketplace() {
   const { data: newestProducts = [], isLoading: newestLoading } = useNewestProducts();
   const { data: homepageConfig, isLoading: homepageLoading } = useHomepageConfig();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedShapes, setSelectedShapes] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  // Featured products: first 6 from all products
-  const featuredProducts = allProducts.slice(0, 6);
+  // Extract unique shapes and categories from all products
+  const uniqueShapes = useMemo(() => {
+    const shapes = new Set<string>();
+    allProducts.forEach(product => {
+      if (product.shape && product.shape.trim()) {
+        shapes.add(product.shape.trim());
+      }
+    });
+    return Array.from(shapes).sort();
+  }, [allProducts]);
+
+  // For now, we'll use shape as a proxy for category since category field doesn't exist yet
+  // This can be updated when category field is added to products
+  const uniqueCategories = useMemo(() => {
+    return uniqueShapes;
+  }, [uniqueShapes]);
+
+  // Filter products based on selected filters
+  const filterProducts = (products: Product[]) => {
+    if (selectedShapes.length === 0 && selectedCategories.length === 0) {
+      return products;
+    }
+
+    return products.filter(product => {
+      const matchesShape = selectedShapes.length === 0 || selectedShapes.includes(product.shape);
+      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.shape);
+      return matchesShape && matchesCategory;
+    });
+  };
+
+  // Apply filters to all product lists
+  const filteredFeaturedProducts = filterProducts(allProducts.slice(0, 6));
+  const filteredMostViewedProducts = filterProducts(mostViewedProducts);
+  const filteredBestSellingProducts = filterProducts(bestSellingProducts);
+  const filteredNewestProducts = filterProducts(newestProducts);
+
+  const toggleShape = (shape: string) => {
+    setSelectedShapes(prev =>
+      prev.includes(shape) ? prev.filter(s => s !== shape) : [...prev, shape]
+    );
+  };
+
+  const toggleCategory = (category: string) => {
+    setSelectedCategories(prev =>
+      prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category]
+    );
+  };
+
+  const clearFilters = () => {
+    setSelectedShapes([]);
+    setSelectedCategories([]);
+  };
+
+  const hasActiveFilters = selectedShapes.length > 0 || selectedCategories.length > 0;
 
   // Get hero configuration with fallbacks
   const heroMotto = homepageConfig?.heroMotto || 'Discover Original Creations';
@@ -82,6 +137,22 @@ export default function Marketplace() {
       );
     }
 
+    if (products.length === 0 && hasActiveFilters) {
+      return (
+        <section className="py-12">
+          <div className="container">
+            <div className="flex items-center gap-3 mb-6">
+              {icon}
+              <h2 className="font-serif text-3xl font-bold">{title}</h2>
+            </div>
+            <div className="text-center py-12 text-muted-foreground">
+              <p>No products match your selected filters.</p>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
     if (products.length === 0) {
       return null;
     }
@@ -135,8 +206,71 @@ export default function Marketplace() {
         </div>
       </section>
 
+      {/* Filter Tabs Section */}
+      {(uniqueShapes.length > 0 || uniqueCategories.length > 0) && (
+        <section className="py-6 bg-muted/30 border-b">
+          <div className="container">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-sm font-medium text-muted-foreground">Filter by:</span>
+              
+              {/* All Products / Clear Filters */}
+              <Badge
+                variant={hasActiveFilters ? "outline" : "default"}
+                className="cursor-pointer hover:bg-primary/90 transition-colors"
+                onClick={clearFilters}
+              >
+                {hasActiveFilters ? (
+                  <>
+                    <X className="h-3 w-3 mr-1" />
+                    Clear Filters
+                  </>
+                ) : (
+                  'All Products'
+                )}
+              </Badge>
+
+              {/* Shape Filters */}
+              {uniqueShapes.length > 0 && (
+                <>
+                  <span className="text-sm text-muted-foreground">|</span>
+                  <span className="text-sm font-medium text-muted-foreground">Shape:</span>
+                  {uniqueShapes.map(shape => (
+                    <Badge
+                      key={shape}
+                      variant={selectedShapes.includes(shape) ? "default" : "outline"}
+                      className="cursor-pointer hover:bg-primary/90 transition-colors"
+                      onClick={() => toggleShape(shape)}
+                    >
+                      {shape}
+                    </Badge>
+                  ))}
+                </>
+              )}
+
+              {/* Category Filters (using shape as proxy for now) */}
+              {uniqueCategories.length > 0 && uniqueCategories.length !== uniqueShapes.length && (
+                <>
+                  <span className="text-sm text-muted-foreground">|</span>
+                  <span className="text-sm font-medium text-muted-foreground">Category:</span>
+                  {uniqueCategories.map(category => (
+                    <Badge
+                      key={category}
+                      variant={selectedCategories.includes(category) ? "default" : "outline"}
+                      className="cursor-pointer hover:bg-primary/90 transition-colors"
+                      onClick={() => toggleCategory(category)}
+                    >
+                      {category}
+                    </Badge>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Featured Products */}
-      {featuredProducts.length > 0 && (
+      {filteredFeaturedProducts.length > 0 && (
         <section className="py-12 bg-muted/30">
           <div className="container">
             <div className="flex items-center gap-3 mb-6">
@@ -144,7 +278,7 @@ export default function Marketplace() {
               <h2 className="font-serif text-3xl font-bold">Featured Creations</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {featuredProducts.map(renderProductCard)}
+              {filteredFeaturedProducts.map(renderProductCard)}
             </div>
           </div>
         </section>
@@ -153,7 +287,7 @@ export default function Marketplace() {
       {/* Most Viewed Products */}
       {renderProductSection(
         'Most Viewed',
-        mostViewedProducts,
+        filteredMostViewedProducts,
         mostViewedLoading,
         <TrendingUp className="h-8 w-8 text-primary" />
       )}
@@ -161,7 +295,7 @@ export default function Marketplace() {
       {/* Best Sellers */}
       {renderProductSection(
         'Best Sellers',
-        bestSellingProducts,
+        filteredBestSellingProducts,
         bestSellingLoading,
         <ShoppingBag className="h-8 w-8 text-primary" />
       )}
@@ -169,7 +303,7 @@ export default function Marketplace() {
       {/* Newest Designs */}
       {renderProductSection(
         'Newest Designs',
-        newestProducts,
+        filteredNewestProducts,
         newestLoading,
         <Clock className="h-8 w-8 text-primary" />
       )}
@@ -183,7 +317,7 @@ export default function Marketplace() {
           <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
             Every piece tells a story. Find the perfect original creation that speaks to you.
           </p>
-          <Button size="lg" variant="outline" className="gap-2">
+          <Button size="lg" variant="outline" className="gap-2" onClick={clearFilters}>
             Browse All Products
             <ArrowRight className="h-4 w-4" />
           </Button>

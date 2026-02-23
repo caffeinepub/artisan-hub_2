@@ -1,69 +1,117 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add description auto-copy and change currency to Australian dollars",
+  "title": "Add product filtering by shape and category tabs to Marketplace header and create description template management system",
   "requirements": [
     {
-      "id": "REQ-63",
-      "summary": "Update auto-copy functionality in BulkProductUpload to include description field",
+      "id": "REQ-66",
+      "summary": "Add filter tabs to the Marketplace home page header that display all available shapes and categories as clickable tabs, allowing customers to filter the displayed products",
       "acceptanceCriteria": [
-        "When auto-copy is enabled in BulkProductUpload, the description field from the first product is automatically copied to all subsequent products",
-        "The description field updates in real-time when the first product's description changes",
-        "Image fields remain independent and are not copied",
-        "Manual edits to individual product descriptions are still possible after auto-copy"
+        "Filter tabs appear in the Marketplace page header above the product sections",
+        "Tabs display all unique shapes from products in the system",
+        "Tabs display all unique categories from products in the system",
+        "Clicking a shape or category tab filters the product display to show only matching products",
+        "Users can select multiple filters (e.g., one shape + one category) to narrow results",
+        "Active filters are visually indicated with distinct styling",
+        "A 'Clear Filters' or 'All Products' option resets the filter state"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/BulkProductUpload.tsx",
+          "path": "frontend/src/pages/Marketplace.tsx",
           "operation": "modify",
-          "description": "Extend the auto-copy functionality to include the description field. When the autoCopy state is true, update the handleInputChange function to copy the description value from the first product (products[0].description) to all other products in the array whenever the description field changes in the first product. Preserve existing auto-copy behavior for title, price, inventoryCount, and category fields. Ensure image fields remain independent and are not copied. Allow manual edits to individual product descriptions after auto-copy has been applied."
+          "description": "Add a FilterTabs section in the header area below the hero section and above the product sections. Extract unique shapes and categories from the products data. Render clickable tabs for each shape and category with active state styling. Include an 'All Products' tab to clear filters. Wire the filter state to control which tabs appear selected."
         }
       ]
     },
     {
-      "id": "REQ-64",
-      "summary": "Change platform currency display to Australian dollars (AUD) across all frontend components",
+      "id": "REQ-67",
+      "summary": "Create React state management in Marketplace.tsx to track selected shape and category filters, and implement filtering logic that filters the product arrays based on the active filter selections",
       "acceptanceCriteria": [
-        "All price displays show Australian dollar formatting with '$' symbol",
-        "Currency is labeled as 'AUD' where appropriate (e.g., in checkout summaries)",
-        "Price inputs and displays are consistent across all frontend components",
-        "Existing price values are preserved and only the display format changes"
+        "Filter state tracks currently selected shapes and categories",
+        "Product lists dynamically update when filters change",
+        "Filtering preserves the original product section structure (featured, most viewed, etc.)",
+        "Empty states display appropriate messages when no products match the selected filters"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/ProductCard.tsx",
+          "path": "frontend/src/pages/Marketplace.tsx",
           "operation": "modify",
-          "description": "Update the price display to show Australian dollar formatting. Format the price value with the '$' symbol and add 'AUD' label where appropriate. Ensure the formatting is consistent with other components displaying prices. Use Intl.NumberFormat with currency 'AUD' or equivalent formatting approach."
-        },
-        {
-          "path": "frontend/src/components/ProductDetailView.tsx",
-          "operation": "modify",
-          "description": "Update the price display in the product detail modal to show Australian dollar formatting with '$' symbol and 'AUD' label. Maintain consistent formatting with ProductCard and other price displays throughout the application."
-        },
-        {
-          "path": "frontend/src/components/ProductManagementTable.tsx",
-          "operation": "modify",
-          "description": "Update the price column display and inline price editing to use Australian dollar formatting with '$' symbol. Ensure price inputs and displays are formatted consistently as AUD. Add 'AUD' label in appropriate locations (e.g., column headers or input hints)."
-        },
-        {
-          "path": "frontend/src/pages/Checkout.tsx",
-          "operation": "modify",
-          "description": "Update all price displays in the checkout flow to show Australian dollar formatting with '$' symbol. Add 'AUD' label to the total amount and any price summaries. Ensure currency formatting is consistent throughout the checkout experience, including individual item prices and grand total."
-        },
-        {
-          "path": "frontend/src/pages/ShoppingBasket.tsx",
-          "operation": "modify",
-          "description": "Update price displays in the shopping basket to show Australian dollar formatting with '$' symbol. Add 'AUD' label where appropriate (e.g., subtotal, item prices). Ensure consistent AUD formatting across all price-related UI elements in the basket."
-        },
+          "description": "Add useState hooks to track selectedShapes and selectedCategories arrays. Implement filtering logic that applies to featuredProducts, mostViewedProducts, bestSellingProducts, and newestProducts arrays. Filter products by checking if product.shape matches any selected shape and if a category field (when implemented) matches any selected category. Display empty state messages when filtered arrays are empty. Preserve the section structure by rendering sections even when filtered."
+        }
+      ]
+    },
+    {
+      "id": "REQ-68",
+      "summary": "Add a new 'Description Templates' tab to the admin Dashboard page with a management interface that displays all existing description templates in a list or table format with options to create new templates, edit existing templates, and delete templates",
+      "acceptanceCriteria": [
+        "New 'Description Templates' tab appears in the Dashboard page navigation",
+        "Interface displays all existing description templates with their names and content preview",
+        "Create button opens a form to add a new description template",
+        "Each template has edit and delete action buttons",
+        "Templates are saved and persisted in the backend"
+      ],
+      "file_operations": [
         {
           "path": "frontend/src/pages/Dashboard.tsx",
           "operation": "modify",
-          "description": "Update any price or inventory value displays in the dashboard (e.g., total inventory value statistics) to show Australian dollar formatting with '$' symbol and 'AUD' label where appropriate. Ensure consistency with other components displaying monetary values."
-        },
+          "description": "Add a new 'Description Templates' tab to the Tabs component alongside Products, Bulk Upload, Branding, Shop Details, and Homepage tabs. In the TabsContent for Description Templates, render a list or table of templates fetched using useDescriptionTemplates hook. Display template name and a truncated content preview. Add a 'Create New Template' button that opens the DescriptionTemplateManager component in create mode. For each template row, include edit and delete action buttons that trigger the appropriate mutations or open the manager in edit mode."
+        }
+      ]
+    },
+    {
+      "id": "REQ-69",
+      "summary": "Create a DescriptionTemplateManager component that provides a form interface for creating and editing description templates with fields for template name and template content text, with save and cancel controls",
+      "acceptanceCriteria": [
+        "Form includes template name input field",
+        "Form includes template content textarea for the description text",
+        "Save button validates required fields and submits to backend",
+        "Cancel button resets form or closes the editor",
+        "Form supports both create and edit modes",
+        "Success feedback displays after successful save"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/DescriptionTemplateManager.tsx",
+          "operation": "create",
+          "description": "Create a form component with Input for template name and Textarea for template content. Accept props for mode ('create' or 'edit'), existing template data (for edit mode), and callbacks for onSave and onCancel. Use useState to manage form fields. Implement validation to ensure name and content are non-empty. On save, call useCreateDescriptionTemplate or useUpdateDescriptionTemplate mutation hooks depending on mode. Display success toast on successful save. Render Save and Cancel buttons with appropriate handlers. Use shadcn/ui Form, Input, Textarea, and Button components for consistent styling."
+        }
+      ]
+    },
+    {
+      "id": "REQ-70",
+      "summary": "Create React Query hooks for fetching all description templates (useDescriptionTemplates) and mutating description templates (useCreateDescriptionTemplate, useUpdateDescriptionTemplate, useDeleteDescriptionTemplate) with admin authentication",
+      "acceptanceCriteria": [
+        "useDescriptionTemplates hook fetches all templates from backend",
+        "useCreateDescriptionTemplate hook creates new templates",
+        "useUpdateDescriptionTemplate hook updates existing templates",
+        "useDeleteDescriptionTemplate hook removes templates",
+        "All mutation hooks invalidate the templates query on success",
+        "Hooks include proper error handling and loading states"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add useDescriptionTemplates query hook that calls actor.getDescriptionTemplates() with queryKey ['descriptionTemplates']. Add useCreateDescriptionTemplate mutation hook that calls actor.createDescriptionTemplate(name, content) and invalidates ['descriptionTemplates'] on success. Add useUpdateDescriptionTemplate mutation hook that calls actor.updateDescriptionTemplate(id, name, content) and invalidates ['descriptionTemplates'] on success. Add useDeleteDescriptionTemplate mutation hook that calls actor.deleteDescriptionTemplate(id) and invalidates ['descriptionTemplates'] on success. Include proper error handling in all hooks using React Query's error handling patterns."
+        }
+      ]
+    },
+    {
+      "id": "REQ-71",
+      "summary": "Update the BulkProductUpload component to replace the single default description template with a dropdown selector that displays all available description templates from the template management system, allowing the trader to select which template to use as the default pre-populated description for bulk uploaded products",
+      "acceptanceCriteria": [
+        "Template selector dropdown appears above the product upload grid",
+        "Dropdown displays all available templates by name",
+        "Selecting a template pre-populates the description field for all products with that template's content",
+        "Template selection works with the existing auto-copy functionality",
+        "Default template is selected automatically if only one exists",
+        "Template selection persists during the upload session"
+      ],
+      "file_operations": [
         {
           "path": "frontend/src/components/BulkProductUpload.tsx",
           "operation": "modify",
-          "description": "Update price input fields and any price displays in the bulk upload component to indicate Australian dollar currency. Add input hints, labels, or placeholders showing 'AUD' or '$' symbol to clarify the expected currency for price entries."
+          "description": "Add useDescriptionTemplates hook to fetch available templates. Add a Select component above the product grid to display template options by name. Add state to track the currently selected template ID. When a template is selected, populate the description field of all products in the grid with the selected template's content. Integrate this with the existing auto-copy functionality so that when a template is selected, it updates the first product's description and triggers auto-copy to propagate to other products if enabled. If only one template exists, automatically select it on component mount. Preserve template selection state during the upload session using useState."
         }
       ]
     }

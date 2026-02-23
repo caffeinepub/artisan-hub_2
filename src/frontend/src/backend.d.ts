@@ -26,6 +26,12 @@ export interface Product {
     price: bigint;
     images: Array<ExternalBlob>;
 }
+export interface DescriptionTemplate {
+    id: bigint;
+    content: string;
+    name: string;
+    createdAt: Time;
+}
 export interface TransformationOutput {
     status: bigint;
     body: Uint8Array;
@@ -134,7 +140,9 @@ export interface backendInterface {
     checkoutCartItems(successUrl: string, cancelUrl: string): Promise<string | null>;
     clearAllCarts(): Promise<void>;
     createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
+    createDescriptionTemplate(name: string, content: string): Promise<bigint>;
     createNoShippingCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
+    deleteDescriptionTemplate(id: bigint): Promise<void>;
     emptyCart(): Promise<void>;
     getBestSellingProducts(): Promise<Array<Product>>;
     getBrandingConfig(): Promise<BrandingConfig>;
@@ -142,6 +150,7 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
     getCartTotal(): Promise<bigint>;
+    getDescriptionTemplates(): Promise<Array<DescriptionTemplate>>;
     getHomepageConfig(): Promise<HomepageConfig>;
     getMostViewedProducts(): Promise<Array<Product>>;
     getNewestProducts(): Promise<Array<Product>>;
@@ -164,6 +173,7 @@ export interface backendInterface {
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateBrandingConfig(config: BrandingConfig): Promise<void>;
     updateCartItem(productId: bigint, newQuantity: bigint): Promise<void>;
+    updateDescriptionTemplate(id: bigint, name: string, content: string): Promise<void>;
     updateHomepageConfig(config: HomepageConfig): Promise<void>;
     updateInventoryCount(productId: bigint, inventoryCount: bigint): Promise<void>;
     updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null): Promise<void>;

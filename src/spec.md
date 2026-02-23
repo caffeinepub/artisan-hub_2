@@ -1,11 +1,16 @@
 # Specification
 
 ## Summary
-**Goal:** Add description auto-copy functionality to bulk product upload and change platform currency to Australian dollars.
+**Goal:** Add product filtering by shape and category to the Marketplace header and create a description template management system for admins.
 
 **Planned changes:**
-- Update BulkProductUpload component to auto-copy description field from first item to subsequent items when auto-copy is enabled
-- Change all price displays across frontend components to show Australian dollar formatting with '$' symbol and 'AUD' label
-- Update backend Stripe checkout session creation to use Australian dollars (AUD) as the currency
+- Add clickable filter tabs to Marketplace header for filtering products by shape and/or category
+- Implement filter state management and dynamic product filtering logic
+- Add "Description Templates" tab to admin Dashboard with template management interface
+- Create DescriptionTemplateManager component for creating and editing templates
+- Add React Query hooks for template CRUD operations with admin authentication
+- Update BulkProductUpload to use template selector dropdown instead of single default description
+- Create backend data structure and methods for storing and managing description templates
+- Initialize backend with default description template on first deployment
 
-**User-visible outcome:** When uploading products in bulk with auto-copy enabled, the description field will automatically copy from the first product to all others. All prices throughout the application will display in Australian dollars ($AUD), and Stripe checkout will process payments in AUD.
+**User-visible outcome:** Customers can filter marketplace products by clicking shape/category tabs in the header. Admins can create, edit, and delete description templates in the Dashboard, then select which template to use when bulk uploading products.

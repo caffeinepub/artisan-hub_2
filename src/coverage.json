@@ -1,18 +1,71 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-22T12:44:53.468Z",
+  "generatedAt": "2026-02-23T00:52:06.342Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 2,
+    "total": 9,
+    "implemented": 5,
     "items": [
       {
-        "id": "REQ-63",
-        "summary": "Update the auto-copy functionality in the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include the description field when copying from the first item to subsequent items. When auto-copy is enabled, the description from the first product should be copied to all other products along with title, price, inventory count, and category.",
+        "id": "REQ-66",
+        "summary": "Add filter tabs to the Marketplace home page header (frontend/src/pages/Marketplace.tsx) that display all available shapes and categories as clickable tabs, allowing customers to filter the displayed products by selecting one or multiple shape/category filters",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/Marketplace.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/Marketplace.tsx"
+        ]
+      },
+      {
+        "id": "REQ-67",
+        "summary": "Create React state management in Marketplace.tsx to track selected shape and category filters, and implement filtering logic that filters the product arrays (featured, most viewed, best selling, newest) based on the active filter selections",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/Marketplace.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/Marketplace.tsx"
+        ]
+      },
+      {
+        "id": "REQ-68",
+        "summary": "Add a new 'Description Templates' tab to the admin Dashboard page (frontend/src/pages/Dashboard.tsx) with a management interface that displays all existing description templates in a list or table format with options to create new templates, edit existing templates, and delete templates",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/Dashboard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/Dashboard.tsx"
+        ]
+      },
+      {
+        "id": "REQ-69",
+        "summary": "Create a DescriptionTemplateManager component (frontend/src/components/DescriptionTemplateManager.tsx) that provides a form interface for creating and editing description templates with fields for template name and template content text, with save and cancel controls",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/src/components/DescriptionTemplateManager.tsx"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-70",
+        "summary": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching all description templates (useDescriptionTemplates) and mutating description templates (useCreateDescriptionTemplate, useUpdateDescriptionTemplate, useDeleteDescriptionTemplate) with admin authentication",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-71",
+        "summary": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to replace the single default description template with a dropdown selector that displays all available description templates from the template management system, allowing the trader to select which template to use as the default pre-populated description for bulk uploaded products",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/components/BulkProductUpload.tsx"
@@ -22,31 +75,22 @@
         ]
       },
       {
-        "id": "REQ-64",
-        "summary": "Change the platform currency from the current default to Australian dollars (AUD) across all components displaying prices, including ProductCard, ProductDetailView, ProductManagementTable, Checkout, ShoppingBasket, and Dashboard components. Update price formatting to use AUD currency symbol ($) with 'AUD' label where appropriate.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/ProductCard.tsx",
-          "frontend/src/components/ProductDetailView.tsx",
-          "frontend/src/components/ProductManagementTable.tsx",
-          "frontend/src/pages/Checkout.tsx",
-          "frontend/src/pages/ShoppingBasket.tsx",
-          "frontend/src/pages/Dashboard.tsx",
-          "frontend/src/components/BulkProductUpload.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/ProductCard.tsx",
-          "frontend/src/components/ProductDetailView.tsx",
-          "frontend/src/components/ProductManagementTable.tsx",
-          "frontend/src/pages/Checkout.tsx",
-          "frontend/src/pages/ShoppingBasket.tsx",
-          "frontend/src/pages/Dashboard.tsx",
-          "frontend/src/components/BulkProductUpload.tsx"
-        ]
+        "id": "REQ-72",
+        "summary": "Create backend data structure in backend/main.mo to store description templates with fields for template ID, template name, template content text, and creation timestamp",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-65",
-        "summary": "Update the backend createStripeCheckoutSession method in backend/main.mo to configure Stripe checkout sessions with Australian dollars (AUD) as the currency instead of the current default currency.",
+        "id": "REQ-73",
+        "summary": "Create backend methods in backend/main.mo for managing description templates: getDescriptionTemplates() to retrieve all templates, createDescriptionTemplate(name, content) to add new templates, updateDescriptionTemplate(id, name, content) to modify existing templates, and deleteDescriptionTemplate(id) to remove templates, all with admin authentication",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-74",
+        "summary": "Create a default description template in the backend initialization with the current template text: 'Original 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike'",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
@@ -59,13 +103,16 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
     "frontend/src/components/BulkProductUpload.tsx",
-    "frontend/src/components/ProductCard.tsx",
-    "frontend/src/components/ProductDetailView.tsx",
-    "frontend/src/components/ProductManagementTable.tsx",
-    "frontend/src/pages/Checkout.tsx",
+    "frontend/src/components/DescriptionTemplateEditor.tsx",
+    "frontend/src/components/DescriptionTemplatesManager.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useQueries.ts",
     "frontend/src/pages/Dashboard.tsx",
-    "frontend/src/pages/ShoppingBasket.tsx",
+    "frontend/src/pages/Marketplace.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

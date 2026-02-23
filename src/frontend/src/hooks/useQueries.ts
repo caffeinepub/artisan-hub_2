@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { Product, UserProfile, ShoppingItem, StripeConfiguration, ExternalBlob, CartItem, BrandingConfig, ShopDetails, HomepageConfig } from '../backend';
+import type { Product, UserProfile, ShoppingItem, StripeConfiguration, ExternalBlob, CartItem, BrandingConfig, ShopDetails, HomepageConfig, DescriptionTemplate } from '../backend';
 
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
@@ -545,5 +545,63 @@ export function useTotalInventoryValue() {
       return actor.getTotalInventoryValue();
     },
     enabled: !!actor && !isFetching,
+  });
+}
+
+export function useDescriptionTemplates() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<DescriptionTemplate[]>({
+    queryKey: ['descriptionTemplates'],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getDescriptionTemplates();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateDescriptionTemplate() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: { name: string; content: string }) => {
+      if (!actor) throw new Error('Actor not available');
+      return await actor.createDescriptionTemplate(params.name, params.content);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['descriptionTemplates'] });
+    },
+  });
+}
+
+export function useUpdateDescriptionTemplate() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: { id: bigint; name: string; content: string }) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.updateDescriptionTemplate(params.id, params.name, params.content);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['descriptionTemplates'] });
+    },
+  });
+}
+
+export function useDeleteDescriptionTemplate() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: bigint) => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.deleteDescriptionTemplate(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['descriptionTemplates'] });
+    },
   });
 }

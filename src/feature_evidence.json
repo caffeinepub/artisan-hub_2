@@ -2,8 +2,96 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-auto-copy-functionality-in-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-include-the-description-field-when-copying-from-the-first-item-to-subsequent-items-when-auto-copy-is-enabled-the-description-from-the-first-product-should-be-copied-to-all-other-products-along-with-title-price-inventory-count-and-category",
-      "featureTitle": "Update the auto-copy functionality in the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include the description field when copying from the first item to subsequent items. When auto-copy is enabled, the description from the first product should be copied to all other products along with title, price, inventory count, and category.",
+      "featureId": "feature-add-filter-tabs-to-the-marketplace-home-page-header-frontend-src-pages-marketplace-tsx-that-display-all-available-shapes-and-categories-as-clickable-tabs-allowing-customers-to-filter-the-displayed-products-by-selecting-one-or-multiple-shape-category-filters",
+      "featureTitle": "Add filter tabs to the Marketplace home page header (frontend/src/pages/Marketplace.tsx) that display all available shapes and categories as clickable tabs, allowing customers to filter the displayed products by selecting one or multiple shape/category filters",
+      "files": [
+        "frontend/src/pages/Marketplace.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-66"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-react-state-management-in-marketplace-tsx-to-track-selected-shape-and-category-filters-and-implement-filtering-logic-that-filters-the-product-arrays-featured-most-viewed-best-selling-newest-based-on-the-active-filter-selections",
+      "featureTitle": "Create React state management in Marketplace.tsx to track selected shape and category filters, and implement filtering logic that filters the product arrays (featured, most viewed, best selling, newest) based on the active filter selections",
+      "files": [
+        "frontend/src/pages/Marketplace.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-67"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-new-description-templates-tab-to-the-admin-dashboard-page-frontend-src-pages-dashboard-tsx-with-a-management-interface-that-displays-all-existing-description-templates-in-a-list-or-table-format-with-options-to-create-new-templates-edit-existing-templates-and-delete-templates",
+      "featureTitle": "Add a new 'Description Templates' tab to the admin Dashboard page (frontend/src/pages/Dashboard.tsx) with a management interface that displays all existing description templates in a list or table format with options to create new templates, edit existing templates, and delete templates",
+      "files": [
+        "frontend/src/pages/Dashboard.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-68"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-react-query-hooks-in-frontend-src-hooks-usequeries-ts-for-fetching-all-description-templates-usedescriptiontemplates-and-mutating-description-templates-usecreatedescriptiontemplate-useupdatedescriptiontemplate-usedeletedescriptiontemplate-with-admin-authentication",
+      "featureTitle": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching all description templates (useDescriptionTemplates) and mutating description templates (useCreateDescriptionTemplate, useUpdateDescriptionTemplate, useDeleteDescriptionTemplate) with admin authentication",
+      "files": [
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-70"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-replace-the-single-default-description-template-with-a-dropdown-selector-that-displays-all-available-description-templates-from-the-template-management-system-allowing-the-trader-to-select-which-template-to-use-as-the-default-pre-populated-description-for-bulk-uploaded-products",
+      "featureTitle": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to replace the single default description template with a dropdown selector that displays all available description templates from the template management system, allowing the trader to select which template to use as the default pre-populated description for bulk uploaded products",
       "files": [
         "frontend/src/components/BulkProductUpload.tsx"
       ],
@@ -19,35 +107,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-63"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-change-the-platform-currency-from-the-current-default-to-australian-dollars-aud-across-all-components-displaying-prices-including-productcard-productdetailview-productmanagementtable-checkout-shoppingbasket-and-dashboard-components-update-price-formatting-to-use-aud-currency-symbol-with-aud-label-where-appropriate",
-      "featureTitle": "Change the platform currency from the current default to Australian dollars (AUD) across all components displaying prices, including ProductCard, ProductDetailView, ProductManagementTable, Checkout, ShoppingBasket, and Dashboard components. Update price formatting to use AUD currency symbol ($) with 'AUD' label where appropriate.",
-      "files": [
-        "frontend/src/components/BulkProductUpload.tsx",
-        "frontend/src/components/ProductCard.tsx",
-        "frontend/src/components/ProductDetailView.tsx",
-        "frontend/src/components/ProductManagementTable.tsx",
-        "frontend/src/pages/Checkout.tsx",
-        "frontend/src/pages/Dashboard.tsx",
-        "frontend/src/pages/ShoppingBasket.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-64"
+        "REQ-71"
       ],
       "confidence": "high"
     }

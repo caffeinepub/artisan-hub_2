@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 27,
+  "projectStateVersion": 29,
   "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -429,6 +429,46 @@
         "REQ-64"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-filter-tabs-to-the-marketplace-home-page-header-frontend-src-pages-marketplace-tsx-that-display-all-available-shapes-and-categories-as-clickable-tabs-allowing-customers-to-filter-the-displayed-products-by-selecting-one-or-multiple-shape-category-filters",
+      "title": "Add filter tabs to the Marketplace home page header (frontend/src/pages/Marketplace.tsx) that display all available shapes and categories as clickable tabs, allowing customers to filter the displayed products by selecting one or multiple shape/category filters",
+      "reqIds": [
+        "REQ-66"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-state-management-in-marketplace-tsx-to-track-selected-shape-and-category-filters-and-implement-filtering-logic-that-filters-the-product-arrays-featured-most-viewed-best-selling-newest-based-on-the-active-filter-selections",
+      "title": "Create React state management in Marketplace.tsx to track selected shape and category filters, and implement filtering logic that filters the product arrays (featured, most viewed, best selling, newest) based on the active filter selections",
+      "reqIds": [
+        "REQ-67"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-description-templates-tab-to-the-admin-dashboard-page-frontend-src-pages-dashboard-tsx-with-a-management-interface-that-displays-all-existing-description-templates-in-a-list-or-table-format-with-options-to-create-new-templates-edit-existing-templates-and-delete-templates",
+      "title": "Add a new 'Description Templates' tab to the admin Dashboard page (frontend/src/pages/Dashboard.tsx) with a management interface that displays all existing description templates in a list or table format with options to create new templates, edit existing templates, and delete templates",
+      "reqIds": [
+        "REQ-68"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-in-frontend-src-hooks-usequeries-ts-for-fetching-all-description-templates-usedescriptiontemplates-and-mutating-description-templates-usecreatedescriptiontemplate-useupdatedescriptiontemplate-usedeletedescriptiontemplate-with-admin-authentication",
+      "title": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching all description templates (useDescriptionTemplates) and mutating description templates (useCreateDescriptionTemplate, useUpdateDescriptionTemplate, useDeleteDescriptionTemplate) with admin authentication",
+      "reqIds": [
+        "REQ-70"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-replace-the-single-default-description-template-with-a-dropdown-selector-that-displays-all-available-description-templates-from-the-template-management-system-allowing-the-trader-to-select-which-template-to-use-as-the-default-pre-populated-description-for-bulk-uploaded-products",
+      "title": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to replace the single default description template with a dropdown selector that displays all available description templates from the template management system, allowing the trader to select which template to use as the default pre-populated description for bulk uploaded products",
+      "reqIds": [
+        "REQ-71"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -703,6 +743,56 @@
       "summary": "Update the backend createStripeCheckoutSession method in backend/main.mo to configure Stripe checkout sessions with Australian dollars (AUD) as the currency instead of the current default currency.",
       "reqIds": [
         "REQ-65"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-63",
+      "summary": "Add filter tabs in Marketplace home page header to filter products by shape and/or category",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-64",
+      "summary": "Ensure product model includes shape as a searchable/filterable field that is captured during bulk upload and stored with each product",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-65",
+      "summary": "Create description template management interface in admin settings where trader can create, edit, and manage multiple product description templates",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-69",
+      "summary": "Create a DescriptionTemplateManager component (frontend/src/components/DescriptionTemplateManager.tsx) that provides a form interface for creating and editing description templates with fields for template name and template content text, with save and cancel controls",
+      "reqIds": [
+        "REQ-69"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-72",
+      "summary": "Create backend data structure in backend/main.mo to store description templates with fields for template ID, template name, template content text, and creation timestamp",
+      "reqIds": [
+        "REQ-72"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-73",
+      "summary": "Create backend methods in backend/main.mo for managing description templates: getDescriptionTemplates() to retrieve all templates, createDescriptionTemplate(name, content) to add new templates, updateDescriptionTemplate(id, name, content) to modify existing templates, and deleteDescriptionTemplate(id) to remove templates, all with admin authentication",
+      "reqIds": [
+        "REQ-73"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-74",
+      "summary": "Create a default description template in the backend initialization with the current template text: 'Original 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike'",
+      "reqIds": [
+        "REQ-74"
       ],
       "status": "pending"
     }

@@ -101,6 +101,12 @@ export interface Product {
     price: bigint;
     images: Array<ExternalBlob>;
 }
+export interface DescriptionTemplate {
+    id: bigint;
+    content: string;
+    name: string;
+    createdAt: Time;
+}
 export interface TransformationOutput {
     status: bigint;
     body: Uint8Array;
@@ -227,7 +233,9 @@ export interface backendInterface {
     checkoutCartItems(successUrl: string, cancelUrl: string): Promise<string | null>;
     clearAllCarts(): Promise<void>;
     createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
+    createDescriptionTemplate(name: string, content: string): Promise<bigint>;
     createNoShippingCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
+    deleteDescriptionTemplate(id: bigint): Promise<void>;
     emptyCart(): Promise<void>;
     getBestSellingProducts(): Promise<Array<Product>>;
     getBrandingConfig(): Promise<BrandingConfig>;
@@ -235,6 +243,7 @@ export interface backendInterface {
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
     getCartTotal(): Promise<bigint>;
+    getDescriptionTemplates(): Promise<Array<DescriptionTemplate>>;
     getHomepageConfig(): Promise<HomepageConfig>;
     getMostViewedProducts(): Promise<Array<Product>>;
     getNewestProducts(): Promise<Array<Product>>;
@@ -257,6 +266,7 @@ export interface backendInterface {
     transform(input: TransformationInput): Promise<TransformationOutput>;
     updateBrandingConfig(config: BrandingConfig): Promise<void>;
     updateCartItem(productId: bigint, newQuantity: bigint): Promise<void>;
+    updateDescriptionTemplate(id: bigint, name: string, content: string): Promise<void>;
     updateHomepageConfig(config: HomepageConfig): Promise<void>;
     updateInventoryCount(productId: bigint, inventoryCount: bigint): Promise<void>;
     updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null): Promise<void>;
@@ -461,6 +471,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async createDescriptionTemplate(arg0: string, arg1: string): Promise<bigint> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createDescriptionTemplate(arg0, arg1);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createDescriptionTemplate(arg0, arg1);
+            return result;
+        }
+    }
     async createNoShippingCheckoutSession(arg0: Array<ShoppingItem>, arg1: string, arg2: string): Promise<string> {
         if (this.processError) {
             try {
@@ -472,6 +496,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.createNoShippingCheckoutSession(arg0, arg1, arg2);
+            return result;
+        }
+    }
+    async deleteDescriptionTemplate(arg0: bigint): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteDescriptionTemplate(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteDescriptionTemplate(arg0);
             return result;
         }
     }
@@ -570,6 +608,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.getCartTotal();
+            return result;
+        }
+    }
+    async getDescriptionTemplates(): Promise<Array<DescriptionTemplate>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getDescriptionTemplates();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getDescriptionTemplates();
             return result;
         }
     }
@@ -878,6 +930,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.updateCartItem(arg0, arg1);
+            return result;
+        }
+    }
+    async updateDescriptionTemplate(arg0: bigint, arg1: string, arg2: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateDescriptionTemplate(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateDescriptionTemplate(arg0, arg1, arg2);
             return result;
         }
     }

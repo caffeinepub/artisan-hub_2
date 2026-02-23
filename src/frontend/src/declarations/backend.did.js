@@ -62,6 +62,12 @@ export const CartItem = IDL.Record({
   'quantity' : IDL.Nat,
   'product' : Product,
 });
+export const DescriptionTemplate = IDL.Record({
+  'id' : IDL.Nat,
+  'content' : IDL.Text,
+  'name' : IDL.Text,
+  'createdAt' : Time,
+});
 export const HomepageConfig = IDL.Record({
   'heroImage' : IDL.Opt(ExternalBlob),
   'promotionalText' : IDL.Text,
@@ -173,11 +179,13 @@ export const idlService = IDL.Service({
       [IDL.Text],
       [],
     ),
+  'createDescriptionTemplate' : IDL.Func([IDL.Text, IDL.Text], [IDL.Nat], []),
   'createNoShippingCheckoutSession' : IDL.Func(
       [IDL.Vec(ShoppingItem), IDL.Text, IDL.Text],
       [IDL.Text],
       [],
     ),
+  'deleteDescriptionTemplate' : IDL.Func([IDL.Nat], [], []),
   'emptyCart' : IDL.Func([], [], []),
   'getBestSellingProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getBrandingConfig' : IDL.Func([], [BrandingConfig], ['query']),
@@ -185,6 +193,11 @@ export const idlService = IDL.Service({
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
   'getCartTotal' : IDL.Func([], [IDL.Nat], ['query']),
+  'getDescriptionTemplates' : IDL.Func(
+      [],
+      [IDL.Vec(DescriptionTemplate)],
+      ['query'],
+    ),
   'getHomepageConfig' : IDL.Func([], [HomepageConfig], ['query']),
   'getMostViewedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getNewestProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
@@ -219,6 +232,7 @@ export const idlService = IDL.Service({
     ),
   'updateBrandingConfig' : IDL.Func([BrandingConfig], [], []),
   'updateCartItem' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
+  'updateDescriptionTemplate' : IDL.Func([IDL.Nat, IDL.Text, IDL.Text], [], []),
   'updateHomepageConfig' : IDL.Func([HomepageConfig], [], []),
   'updateInventoryCount' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
   'updateProduct' : IDL.Func(
@@ -292,6 +306,12 @@ export const idlFactory = ({ IDL }) => {
     'email' : IDL.Text,
   });
   const CartItem = IDL.Record({ 'quantity' : IDL.Nat, 'product' : Product });
+  const DescriptionTemplate = IDL.Record({
+    'id' : IDL.Nat,
+    'content' : IDL.Text,
+    'name' : IDL.Text,
+    'createdAt' : Time,
+  });
   const HomepageConfig = IDL.Record({
     'heroImage' : IDL.Opt(ExternalBlob),
     'promotionalText' : IDL.Text,
@@ -404,11 +424,13 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Text],
         [],
       ),
+    'createDescriptionTemplate' : IDL.Func([IDL.Text, IDL.Text], [IDL.Nat], []),
     'createNoShippingCheckoutSession' : IDL.Func(
         [IDL.Vec(ShoppingItem), IDL.Text, IDL.Text],
         [IDL.Text],
         [],
       ),
+    'deleteDescriptionTemplate' : IDL.Func([IDL.Nat], [], []),
     'emptyCart' : IDL.Func([], [], []),
     'getBestSellingProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getBrandingConfig' : IDL.Func([], [BrandingConfig], ['query']),
@@ -416,6 +438,11 @@ export const idlFactory = ({ IDL }) => {
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getCart' : IDL.Func([], [IDL.Vec(CartItem)], ['query']),
     'getCartTotal' : IDL.Func([], [IDL.Nat], ['query']),
+    'getDescriptionTemplates' : IDL.Func(
+        [],
+        [IDL.Vec(DescriptionTemplate)],
+        ['query'],
+      ),
     'getHomepageConfig' : IDL.Func([], [HomepageConfig], ['query']),
     'getMostViewedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getNewestProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
@@ -450,6 +477,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'updateBrandingConfig' : IDL.Func([BrandingConfig], [], []),
     'updateCartItem' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
+    'updateDescriptionTemplate' : IDL.Func(
+        [IDL.Nat, IDL.Text, IDL.Text],
+        [],
+        [],
+      ),
     'updateHomepageConfig' : IDL.Func([HomepageConfig], [], []),
     'updateInventoryCount' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
     'updateProduct' : IDL.Func(

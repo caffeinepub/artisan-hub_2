@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAddProduct } from '../hooks/useQueries';
+import { useAddProduct, useDescriptionTemplates } from '../hooks/useQueries';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Upload, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExternalBlob } from '../backend';
@@ -23,16 +24,28 @@ interface ProductPreview {
   shape: string;
   price: string;
   inventoryCount: string;
+  uploadProgress: number;
 }
-
-const DEFAULT_DESCRIPTION = 'Original 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike';
 
 export default function BulkProductUpload({ onComplete }: BulkProductUploadProps) {
   const addProduct = useAddProduct();
+  const { data: templates = [], isLoading: templatesLoading } = useDescriptionTemplates();
   const [products, setProducts] = useState<ProductPreview[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [autoCopyEnabled, setAutoCopyEnabled] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+
+  // Auto-select first template if only one exists
+  useEffect(() => {
+    if (templates.length === 1 && !selectedTemplateId) {
+      setSelectedTemplateId(templates[0].id.toString());
+    }
+  }, [templates, selectedTemplateId]);
+
+  // Get the selected template content
+  const selectedTemplate = templates.find(t => t.id.toString() === selectedTemplateId);
+  const templateContent = selectedTemplate?.content || '';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -40,13 +53,29 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
       const newProducts: ProductPreview[] = newFiles.map((file, index) => ({
         file,
         name: `Product ${products.length + index + 1}`,
-        description: DEFAULT_DESCRIPTION,
+        description: templateContent,
         generatingDescription: false,
         shape: '',
         price: '',
         inventoryCount: '0',
+        uploadProgress: 0,
       }));
       setProducts([...products, ...newProducts]);
+    }
+  };
+
+  // Handle template selection change
+  const handleTemplateChange = (templateId: string) => {
+    setSelectedTemplateId(templateId);
+    const template = templates.find(t => t.id.toString() === templateId);
+    if (template) {
+      // Update all products with the new template content
+      setProducts(prevProducts =>
+        prevProducts.map(product => ({
+          ...product,
+          description: template.content,
+        }))
+      );
     }
   };
 
@@ -60,7 +89,6 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
             ? product
             : {
                 ...product,
-                name: firstProduct.name,
                 description: firstProduct.description,
                 shape: firstProduct.shape,
                 price: firstProduct.price,
@@ -69,93 +97,71 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
         )
       );
     }
-  }, [
-    autoCopyEnabled,
-    products.length > 0 ? products[0]?.name : '',
-    products.length > 0 ? products[0]?.description : '',
-    products.length > 0 ? products[0]?.shape : '',
-    products.length > 0 ? products[0]?.price : '',
-    products.length > 0 ? products[0]?.inventoryCount : '',
-  ]);
+  }, [autoCopyEnabled, products.length > 0 ? products[0].description : '', products.length > 0 ? products[0].shape : '', products.length > 0 ? products[0].price : '', products.length > 0 ? products[0].inventoryCount : '']);
 
-  const generateDescription = (title: string, shape: string, price: string): string => {
-    const priceValue = parseFloat(price);
-    const priceText = !isNaN(priceValue) && priceValue > 0 ? ` priced at $${priceValue.toFixed(2)} AUD` : '';
-    
-    return `Original ${title.toLowerCase()} in ${shape.toLowerCase()} shape. This unique piece${priceText} is carefully crafted with attention to detail and quality. Each item is one-of-a-kind and perfect for adding distinctive character to your collection.`;
-  };
+  const updateProduct = (index: number, field: keyof ProductPreview, value: string | number | boolean) => {
+    setProducts(prevProducts => {
+      const newProducts = [...prevProducts];
+      newProducts[index] = { ...newProducts[index], [field]: value };
 
-  const handleGenerateDescription = (index: number) => {
-    const product = products[index];
-    
-    if (!product.shape.trim() || !product.name.trim()) {
-      toast.error('Please fill in product name and shape first');
-      return;
-    }
+      // If auto-copy is enabled and we're updating the first product, update all others
+      if (autoCopyEnabled && index === 0 && (field === 'description' || field === 'shape' || field === 'price' || field === 'inventoryCount')) {
+        for (let i = 1; i < newProducts.length; i++) {
+          newProducts[i] = { ...newProducts[i], [field]: value };
+        }
+      }
 
-    // Set generating state
-    setProducts(products.map((p, i) => 
-      i === index ? { ...p, generatingDescription: true } : p
-    ));
-
-    // Simulate AI generation with a small delay
-    setTimeout(() => {
-      const aiDescription = generateDescription(
-        product.name,
-        product.shape,
-        product.price
-      );
-      setProducts(products.map((p, i) => 
-        i === index ? { ...p, description: aiDescription, generatingDescription: false } : p
-      ));
-    }, 500);
-  };
-
-  const updateProductField = (index: number, field: keyof ProductPreview, value: string) => {
-    setProducts(products.map((p, i) => (i === index ? { ...p, [field]: value } : p)));
-  };
-
-  const removeProduct = (index: number) => {
-    setProducts(products.filter((_, i) => i !== index));
-  };
-
-  const fileToBytes = async (file: File): Promise<Uint8Array<ArrayBuffer>> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const arrayBuffer = reader.result as ArrayBuffer;
-        resolve(new Uint8Array(arrayBuffer) as Uint8Array<ArrayBuffer>);
-      };
-      reader.onerror = reject;
-      reader.readAsArrayBuffer(file);
+      return newProducts;
     });
   };
 
-  const handleUpload = async () => {
-    if (products.length === 0) {
-      toast.error('Please select at least one image');
-      return;
+  const generateDescription = async (index: number) => {
+    const product = products[index];
+    updateProduct(index, 'generatingDescription', true);
+
+    try {
+      const prompt = `Generate a compelling product description for a ${product.shape} shaped item named "${product.name}". Make it appealing and highlight its unique qualities. Keep it under 100 words.`;
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY || ''}`,
+        },
+        body: JSON.stringify({
+          model: 'gpt-3.5-turbo',
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: 150,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate description');
+      }
+
+      const data = await response.json();
+      const generatedDescription = data.choices[0]?.message?.content?.trim() || '';
+
+      if (generatedDescription) {
+        updateProduct(index, 'description', generatedDescription);
+        toast.success('Description generated successfully');
+      }
+    } catch (error) {
+      console.error('Error generating description:', error);
+      toast.error('Failed to generate description. Please enter manually.');
+    } finally {
+      updateProduct(index, 'generatingDescription', false);
     }
+  };
 
-    // Validate all products have required fields
-    for (let i = 0; i < products.length; i++) {
-      const product = products[i];
-      if (!product.name.trim() || !product.description.trim() || !product.shape.trim() || !product.price) {
-        toast.error(`Product ${i + 1}: Please fill in all fields (name, description, shape, and price)`);
-        return;
-      }
+  const handleUpload = async () => {
+    const invalidProducts = products.filter(
+      p => !p.name.trim() || !p.shape.trim() || !p.price || parseFloat(p.price) <= 0
+    );
 
-      const priceInCents = Math.round(parseFloat(product.price) * 100);
-      if (isNaN(priceInCents) || priceInCents <= 0) {
-        toast.error(`Product ${i + 1}: Please enter a valid price`);
-        return;
-      }
-
-      const inventory = parseInt(product.inventoryCount);
-      if (isNaN(inventory) || inventory < 0) {
-        toast.error(`Product ${i + 1}: Please enter a valid inventory count`);
-        return;
-      }
+    if (invalidProducts.length > 0) {
+      toast.error('Please fill in all required fields (name, shape, price) for all products');
+      return;
     }
 
     setUploading(true);
@@ -164,222 +170,256 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
     try {
       for (let i = 0; i < products.length; i++) {
         const product = products[i];
-        const priceInCents = Math.round(parseFloat(product.price) * 100);
-        const inventory = parseInt(product.inventoryCount);
 
-        // Convert file to bytes and create ExternalBlob
-        const imageBytes = await fileToBytes(product.file);
-        const imageBlob = ExternalBlob.fromBytes(imageBytes).withUploadProgress((percentage) => {
-          const baseProgress = (i / products.length) * 100;
-          const fileProgress = (percentage / 100) * (100 / products.length);
-          setProgress(baseProgress + fileProgress);
+        // Convert file to bytes
+        const arrayBuffer = await product.file.arrayBuffer();
+        const bytes = new Uint8Array(arrayBuffer);
+
+        // Create ExternalBlob with progress tracking
+        const blob = ExternalBlob.fromBytes(bytes).withUploadProgress((percentage) => {
+          updateProduct(i, 'uploadProgress', percentage);
         });
 
+        const priceInCents = Math.round(parseFloat(product.price) * 100);
+
         await addProduct.mutateAsync({
-          name: product.name.trim(),
-          shape: product.shape.trim(),
+          name: product.name,
+          shape: product.shape,
           price: BigInt(priceInCents),
           stripeProductId: `prod_${Date.now()}_${i}`,
-          stripeProductDescription: product.description.trim(),
-          images: [imageBlob],
-          inventoryCount: BigInt(inventory),
+          stripeProductDescription: product.description,
+          images: [blob],
+          inventoryCount: BigInt(product.inventoryCount || '0'),
         });
 
         setProgress(((i + 1) / products.length) * 100);
       }
 
-      toast.success(`Successfully uploaded ${products.length} product${products.length > 1 ? 's' : ''}`);
+      toast.success(`Successfully uploaded ${products.length} product(s)`);
       setProducts([]);
-      setAutoCopyEnabled(false);
+      setProgress(0);
       onComplete?.();
     } catch (error) {
-      toast.error('Failed to upload products');
-      console.error(error);
+      console.error('Upload error:', error);
+      toast.error('Failed to upload products. Please try again.');
     } finally {
       setUploading(false);
-      setProgress(0);
     }
+  };
+
+  const removeProduct = (index: number) => {
+    setProducts(products.filter((_, i) => i !== index));
   };
 
   return (
     <Card>
-      <CardContent className="pt-6 space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="images">Product Images</Label>
-          <Input
-            id="images"
-            type="file"
-            accept="image/*"
-            multiple
-            onChange={handleFileChange}
-            disabled={uploading}
-          />
+      <CardContent className="pt-6">
+        <div className="space-y-6">
+          {/* Template Selector */}
+          {!templatesLoading && templates.length > 0 && (
+            <div className="space-y-2">
+              <Label htmlFor="template-select">Description Template</Label>
+              <Select value={selectedTemplateId} onValueChange={handleTemplateChange}>
+                <SelectTrigger id="template-select">
+                  <SelectValue placeholder="Select a template..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {templates.map(template => (
+                    <SelectItem key={template.id.toString()} value={template.id.toString()}>
+                      {template.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {selectedTemplate && (
+                <p className="text-xs text-muted-foreground line-clamp-2">
+                  {selectedTemplate.content}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* File Upload */}
+          <div className="space-y-2">
+            <Label htmlFor="file-upload">Upload Product Images</Label>
+            <div className="flex items-center gap-4">
+              <Input
+                id="file-upload"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileChange}
+                disabled={uploading}
+                className="flex-1"
+              />
+              <Button variant="outline" disabled={uploading} asChild>
+                <label htmlFor="file-upload" className="cursor-pointer">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Choose Files
+                </label>
+              </Button>
+            </div>
+          </div>
+
+          {/* Auto-copy Toggle */}
+          {products.length > 1 && (
+            <div className="flex items-center space-x-2 p-4 bg-muted/50 rounded-lg">
+              <Switch
+                id="auto-copy"
+                checked={autoCopyEnabled}
+                onCheckedChange={setAutoCopyEnabled}
+                disabled={uploading}
+              />
+              <Label htmlFor="auto-copy" className="cursor-pointer">
+                Auto-copy description, shape, price, and inventory from first product to all others
+              </Label>
+            </div>
+          )}
+
+          {/* Product Previews */}
           {products.length > 0 && (
-            <p className="text-sm text-muted-foreground">{products.length} product(s) ready to upload</p>
+            <div className="space-y-4">
+              <h3 className="font-semibold text-lg">Products to Upload ({products.length})</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {products.map((product, index) => (
+                  <Card key={index} className="overflow-hidden">
+                    <div className="aspect-square bg-muted relative">
+                      <img
+                        src={URL.createObjectURL(product.file)}
+                        alt={product.name}
+                        className="w-full h-full object-cover"
+                      />
+                      {product.uploadProgress > 0 && product.uploadProgress < 100 && (
+                        <div className="absolute inset-0 bg-background/80 flex items-center justify-center">
+                          <div className="w-3/4">
+                            <Progress value={product.uploadProgress} />
+                            <p className="text-xs text-center mt-2">{Math.round(product.uploadProgress)}%</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    <CardContent className="p-4 space-y-3">
+                      <div className="space-y-1">
+                        <Label htmlFor={`name-${index}`} className="text-xs">
+                          Product Name *
+                        </Label>
+                        <Input
+                          id={`name-${index}`}
+                          value={product.name}
+                          onChange={e => updateProduct(index, 'name', e.target.value)}
+                          disabled={uploading}
+                          placeholder="Enter product name"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <Label htmlFor={`description-${index}`} className="text-xs">
+                            Description
+                          </Label>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => generateDescription(index)}
+                            disabled={uploading || product.generatingDescription}
+                            className="h-6 px-2 text-xs"
+                          >
+                            <Sparkles className="h-3 w-3 mr-1" />
+                            {product.generatingDescription ? 'Generating...' : 'AI Generate'}
+                          </Button>
+                        </div>
+                        <Textarea
+                          id={`description-${index}`}
+                          value={product.description}
+                          onChange={e => updateProduct(index, 'description', e.target.value)}
+                          disabled={uploading || product.generatingDescription}
+                          placeholder="Enter product description"
+                          rows={3}
+                          className="text-xs"
+                        />
+                      </div>
+
+                      <div className="space-y-1">
+                        <Label htmlFor={`shape-${index}`} className="text-xs">
+                          Shape *
+                        </Label>
+                        <Input
+                          id={`shape-${index}`}
+                          value={product.shape}
+                          onChange={e => updateProduct(index, 'shape', e.target.value)}
+                          disabled={uploading}
+                          placeholder="e.g., Dolphin, Heart, Star"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <Label htmlFor={`price-${index}`} className="text-xs">
+                            Price (AUD) *
+                          </Label>
+                          <Input
+                            id={`price-${index}`}
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            value={product.price}
+                            onChange={e => updateProduct(index, 'price', e.target.value)}
+                            disabled={uploading}
+                            placeholder="0.00"
+                          />
+                        </div>
+
+                        <div className="space-y-1">
+                          <Label htmlFor={`inventory-${index}`} className="text-xs">
+                            Inventory
+                          </Label>
+                          <Input
+                            id={`inventory-${index}`}
+                            type="number"
+                            min="0"
+                            value={product.inventoryCount}
+                            onChange={e => updateProduct(index, 'inventoryCount', e.target.value)}
+                            disabled={uploading}
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => removeProduct(index)}
+                        disabled={uploading}
+                        className="w-full"
+                      >
+                        Remove
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Upload Progress */}
+          {uploading && (
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Uploading products...</span>
+                <span>{Math.round(progress)}%</span>
+              </div>
+              <Progress value={progress} />
+            </div>
+          )}
+
+          {/* Upload Button */}
+          {products.length > 0 && (
+            <Button onClick={handleUpload} disabled={uploading} className="w-full" size="lg">
+              {uploading ? 'Uploading...' : `Upload ${products.length} Product(s)`}
+            </Button>
           )}
         </div>
-
-        {/* Auto-copy toggle */}
-        {products.length > 1 && (
-          <div className="flex items-center justify-between p-4 border rounded-lg bg-muted/20">
-            <div className="space-y-0.5">
-              <Label htmlFor="auto-copy" className="text-sm font-medium">
-                Auto-copy fields from first item
-              </Label>
-              <p className="text-xs text-muted-foreground">
-                Automatically copy name, description, shape, price, and inventory from the first product to all others
-              </p>
-            </div>
-            <Switch
-              id="auto-copy"
-              checked={autoCopyEnabled}
-              onCheckedChange={setAutoCopyEnabled}
-              disabled={uploading}
-            />
-          </div>
-        )}
-
-        {/* Product Previews */}
-        {products.length > 0 && (
-          <div className="space-y-4 border rounded-lg p-4 bg-muted/20">
-            <h3 className="font-medium text-sm">Product Details</h3>
-            {products.map((product, index) => (
-              <div key={index} className="space-y-3 p-4 border rounded-lg bg-background">
-                <div className="flex items-start gap-3">
-                  <img
-                    src={URL.createObjectURL(product.file)}
-                    alt={`Preview ${index + 1}`}
-                    className="w-20 h-20 object-cover rounded border"
-                  />
-                  <div className="flex-1 space-y-3">
-                    <div className="space-y-1">
-                      <Label htmlFor={`name-${index}`} className="text-xs">
-                        Product Name {index === 0 && autoCopyEnabled && products.length > 1 && (
-                          <span className="text-primary">(Master)</span>
-                        )}
-                      </Label>
-                      <Input
-                        id={`name-${index}`}
-                        value={product.name}
-                        onChange={(e) => updateProductField(index, 'name', e.target.value)}
-                        placeholder="Enter product name"
-                        disabled={uploading || (autoCopyEnabled && index > 0)}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <Label htmlFor={`shape-${index}`} className="text-xs">
-                        Shape {index === 0 && autoCopyEnabled && products.length > 1 && (
-                          <span className="text-primary">(Master)</span>
-                        )}
-                      </Label>
-                      <Input
-                        id={`shape-${index}`}
-                        value={product.shape}
-                        onChange={(e) => updateProductField(index, 'shape', e.target.value)}
-                        placeholder="e.g., Round, Square, Oval"
-                        disabled={uploading || (autoCopyEnabled && index > 0)}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <Label htmlFor={`price-${index}`} className="text-xs">
-                        Price (AUD) {index === 0 && autoCopyEnabled && products.length > 1 && (
-                          <span className="text-primary">(Master)</span>
-                        )}
-                      </Label>
-                      <Input
-                        id={`price-${index}`}
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={product.price}
-                        onChange={(e) => updateProductField(index, 'price', e.target.value)}
-                        placeholder="0.00"
-                        disabled={uploading || (autoCopyEnabled && index > 0)}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <Label htmlFor={`inventory-${index}`} className="text-xs">
-                        Inventory Count {index === 0 && autoCopyEnabled && products.length > 1 && (
-                          <span className="text-primary">(Master)</span>
-                        )}
-                      </Label>
-                      <Input
-                        id={`inventory-${index}`}
-                        type="number"
-                        min="0"
-                        value={product.inventoryCount}
-                        onChange={(e) => updateProductField(index, 'inventoryCount', e.target.value)}
-                        placeholder="0"
-                        disabled={uploading || (autoCopyEnabled && index > 0)}
-                      />
-                    </div>
-
-                    <div className="space-y-1">
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor={`desc-${index}`} className="text-xs">
-                          Description {index === 0 && autoCopyEnabled && products.length > 1 && (
-                            <span className="text-primary">(Master)</span>
-                          )}
-                        </Label>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleGenerateDescription(index)}
-                          disabled={
-                            uploading ||
-                            product.generatingDescription ||
-                            !product.shape.trim() ||
-                            !product.name.trim() ||
-                            (autoCopyEnabled && index > 0)
-                          }
-                          className="h-7 gap-1 text-xs"
-                        >
-                          <Sparkles className="h-3 w-3" />
-                          {product.generatingDescription ? 'Generating...' : 'Generate AI Description'}
-                        </Button>
-                      </div>
-                      <Textarea
-                        id={`desc-${index}`}
-                        value={product.description}
-                        onChange={(e) => updateProductField(index, 'description', e.target.value)}
-                        placeholder="Enter product description"
-                        disabled={uploading || (autoCopyEnabled && index > 0)}
-                        rows={3}
-                        className="text-sm"
-                      />
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeProduct(index)}
-                    disabled={uploading}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    Remove
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {uploading && (
-          <div className="space-y-2">
-            <Progress value={progress} />
-            <p className="text-sm text-muted-foreground text-center">Uploading... {Math.round(progress)}%</p>
-          </div>
-        )}
-
-        <Button onClick={handleUpload} disabled={uploading || products.length === 0} className="w-full gap-2">
-          <Upload className="h-4 w-4" />
-          {uploading ? 'Uploading...' : `Upload ${products.length} Product${products.length !== 1 ? 's' : ''}`}
-        </Button>
       </CardContent>
     </Card>
   );

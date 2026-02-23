@@ -19,6 +19,12 @@ export interface BrandingConfig {
   'secondaryColor' : [] | [string],
 }
 export interface CartItem { 'quantity' : bigint, 'product' : Product }
+export interface DescriptionTemplate {
+  'id' : bigint,
+  'content' : string,
+  'name' : string,
+  'createdAt' : Time,
+}
 export type ExternalBlob = Uint8Array;
 export interface HomepageConfig {
   'heroImage' : [] | [ExternalBlob],
@@ -140,10 +146,12 @@ export interface _SERVICE {
     [Array<ShoppingItem>, string, string],
     string
   >,
+  'createDescriptionTemplate' : ActorMethod<[string, string], bigint>,
   'createNoShippingCheckoutSession' : ActorMethod<
     [Array<ShoppingItem>, string, string],
     string
   >,
+  'deleteDescriptionTemplate' : ActorMethod<[bigint], undefined>,
   'emptyCart' : ActorMethod<[], undefined>,
   'getBestSellingProducts' : ActorMethod<[], Array<Product>>,
   'getBrandingConfig' : ActorMethod<[], BrandingConfig>,
@@ -151,6 +159,7 @@ export interface _SERVICE {
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getCartTotal' : ActorMethod<[], bigint>,
+  'getDescriptionTemplates' : ActorMethod<[], Array<DescriptionTemplate>>,
   'getHomepageConfig' : ActorMethod<[], HomepageConfig>,
   'getMostViewedProducts' : ActorMethod<[], Array<Product>>,
   'getNewestProducts' : ActorMethod<[], Array<Product>>,
@@ -176,6 +185,10 @@ export interface _SERVICE {
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
   'updateBrandingConfig' : ActorMethod<[BrandingConfig], undefined>,
   'updateCartItem' : ActorMethod<[bigint, bigint], undefined>,
+  'updateDescriptionTemplate' : ActorMethod<
+    [bigint, string, string],
+    undefined
+  >,
   'updateHomepageConfig' : ActorMethod<[HomepageConfig], undefined>,
   'updateInventoryCount' : ActorMethod<[bigint, bigint], undefined>,
   'updateProduct' : ActorMethod<

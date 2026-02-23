@@ -12,15 +12,14 @@ import Nat "mo:core/Nat";
 import Time "mo:core/Time";
 import Order "mo:core/Order";
 import Int "mo:core/Int";
+import Iter "mo:core/Iter";
 
 actor {
   include MixinStorage();
 
-  // Initialize the access control state
   let accessControlState = AccessControl.initState();
   include MixinAuthorization(accessControlState);
 
-  // Branding configuration types
   public type BrandingConfig = {
     siteName : Text;
     logo : ?Storage.ExternalBlob;
@@ -39,7 +38,6 @@ actor {
     theme = null;
   };
 
-  // Homepage configuration types
   public type HomepageConfig = {
     heroMotto : Text;
     heroImage : ?Storage.ExternalBlob;
@@ -52,7 +50,6 @@ actor {
     promotionalText = "Taste the best handmade pralines and chocolates!";
   };
 
-  // Add/update homepage configuration (Admin only)
   public shared ({ caller }) func updateHomepageConfig(config : HomepageConfig) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can update homepage configuration");
@@ -60,12 +57,10 @@ actor {
     homepageConfig := config;
   };
 
-  // Get current homepage configuration (Public)
   public query func getHomepageConfig() : async HomepageConfig {
     homepageConfig;
   };
 
-  // Admin only - update branding configuration
   public shared ({ caller }) func updateBrandingConfig(config : BrandingConfig) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can update branding configuration");
@@ -73,12 +68,10 @@ actor {
     brandingConfig := config;
   };
 
-  // Public query - get current branding configuration
   public query func getBrandingConfig() : async BrandingConfig {
     brandingConfig;
   };
 
-  // User profile type
   public type UserProfile = {
     name : Text;
     email : Text;
@@ -87,7 +80,6 @@ actor {
 
   let userProfiles = Map.empty<Principal, UserProfile>();
 
-  // User profile management
   public query ({ caller }) func getCallerUserProfile() : async ?UserProfile {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access profiles");
@@ -109,7 +101,6 @@ actor {
     userProfiles.add(caller, profile);
   };
 
-  // Product types
   public type Product = {
     id : Nat;
     name : Text;
@@ -126,7 +117,6 @@ actor {
   let products = Map.empty<Nat, Product>();
   var nextProductId = 1;
 
-  // Shopping Cart Types
   public type CartItem = {
     product : Product;
     quantity : Nat;
@@ -179,7 +169,6 @@ actor {
     shopDetails;
   };
 
-  // View tracking for products - No authentication required (public action)
   public shared func trackProductView(productId : Nat) : async () {
     switch (products.get(productId)) {
       case (null) { Runtime.trap("Product not found") };
@@ -193,10 +182,8 @@ actor {
     };
   };
 
-  // Stripe integration
   var configuration : ?Stripe.StripeConfiguration = null;
 
-  // Admin only - product management
   public shared ({ caller }) func addProduct(
     name : Text,
     shape : Text,
@@ -227,7 +214,6 @@ actor {
     nextProductId += 1;
   };
 
-  // Update product function - Admin only
   public shared ({ caller }) func updateProduct(
     productId : Nat,
     name : ?Text,
@@ -270,7 +256,6 @@ actor {
     products.add(productId, updatedProduct);
   };
 
-  // Separate inventory count update - Admin only
   public shared ({ caller }) func updateInventoryCount(productId : Nat, inventoryCount : Nat) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can update inventory count");
@@ -288,7 +273,6 @@ actor {
     products.add(productId, updatedProduct);
   };
 
-  // Product retrieval functions - Public (no authentication required)
   public query func getProducts() : async [Product] {
     products.values().toArray();
   };
@@ -304,7 +288,6 @@ actor {
     products.size();
   };
 
-  // Shopping cart functions
   public query ({ caller }) func getCart() : async [CartItem] {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can access shopping cart");
@@ -449,7 +432,6 @@ actor {
   };
 
   public shared ({ caller }) func createCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
-    // Automatically map all items to AUD
     let audItems = items.map(
       func(item) {
         { item with currency = "aud" };
@@ -537,7 +519,6 @@ actor {
     if (items.size() == 0) {
       Runtime.trap("Cart is empty");
     };
-    // Transform cart items to shopping items
     let shoppingItems = items.map<CartItem, Stripe.ShoppingItem>(
       func(cartItem) {
         {
@@ -556,7 +537,6 @@ actor {
     ?sessionId;
   };
 
-  // Empty the cart without checkout - Users only
   public shared ({ caller }) func emptyCart() : async () {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
       Runtime.trap("Unauthorized: Only users can empty their cart");
@@ -564,7 +544,6 @@ actor {
     shoppingCarts.remove(caller);
   };
 
-  // Test function to clear all carts (admin only)
   public shared ({ caller }) func clearAllCarts() : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can clear all carts");
@@ -572,14 +551,12 @@ actor {
     shoppingCarts.clear();
   };
 
-  // Sorting order types
   public type SortingOrder = {
     #mostViewed;
     #bestSelling;
     #newest;
   };
 
-  // Product ordering modules
   module ProductOrdering {
     public func compareByViewCountDescending(a : Product, b : Product) : Order.Order {
       Nat.compare(b.viewCount, a.viewCount);
@@ -590,7 +567,6 @@ actor {
     };
   };
 
-  // Home page product display functions - Public (no authentication required)
   public query func getMostViewedProducts() : async [Product] {
     let allProducts = products.values().toArray();
     allProducts.sort(ProductOrdering.compareByViewCountDescending);
@@ -602,8 +578,6 @@ actor {
   };
 
   public query func getBestSellingProducts() : async [Product] {
-    // TODO: Implement best selling logic after implementing order tracking
-    // For now, return products sorted by view count as a placeholder
     let allProducts = products.values().toArray();
     allProducts.sort(ProductOrdering.compareByViewCountDescending);
   };
@@ -619,13 +593,11 @@ actor {
         allProducts.sort(ProductOrdering.compareByCreatedAtDescending);
       };
       case (#bestSelling) {
-        // TODO: best selling logic after implementing order tracking
         allProducts.sort(ProductOrdering.compareByViewCountDescending);
       };
     };
   };
 
-  // Calculate the total inventory value across all products
   public query ({ caller }) func getTotalInventoryValue() : async Nat {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can view total inventory value");
@@ -636,5 +608,81 @@ actor {
       totalValue += product.price * product.inventoryCount;
     };
     totalValue;
+  };
+
+  // ================== Description Template Management ==================
+
+  public type DescriptionTemplate = {
+    id : Nat;
+    name : Text;
+    content : Text;
+    createdAt : Time.Time;
+  };
+
+  let descriptionTemplates = Map.empty<Nat, DescriptionTemplate>();
+  var nextTemplateId = 2; // Start from 2 since we have a default template
+
+  public query ({ caller }) func getDescriptionTemplates() : async [DescriptionTemplate] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can view description templates");
+    };
+    descriptionTemplates.values().toArray();
+  };
+
+  public shared ({ caller }) func createDescriptionTemplate(
+    name : Text,
+    content : Text,
+  ) : async Nat {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can create description templates");
+    };
+
+    let template : DescriptionTemplate = {
+      id = nextTemplateId;
+      name;
+      content;
+      createdAt = Time.now();
+    };
+
+    descriptionTemplates.add(nextTemplateId, template);
+    nextTemplateId += 1;
+    template.id;
+  };
+
+  public shared ({ caller }) func updateDescriptionTemplate(
+    id : Nat,
+    name : Text,
+    content : Text,
+  ) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can update description templates");
+    };
+
+    let existingTemplate = switch (descriptionTemplates.get(id)) {
+      case (null) { Runtime.trap("Template does not exist") };
+      case (?template) { template };
+    };
+
+    let updatedTemplate : DescriptionTemplate = {
+      id;
+      name;
+      content;
+      createdAt = existingTemplate.createdAt;
+    };
+
+    descriptionTemplates.add(id, updatedTemplate);
+  };
+
+  public shared ({ caller }) func deleteDescriptionTemplate(id : Nat) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can delete description templates");
+    };
+
+    switch (descriptionTemplates.get(id)) {
+      case (null) { Runtime.trap("Template does not exist") };
+      case (?_) {
+        descriptionTemplates.remove(id);
+      };
+    };
   };
 };

@@ -3,7 +3,7 @@ import { useInternetIdentity } from '../hooks/useInternetIdentity';
 import { useIsCallerAdmin, useGetProducts, useGetProductCount, useIsStripeConfigured, useTotalInventoryValue } from '../hooks/useQueries';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Package, Upload, Settings, TrendingUp, Edit, Palette, Store, Home, DollarSign } from 'lucide-react';
+import { Package, Upload, Settings, TrendingUp, Edit, Palette, Store, Home, DollarSign, FileText } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import ProductManagementTable from '../components/ProductManagementTable';
 import BulkProductUpload from '../components/BulkProductUpload';
@@ -11,6 +11,7 @@ import StripeSetup from '../components/StripeSetup';
 import BrandingSettings from '../components/BrandingSettings';
 import ShopDetailsSettings from '../components/ShopDetailsSettings';
 import HomepageSettings from '../components/HomepageSettings';
+import DescriptionTemplatesManager from '../components/DescriptionTemplatesManager';
 
 export default function Dashboard() {
   const { identity } = useInternetIdentity();
@@ -161,7 +162,7 @@ export default function Dashboard() {
 
       {/* Tabs */}
       <Tabs defaultValue="products" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6 lg:w-auto">
+        <TabsList className="grid w-full grid-cols-7 lg:w-auto">
           <TabsTrigger value="products" className="flex items-center gap-2">
             <Edit className="h-4 w-4" />
             <span className="hidden sm:inline">Products</span>
@@ -169,6 +170,10 @@ export default function Dashboard() {
           <TabsTrigger value="bulk-upload" className="flex items-center gap-2">
             <Upload className="h-4 w-4" />
             <span className="hidden sm:inline">Bulk Upload</span>
+          </TabsTrigger>
+          <TabsTrigger value="templates" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            <span className="hidden sm:inline">Templates</span>
           </TabsTrigger>
           <TabsTrigger value="stripe" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
@@ -194,6 +199,10 @@ export default function Dashboard() {
 
         <TabsContent value="bulk-upload">
           <BulkProductUpload />
+        </TabsContent>
+
+        <TabsContent value="templates">
+          <DescriptionTemplatesManager />
         </TabsContent>
 
         <TabsContent value="stripe">
