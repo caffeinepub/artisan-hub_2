@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Sparkles } from 'lucide-react';
+import { Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExternalBlob } from '../backend';
 
@@ -20,7 +20,6 @@ interface ProductPreview {
   file: File;
   name: string;
   description: string;
-  generatingDescription: boolean;
   shape: string;
   category: string;
   price: string;
@@ -55,7 +54,6 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
         file,
         name: `Product ${products.length + index + 1}`,
         description: templateContent,
-        generatingDescription: false,
         shape: '',
         category: '',
         price: '',
@@ -102,7 +100,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
     }
   }, [autoCopyEnabled, products.length > 0 ? products[0].description : '', products.length > 0 ? products[0].shape : '', products.length > 0 ? products[0].category : '', products.length > 0 ? products[0].price : '', products.length > 0 ? products[0].inventoryCount : '']);
 
-  const updateProduct = (index: number, field: keyof ProductPreview, value: string | number | boolean) => {
+  const updateProduct = (index: number, field: keyof ProductPreview, value: string | number) => {
     setProducts(prevProducts => {
       const newProducts = [...prevProducts];
       newProducts[index] = { ...newProducts[index], [field]: value };
@@ -116,45 +114,6 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
 
       return newProducts;
     });
-  };
-
-  const generateDescription = async (index: number) => {
-    const product = products[index];
-    updateProduct(index, 'generatingDescription', true);
-
-    try {
-      const prompt = `Generate a compelling product description for a ${product.shape} shaped item named "${product.name}". Make it appealing and highlight its unique qualities. Keep it under 100 words.`;
-
-      const response = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY || ''}`,
-        },
-        body: JSON.stringify({
-          model: 'gpt-3.5-turbo',
-          messages: [{ role: 'user', content: prompt }],
-          max_tokens: 150,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate description');
-      }
-
-      const data = await response.json();
-      const generatedDescription = data.choices[0]?.message?.content?.trim() || '';
-
-      if (generatedDescription) {
-        updateProduct(index, 'description', generatedDescription);
-        toast.success('Description generated!');
-      }
-    } catch (error) {
-      console.error('Error generating description:', error);
-      toast.error('Failed to generate description. Please check your API key.');
-    } finally {
-      updateProduct(index, 'generatingDescription', false);
-    }
   };
 
   const fileToBytes = async (file: File): Promise<Uint8Array<ArrayBuffer>> => {
@@ -266,7 +225,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
         <Card>
           <CardContent className="pt-6">
             <div className="space-y-2">
-              <Label htmlFor="template-select">Description Template (Optional)</Label>
+              <Label htmlFor="template-select">Description Template</Label>
               <Select value={selectedTemplateId} onValueChange={handleTemplateChange}>
                 <SelectTrigger id="template-select">
                   <SelectValue placeholder="Select a template..." />
@@ -347,20 +306,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                       </div>
 
                       <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <Label htmlFor={`description-${index}`}>Description *</Label>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => generateDescription(index)}
-                            disabled={product.generatingDescription || !product.name || !product.shape}
-                            className="gap-1"
-                          >
-                            <Sparkles className="h-3 w-3" />
-                            {product.generatingDescription ? 'Generating...' : 'AI Generate'}
-                          </Button>
-                        </div>
+                        <Label htmlFor={`description-${index}`}>Description *</Label>
                         <Textarea
                           id={`description-${index}`}
                           value={product.description}

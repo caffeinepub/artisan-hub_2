@@ -1,208 +1,119 @@
 {
   "kind": "build_request",
-  "title": "Add separate Category field and filter section alongside Shape filter",
+  "title": "Replace AI generation with template selection in bulk upload and add bulk delete capability to product management",
   "projectName": "Original Creations Hub",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-75",
-      "text": "Add a 'category' field to the Product type in backend/main.mo as a separate field distinct from the shape field, storing category as Text type",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "2 a separate field on products"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Product type includes a category field of type Text",
-        "Category field is independent from the shape field",
-        "Existing products can be migrated to include the category field"
-      ]
-    },
-    {
-      "id": "REQ-76",
-      "text": "Update the createProduct backend method in backend/main.mo to accept and store the category field when creating new products",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "2 a separate field on products"
-        ]
-      },
-      "acceptanceCriteria": [
-        "createProduct method accepts category parameter",
-        "Category value is stored with the product record",
-        "Category can be set independently from shape"
-      ]
-    },
-    {
-      "id": "REQ-77",
-      "text": "Update the updateProduct backend method in backend/main.mo to support updating the category field independently from other product fields",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "2 a separate field on products"
-        ]
-      },
-      "acceptanceCriteria": [
-        "updateProduct supports category field updates",
-        "Category can be updated without modifying other product fields",
-        "Category changes are persisted correctly"
-      ]
-    },
-    {
-      "id": "REQ-78",
-      "text": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include a separate category input field for each uploaded product alongside the existing shape field",
+      "id": "REQ-85",
+      "text": "Remove the 'Generate AI Description' button from the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) entirely, eliminating the AI description generation functionality from the bulk upload flow",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "2 a separate field on products"
+          "Swap ai generation for use template function"
         ]
       },
       "acceptanceCriteria": [
-        "Category input field is displayed for each product in bulk upload",
-        "Category field is independent from shape field",
-        "Auto-copy functionality includes category when enabled",
-        "Category value is sent to backend when creating products"
+        "The 'Generate AI Description' button is no longer visible in the bulk upload interface",
+        "No AI description generation logic is triggered during bulk upload",
+        "The description field remains editable but uses only template-based pre-population"
       ]
     },
     {
-      "id": "REQ-79",
-      "text": "Update the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) to display the category field as a separate column and support inline editing of category independently from shape",
+      "id": "REQ-86",
+      "text": "Update the BulkProductUpload component to automatically populate the description field for each product using the selected description template from the dropdown selector, without requiring any additional button click or AI generation step",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "2 a separate field on products"
+          "Swap ai generation for use template function"
         ]
       },
       "acceptanceCriteria": [
-        "Category column is displayed in the product management table",
-        "Category can be edited inline with save/cancel controls",
-        "Category dropdown or input allows selecting/entering category values",
-        "Category updates are saved to backend correctly"
+        "When a template is selected from the dropdown, all product description fields are immediately populated with the template content",
+        "The description field remains manually editable after template population",
+        "Template selection works seamlessly with the existing auto-copy functionality when enabled"
       ]
     },
     {
-      "id": "REQ-80",
-      "text": "Add a separate 'Category' filter section in the Marketplace page (frontend/src/pages/Marketplace.tsx) header alongside the existing 'Shape' filter section, displaying all unique category values as clickable filter tabs",
+      "id": "REQ-87",
+      "text": "Add checkbox selection controls to each row in the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) allowing the admin to select multiple products for bulk operations",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "1 separate \"Category\" filter section alongside the existing \"Shape\" filter section"
+          "bulk delete capability"
         ]
       },
       "acceptanceCriteria": [
-        "Category filter section is visually separate from Shape filter section",
-        "All unique category values from products are displayed as filter tabs",
-        "Category filter tabs are clickable and toggle selection state",
-        "Multiple category filters can be selected simultaneously",
-        "Category filters work independently from shape filters"
+        "Each product row displays a checkbox in the first column",
+        "A 'select all' checkbox in the table header allows selecting/deselecting all products at once",
+        "Selected rows are visually distinguished (e.g., highlighted background)",
+        "The selection state persists across inline edits but clears after bulk delete operation"
       ]
     },
     {
-      "id": "REQ-81",
-      "text": "Update the filter logic in Marketplace.tsx to support filtering products by both shape and category independently, where products must match selected shape filters AND selected category filters",
+      "id": "REQ-88",
+      "text": "Add a 'Delete Selected' button above or below the ProductManagementTable that becomes enabled when one or more products are selected via checkboxes, and displays a confirmation dialog before deleting multiple products",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "1 separate \"Category\" filter section alongside the existing \"Shape\" filter section"
+          "bulk delete capability"
         ]
       },
       "acceptanceCriteria": [
-        "Products are filtered by both shape and category selections",
-        "If no shape filters are selected, all shapes are shown (filtered only by category)",
-        "If no category filters are selected, all categories are shown (filtered only by shape)",
-        "If both filters are selected, products must match both criteria",
-        "Filtered results update all product sections (featured, most viewed, best selling, newest)"
+        "The 'Delete Selected' button is disabled when no products are selected",
+        "The button shows the count of selected products (e.g., 'Delete Selected (3)')",
+        "Clicking the button displays a confirmation dialog asking 'Are you sure you want to delete X products?'",
+        "After confirmation, all selected products are deleted via backend calls",
+        "A success toast notification displays the number of products deleted",
+        "The table refreshes to remove deleted products and clears all selections"
       ]
     },
     {
-      "id": "REQ-82",
-      "text": "Update the ProductCard component (frontend/src/components/ProductCard.tsx) to display both shape and category information on each product card",
+      "id": "REQ-89",
+      "text": "Create a React Query mutation hook useBulkDeleteProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and calls the backend deleteProduct method sequentially or in parallel for each ID, with proper error handling and cache invalidation",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "2 a separate field on products"
+          "bulk delete capability"
         ]
       },
       "acceptanceCriteria": [
-        "Both shape and category are displayed on product cards",
-        "Shape and category are visually distinguishable from each other",
-        "Layout accommodates both fields without cluttering the card design"
-      ]
-    },
-    {
-      "id": "REQ-83",
-      "text": "Update the ProductDetailView component (frontend/src/components/ProductDetailView.tsx) to display both shape and category fields in the product detail modal",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "2 a separate field on products"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Shape is displayed in product detail view",
-        "Category is displayed in product detail view as a separate field",
-        "Both fields are clearly labeled and distinguishable"
-      ]
-    },
-    {
-      "id": "REQ-84",
-      "text": "Update all React Query hooks in frontend/src/hooks/useQueries.ts to handle the new category field in product data structures for fetching and mutating products",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "2 a separate field on products"
-        ]
-      },
-      "acceptanceCriteria": [
-        "useProducts hook returns products with category field",
-        "useCreateProduct mutation includes category parameter",
-        "useUpdateProduct mutation supports category updates",
-        "TypeScript types are updated to include category field"
+        "The mutation hook accepts an array of product ID strings",
+        "All delete operations are executed and their results aggregated",
+        "On success, the products query cache is invalidated to refresh the product list",
+        "Errors during bulk delete are captured and reported to the user",
+        "The hook returns loading state and error information for UI feedback"
       ]
     }
   ],
   "constraints": [
-    "Maintain single-actor backend architecture in backend/main.mo",
-    "Do not modify immutable frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
-    "Keep shape and category as completely independent fields that can be set and filtered separately",
-    "Ensure backward compatibility with existing products that may not have category values"
+    "Do not modify the existing description template management system in the Dashboard page",
+    "Preserve the existing dropdown selector for choosing templates in BulkProductUpload",
+    "Use the existing backend deleteProduct method; do not create a new bulk delete backend method",
+    "Maintain the current auto-copy functionality that includes description field when enabled",
+    "Do not change the ProductManagementTable inline editing functionality"
   ],
   "nonGoals": [
-    "Combining shape and category into a single field",
-    "Removing the existing shape filter functionality",
-    "Creating predefined category lists or validation (allow free text entry)",
-    "Adding category hierarchies or subcategories"
+    "Adding new AI generation features or alternative AI integration methods",
+    "Creating a dedicated bulk delete backend endpoint (use existing deleteProduct per item)",
+    "Modifying the template creation/editing interface",
+    "Adding undo/restore functionality for deleted products",
+    "Implementing advanced selection features like range selection or filter-based selection"
   ],
   "imageRequirements": {
     "required": [],

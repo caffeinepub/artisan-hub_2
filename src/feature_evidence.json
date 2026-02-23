@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-include-a-separate-category-input-field-for-each-uploaded-product-alongside-the-existing-shape-field",
-      "featureTitle": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include a separate category input field for each uploaded product alongside the existing shape field",
+      "featureId": "feature-remove-the-generate-ai-description-button-from-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-entirely-eliminating-the-ai-description-generation-functionality-from-the-bulk-upload-flow",
+      "featureTitle": "Remove the 'Generate AI Description' button from the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) entirely, eliminating the AI description generation functionality from the bulk upload flow",
       "files": [
         "frontend/src/components/BulkProductUpload.tsx"
       ],
@@ -19,15 +19,15 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-78"
+        "REQ-85"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-productmanagementtable-component-frontend-src-components-productmanagementtable-tsx-to-display-the-category-field-as-a-separate-column-and-support-inline-editing-of-category-independently-from-shape",
-      "featureTitle": "Update the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) to display the category field as a separate column and support inline editing of category independently from shape",
+      "featureId": "feature-update-the-bulkproductupload-component-to-automatically-populate-the-description-field-for-each-product-using-the-selected-description-template-from-the-dropdown-selector-without-requiring-any-additional-button-click-or-ai-generation-step",
+      "featureTitle": "Update the BulkProductUpload component to automatically populate the description field for each product using the selected description template from the dropdown selector, without requiring any additional button click or AI generation step",
       "files": [
-        "frontend/src/components/ProductManagementTable.tsx"
+        "frontend/src/components/BulkProductUpload.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -41,117 +41,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-79"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-separate-category-filter-section-in-the-marketplace-page-frontend-src-pages-marketplace-tsx-header-alongside-the-existing-shape-filter-section-displaying-all-unique-category-values-as-clickable-filter-tabs",
-      "featureTitle": "Add a separate 'Category' filter section in the Marketplace page (frontend/src/pages/Marketplace.tsx) header alongside the existing 'Shape' filter section, displaying all unique category values as clickable filter tabs",
-      "files": [
-        "frontend/src/pages/Marketplace.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-80"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-filter-logic-in-marketplace-tsx-to-support-filtering-products-by-both-shape-and-category-independently-where-products-must-match-selected-shape-filters-and-selected-category-filters",
-      "featureTitle": "Update the filter logic in Marketplace.tsx to support filtering products by both shape and category independently, where products must match selected shape filters AND selected category filters",
-      "files": [
-        "frontend/src/pages/Marketplace.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-81"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-productcard-component-frontend-src-components-productcard-tsx-to-display-both-shape-and-category-information-on-each-product-card",
-      "featureTitle": "Update the ProductCard component (frontend/src/components/ProductCard.tsx) to display both shape and category information on each product card",
-      "files": [
-        "frontend/src/components/ProductCard.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-82"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-productdetailview-component-frontend-src-components-productdetailview-tsx-to-display-both-shape-and-category-fields-in-the-product-detail-modal",
-      "featureTitle": "Update the ProductDetailView component (frontend/src/components/ProductDetailView.tsx) to display both shape and category fields in the product detail modal",
-      "files": [
-        "frontend/src/components/ProductDetailView.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-83"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-all-react-query-hooks-in-frontend-src-hooks-usequeries-ts-to-handle-the-new-category-field-in-product-data-structures-for-fetching-and-mutating-products",
-      "featureTitle": "Update all React Query hooks in frontend/src/hooks/useQueries.ts to handle the new category field in product data structures for fetching and mutating products",
-      "files": [
-        "frontend/src/hooks/useQueries.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-84"
+        "REQ-86"
       ],
       "confidence": "high"
     }

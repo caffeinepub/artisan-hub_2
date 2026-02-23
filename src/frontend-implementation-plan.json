@@ -1,124 +1,91 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add separate Category field and filter section alongside Shape filter",
+  "title": "Replace AI generation with template selection in bulk upload and add bulk delete capability to product management",
   "requirements": [
     {
-      "id": "REQ-78",
-      "summary": "Update BulkProductUpload to include separate category input field alongside shape field",
+      "id": "REQ-85",
+      "summary": "Remove the 'Generate AI Description' button from BulkProductUpload component, eliminating AI description generation functionality from the bulk upload flow",
       "acceptanceCriteria": [
-        "Category input field is displayed for each product in bulk upload",
-        "Category field is independent from shape field",
-        "Auto-copy functionality includes category when enabled",
-        "Category value is sent to backend when creating products"
+        "The 'Generate AI Description' button is no longer visible in the bulk upload interface",
+        "No AI description generation logic is triggered during bulk upload",
+        "The description field remains editable but uses only template-based pre-population"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/BulkProductUpload.tsx",
           "operation": "modify",
-          "description": "Add a category input field to each product entry in the bulk upload form. Update the ProductEntry type to include a category field of type string. Add a text input for category alongside the existing shape input. Ensure the auto-fill from first entry functionality copies the category value when enabled. Update the handleSubmit function to include category when calling addProduct mutation (using the category field from the backend interface)."
+          "description": "Remove the 'Generate AI Description' button and all associated AI generation logic including state variables, event handlers, and mutation hooks. Keep the description field editable and ensure the template selector dropdown remains functional."
         }
       ]
     },
     {
-      "id": "REQ-79",
-      "summary": "Update ProductManagementTable to display category column and support inline editing",
+      "id": "REQ-86",
+      "summary": "Update BulkProductUpload to automatically populate description fields using the selected template from the dropdown without requiring additional button clicks",
       "acceptanceCriteria": [
-        "Category column is displayed in the product management table",
-        "Category can be edited inline with save/cancel controls",
-        "Category dropdown or input allows selecting/entering category values",
-        "Category updates are saved to backend correctly"
+        "When a template is selected from the dropdown, all product description fields are immediately populated with the template content",
+        "The description field remains manually editable after template population",
+        "Template selection works seamlessly with the existing auto-copy functionality when enabled"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/BulkProductUpload.tsx",
+          "operation": "modify",
+          "description": "Modify the template selection handler to immediately populate all product description fields when a template is chosen from the dropdown. Ensure this works with the existing auto-copy functionality by updating the description fields in the products state array. The descriptions should remain editable after population."
+        }
+      ]
+    },
+    {
+      "id": "REQ-87",
+      "summary": "Add checkbox selection controls to ProductManagementTable allowing admin to select multiple products for bulk operations",
+      "acceptanceCriteria": [
+        "Each product row displays a checkbox in the first column",
+        "A 'select all' checkbox in the table header allows selecting/deselecting all products at once",
+        "Selected rows are visually distinguished (e.g., highlighted background)",
+        "The selection state persists across inline edits but clears after bulk delete operation"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/ProductManagementTable.tsx",
           "operation": "modify",
-          "description": "Add a Category column to the table displaying product.category. Implement inline editing for the category field similar to how name and shape are edited. Add a text input that appears when editing category. Update the handleSave function to include the category field when calling updateProduct mutation. Ensure the category can be updated independently from other fields."
+          "description": "Add a new column at the beginning of the table with checkboxes for each product row. Add a 'select all' checkbox in the table header. Implement selection state management using useState to track selected product IDs. Apply visual highlighting (e.g., bg-blue-50) to selected rows. Ensure selection state persists during inline edits but provide a method to clear selections after delete operations."
         }
       ]
     },
     {
-      "id": "REQ-80",
-      "summary": "Add separate Category filter section in Marketplace page alongside Shape filter",
+      "id": "REQ-88",
+      "summary": "Add 'Delete Selected' button to ProductManagementTable that shows confirmation dialog before deleting multiple products",
       "acceptanceCriteria": [
-        "Category filter section is visually separate from Shape filter section",
-        "All unique category values from products are displayed as filter tabs",
-        "Category filter tabs are clickable and toggle selection state",
-        "Multiple category filters can be selected simultaneously",
-        "Category filters work independently from shape filters"
+        "The 'Delete Selected' button is disabled when no products are selected",
+        "The button shows the count of selected products (e.g., 'Delete Selected (3)')",
+        "Clicking the button displays a confirmation dialog asking 'Are you sure you want to delete X products?'",
+        "After confirmation, all selected products are deleted via backend calls",
+        "A success toast notification displays the number of products deleted",
+        "The table refreshes to remove deleted products and clears all selections"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/Marketplace.tsx",
+          "path": "frontend/src/components/ProductManagementTable.tsx",
           "operation": "modify",
-          "description": "Extract all unique category values from the products array using a Set. Add a new Category filter section in the page header (similar to the existing Shape filter section) that displays all unique categories as clickable filter tabs. Add state management for selectedCategories (array of strings) similar to selectedShapes. Implement toggle functionality for category filters allowing multiple selections. Style the Category filter section to be visually distinct from but aligned with the Shape filter section. Ensure both filter sections are displayed side by side or in separate rows in the header area."
+          "description": "Add a 'Delete Selected' button above or below the table that is disabled when no products are selected. Display the count of selected products in the button label. Implement a confirmation dialog using shadcn/ui Dialog or AlertDialog component that shows 'Are you sure you want to delete X products?' before proceeding. Wire the button to use the useBulkDeleteProducts mutation hook. Display a success toast showing the number of deleted products. Clear selection state and refresh the products query after successful deletion."
         }
       ]
     },
     {
-      "id": "REQ-81",
-      "summary": "Update Marketplace filter logic to support filtering by both shape and category independently",
+      "id": "REQ-89",
+      "summary": "Create useBulkDeleteProducts React Query mutation hook that deletes multiple products by calling deleteProduct for each ID with proper error handling and cache invalidation",
       "acceptanceCriteria": [
-        "Products are filtered by both shape and category selections",
-        "If no shape filters are selected, all shapes are shown (filtered only by category)",
-        "If no category filters are selected, all categories are shown (filtered only by shape)",
-        "If both filters are selected, products must match both criteria",
-        "Filtered results update all product sections (featured, most viewed, best selling, newest)"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Marketplace.tsx",
-          "operation": "modify",
-          "description": "Update the filteredProducts calculation logic to apply both shape and category filters. If selectedShapes is empty, skip shape filtering. If selectedCategories is empty, skip category filtering. If both have selections, products must match at least one selected shape AND at least one selected category. Apply the combined filter to all product sections: featuredProducts, mostViewedProducts, bestSellingProducts, and newestProducts. Ensure the filtering logic uses product.category field from the backend interface."
-        }
-      ]
-    },
-    {
-      "id": "REQ-82",
-      "summary": "Update ProductCard to display both shape and category information",
-      "acceptanceCriteria": [
-        "Both shape and category are displayed on product cards",
-        "Shape and category are visually distinguishable from each other",
-        "Layout accommodates both fields without cluttering the card design"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductCard.tsx",
-          "operation": "modify",
-          "description": "Add display of product.category alongside the existing product.shape display. Use distinct styling or labels (e.g., 'Shape: {shape}' and 'Category: {category}') to make them visually distinguishable. Position both fields in the card layout without cluttering the design, perhaps using a row with two columns or stacked layout with clear separation. Ensure the category field is displayed using product.category from the Product type."
-        }
-      ]
-    },
-    {
-      "id": "REQ-83",
-      "summary": "Update ProductDetailView to display both shape and category fields",
-      "acceptanceCriteria": [
-        "Shape is displayed in product detail view",
-        "Category is displayed in product detail view as a separate field",
-        "Both fields are clearly labeled and distinguishable"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductDetailView.tsx",
-          "operation": "modify",
-          "description": "Add a separate display section for product.category in the product detail modal alongside the existing shape display. Use clear labels such as 'Shape:' and 'Category:' to distinguish the fields. Ensure both fields are visible in the modal layout without overlap. Reference product.category from the Product type passed as a prop."
-        }
-      ]
-    },
-    {
-      "id": "REQ-84",
-      "summary": "Update React Query hooks to handle category field in product data structures",
-      "acceptanceCriteria": [
-        "useProducts hook returns products with category field",
-        "useCreateProduct mutation includes category parameter",
-        "useUpdateProduct mutation supports category updates",
-        "TypeScript types are updated to include category field"
+        "The mutation hook accepts an array of product ID strings",
+        "All delete operations are executed and their results aggregated",
+        "On success, the products query cache is invalidated to refresh the product list",
+        "Errors during bulk delete are captured and reported to the user",
+        "The hook returns loading state and error information for UI feedback"
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Update the useCreateProduct mutation to accept a category parameter in the mutationFn and pass it to actor.addProduct (the backend interface already includes category as the 8th parameter). Update the useUpdateProduct mutation to accept an optional category parameter and pass it to actor.updateProduct. Verify that the Product type from backend.d.ts already includes the category field (it does according to the backend-interface). No TypeScript type changes needed in this file since types are imported from backend.d.ts."
+          "description": "Add a new useBulkDeleteProducts mutation hook that accepts an array of product IDs (bigint[]). Use Promise.allSettled or sequential calls to execute actor.deleteProduct for each ID. Aggregate results to track successes and failures. On success, invalidate the 'products' query key to refresh the product list. Return loading state, error information, and success/failure counts for UI feedback. Handle partial failures gracefully by reporting which products failed to delete."
         }
       ]
     }

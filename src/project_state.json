@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 31,
+  "projectStateVersion": 33,
   "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -525,6 +525,22 @@
         "REQ-84"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-remove-the-generate-ai-description-button-from-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-entirely-eliminating-the-ai-description-generation-functionality-from-the-bulk-upload-flow",
+      "title": "Remove the 'Generate AI Description' button from the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) entirely, eliminating the AI description generation functionality from the bulk upload flow",
+      "reqIds": [
+        "REQ-85"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-bulkproductupload-component-to-automatically-populate-the-description-field-for-each-product-using-the-selected-description-template-from-the-dropdown-selector-without-requiring-any-additional-button-click-or-ai-generation-step",
+      "title": "Update the BulkProductUpload component to automatically populate the description field for each product using the selected description template from the dropdown selector, without requiring any additional button click or AI generation step",
+      "reqIds": [
+        "REQ-86"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -879,6 +895,42 @@
       "summary": "Update the updateProduct backend method in backend/main.mo to support updating the category field independently from other product fields",
       "reqIds": [
         "REQ-77"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-79",
+      "summary": "Remove AI generation button from bulk upload and use template dropdown for descriptions instead",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-80",
+      "summary": "Add bulk delete capability to product management dashboard with checkboxes to select multiple products and delete them at once",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-83",
+      "summary": "Add checkbox selection controls to each row in the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) allowing the admin to select multiple products for bulk operations",
+      "reqIds": [
+        "REQ-87"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-84",
+      "summary": "Add a 'Delete Selected' button above or below the ProductManagementTable that becomes enabled when one or more products are selected via checkboxes, and displays a confirmation dialog before deleting multiple products",
+      "reqIds": [
+        "REQ-88"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-85",
+      "summary": "Create a React Query mutation hook useBulkDeleteProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and calls the backend deleteProduct method sequentially or in parallel for each ID, with proper error handling and cache invalidation",
+      "reqIds": [
+        "REQ-89"
       ],
       "status": "pending"
     }

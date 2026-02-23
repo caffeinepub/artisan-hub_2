@@ -1,16 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Add a separate Category field to products and implement independent Category filtering alongside the existing Shape filter in the marketplace.
+**Goal:** Replace AI-generated descriptions with template-based population in bulk upload and add bulk delete capability to product management.
 
 **Planned changes:**
-- Add category as a separate Text field on the Product type in the backend
-- Update backend createProduct and updateProduct methods to handle category field
-- Add category input field in BulkProductUpload component alongside shape field
-- Add category column with inline editing in ProductManagementTable
-- Create separate "Category" filter section in Marketplace header alongside "Shape" filter section
-- Implement independent filtering logic where products can be filtered by shape AND/OR category
-- Display both shape and category on ProductCard and ProductDetailView components
-- Update React Query hooks to handle category field in product data structures
+- Remove the "Generate AI Description" button from the bulk upload interface
+- Automatically populate description fields using the selected template from the dropdown
+- Add checkbox selection to each product row in the product management table
+- Add a "Delete Selected" button that deletes multiple products with confirmation
+- Create a React Query mutation hook for bulk delete operations
 
-**User-visible outcome:** Users can assign and edit categories on products separately from shapes, and filter marketplace products using independent Shape and Category filter sections that work together or separately.
+**User-visible outcome:** Admins can quickly populate product descriptions using templates during bulk upload without clicking generate buttons, and can select and delete multiple products at once from the product management table.

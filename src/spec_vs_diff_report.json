@@ -1,21 +1,35 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-23T01:10:04.296Z",
-  "summary": "All 10 requirements (REQ-75 through REQ-84) are fully implemented. The backend adds the category field to the Product type and updates createProduct/updateProduct methods. The frontend adds category inputs to BulkProductUpload and ProductManagementTable, displays category in ProductCard and ProductDetailView, adds a separate Category filter section in Marketplace with independent filter logic, and updates useQueries hooks to handle the category field. A migration module ensures backward compatibility.",
-  "missing_requirements": [],
+  "generatedAt": "2026-02-23T02:03:09.049Z",
+  "summary": "The diff is incomplete (truncated files), making full verification impossible. Based on available evidence: REQ-85 and REQ-86 appear implemented in BulkProductUpload.tsx with AI button removed and template auto-population added. REQ-87, REQ-88, and REQ-89 (bulk delete functionality) show no evidence of implementation - ProductManagementTable.tsx and useQueries.ts modifications are not visible in the diff.",
+  "missing_requirements": [
+    {
+      "id": "REQ-87",
+      "requirement": "Add checkbox selection controls to each row in the ProductManagementTable component allowing the admin to select multiple products for bulk operations",
+      "reason": "ProductManagementTable.tsx is not present in the modified files list. No evidence of checkbox implementation in any visible file.",
+      "evidence": []
+    },
+    {
+      "id": "REQ-88",
+      "requirement": "Add a 'Delete Selected' button above or below the ProductManagementTable that becomes enabled when one or more products are selected via checkboxes, and displays a confirmation dialog before deleting multiple products",
+      "reason": "ProductManagementTable.tsx is not present in the modified files list. No evidence of Delete Selected button implementation.",
+      "evidence": []
+    },
+    {
+      "id": "REQ-89",
+      "requirement": "Create a React Query mutation hook useBulkDeleteProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and calls the backend deleteProduct method sequentially or in parallel for each ID",
+      "reason": "useQueries.ts is listed in modified files but its diff content is not shown. The visible frontend-file-summaries.txt description of useQueries.ts does not mention bulk delete functionality, only listing existing hooks without useBulkDeleteProducts.",
+      "evidence": [
+        "frontend/src/hooks/useQueries.ts"
+      ]
+    }
+  ],
   "hallucinated_features": [],
-  "confidence": 0.95,
+  "confidence": 0.65,
   "changed_files": [
-    "backend/main.mo",
-    "backend/migration.mo",
     "frontend-file-summaries.txt",
     "frontend/src/components/BulkProductUpload.tsx",
-    "frontend/src/components/ProductCard.tsx",
-    "frontend/src/components/ProductDetailView.tsx",
-    "frontend/src/components/ProductManagementTable.tsx",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/Marketplace.tsx",
     "project_state.json"
   ]
 }
