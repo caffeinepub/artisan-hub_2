@@ -45,7 +45,11 @@ export default function ProductCard({ product }: ProductCardProps) {
       </div>
       <CardContent className="p-4">
         <h3 className="font-serif font-semibold text-lg mb-1 line-clamp-1">{product.name}</h3>
-        <p className="text-sm text-muted-foreground mb-2 line-clamp-1">{product.shape}</p>
+        <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
+          <span className="line-clamp-1">{product.shape}</span>
+          <span>•</span>
+          <span className="line-clamp-1">{product.category}</span>
+        </div>
         <div className="flex items-center justify-between">
           <p className="font-semibold text-lg">{formatPrice(product.price)}</p>
           <Button 

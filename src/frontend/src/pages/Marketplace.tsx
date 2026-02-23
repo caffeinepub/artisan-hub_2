@@ -18,7 +18,7 @@ export default function Marketplace() {
   const [selectedShapes, setSelectedShapes] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-  // Extract unique shapes and categories from all products
+  // Extract unique shapes from all products
   const uniqueShapes = useMemo(() => {
     const shapes = new Set<string>();
     allProducts.forEach(product => {
@@ -29,11 +29,16 @@ export default function Marketplace() {
     return Array.from(shapes).sort();
   }, [allProducts]);
 
-  // For now, we'll use shape as a proxy for category since category field doesn't exist yet
-  // This can be updated when category field is added to products
+  // Extract unique categories from all products
   const uniqueCategories = useMemo(() => {
-    return uniqueShapes;
-  }, [uniqueShapes]);
+    const categories = new Set<string>();
+    allProducts.forEach(product => {
+      if (product.category && product.category.trim()) {
+        categories.add(product.category.trim());
+      }
+    });
+    return Array.from(categories).sort();
+  }, [allProducts]);
 
   // Filter products based on selected filters
   const filterProducts = (products: Product[]) => {
@@ -43,7 +48,7 @@ export default function Marketplace() {
 
     return products.filter(product => {
       const matchesShape = selectedShapes.length === 0 || selectedShapes.includes(product.shape);
-      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.shape);
+      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(product.category);
       return matchesShape && matchesCategory;
     });
   };
@@ -100,7 +105,11 @@ export default function Marketplace() {
         </div>
         <CardContent className="p-4">
           <h3 className="font-serif font-semibold text-lg mb-1 line-clamp-1">{product.name}</h3>
-          <p className="text-sm text-muted-foreground mb-2 line-clamp-1">{product.shape}</p>
+          <div className="flex items-center gap-2 mb-2 text-sm text-muted-foreground">
+            <span className="line-clamp-1">{product.shape}</span>
+            <span>•</span>
+            <span className="line-clamp-1">{product.category}</span>
+          </div>
           <p className="font-semibold text-lg">${(Number(product.price) / 100).toFixed(2)}</p>
         </CardContent>
       </Card>
@@ -210,30 +219,30 @@ export default function Marketplace() {
       {(uniqueShapes.length > 0 || uniqueCategories.length > 0) && (
         <section className="py-6 bg-muted/30 border-b">
           <div className="container">
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="text-sm font-medium text-muted-foreground">Filter by:</span>
-              
-              {/* All Products / Clear Filters */}
-              <Badge
-                variant={hasActiveFilters ? "outline" : "default"}
-                className="cursor-pointer hover:bg-primary/90 transition-colors"
-                onClick={clearFilters}
-              >
-                {hasActiveFilters ? (
-                  <>
-                    <X className="h-3 w-3 mr-1" />
-                    Clear Filters
-                  </>
-                ) : (
-                  'All Products'
-                )}
-              </Badge>
+            <div className="space-y-3">
+              {/* Clear Filters / All Products */}
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-sm font-medium text-muted-foreground">Filters:</span>
+                <Badge
+                  variant={hasActiveFilters ? "outline" : "default"}
+                  className="cursor-pointer hover:bg-primary/90 transition-colors"
+                  onClick={clearFilters}
+                >
+                  {hasActiveFilters ? (
+                    <>
+                      <X className="h-3 w-3 mr-1" />
+                      Clear All Filters
+                    </>
+                  ) : (
+                    'All Products'
+                  )}
+                </Badge>
+              </div>
 
               {/* Shape Filters */}
               {uniqueShapes.length > 0 && (
-                <>
-                  <span className="text-sm text-muted-foreground">|</span>
-                  <span className="text-sm font-medium text-muted-foreground">Shape:</span>
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-sm font-medium text-muted-foreground min-w-[80px]">Shape:</span>
                   {uniqueShapes.map(shape => (
                     <Badge
                       key={shape}
@@ -244,14 +253,13 @@ export default function Marketplace() {
                       {shape}
                     </Badge>
                   ))}
-                </>
+                </div>
               )}
 
-              {/* Category Filters (using shape as proxy for now) */}
-              {uniqueCategories.length > 0 && uniqueCategories.length !== uniqueShapes.length && (
-                <>
-                  <span className="text-sm text-muted-foreground">|</span>
-                  <span className="text-sm font-medium text-muted-foreground">Category:</span>
+              {/* Category Filters */}
+              {uniqueCategories.length > 0 && (
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="text-sm font-medium text-muted-foreground min-w-[80px]">Category:</span>
                   {uniqueCategories.map(category => (
                     <Badge
                       key={category}
@@ -262,7 +270,7 @@ export default function Marketplace() {
                       {category}
                     </Badge>
                   ))}
-                </>
+                </div>
               )}
             </div>
           </div>

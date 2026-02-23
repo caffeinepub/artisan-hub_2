@@ -1,207 +1,208 @@
 {
   "kind": "build_request",
-  "title": "Add product filtering by shape and category tabs to Marketplace header and create description template management system",
+  "title": "Add separate Category field and filter section alongside Shape filter",
   "projectName": "Original Creations Hub",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-66",
-      "text": "Add filter tabs to the Marketplace home page header (frontend/src/pages/Marketplace.tsx) that display all available shapes and categories as clickable tabs, allowing customers to filter the displayed products by selecting one or multiple shape/category filters",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "the filters appear, in home page header like tabs that filter by shape and/or category"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Filter tabs appear in the Marketplace page header above the product sections",
-        "Tabs display all unique shapes from products in the system",
-        "Tabs display all unique categories from products in the system",
-        "Clicking a shape or category tab filters the product display to show only matching products",
-        "Users can select multiple filters (e.g., one shape + one category) to narrow results",
-        "Active filters are visually indicated with distinct styling",
-        "A 'Clear Filters' or 'All Products' option resets the filter state"
-      ]
-    },
-    {
-      "id": "REQ-67",
-      "text": "Create React state management in Marketplace.tsx to track selected shape and category filters, and implement filtering logic that filters the product arrays (featured, most viewed, best selling, newest) based on the active filter selections",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "the filters appear, in home page header like tabs that filter by shape and/or category"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Filter state tracks currently selected shapes and categories",
-        "Product lists dynamically update when filters change",
-        "Filtering preserves the original product section structure (featured, most viewed, etc.)",
-        "Empty states display appropriate messages when no products match the selected filters"
-      ]
-    },
-    {
-      "id": "REQ-68",
-      "text": "Add a new 'Description Templates' tab to the admin Dashboard page (frontend/src/pages/Dashboard.tsx) with a management interface that displays all existing description templates in a list or table format with options to create new templates, edit existing templates, and delete templates",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "i want to create the templates",
-          "product description generation to be managed by product description generation options, where i can add new ones"
-        ]
-      },
-      "acceptanceCriteria": [
-        "New 'Description Templates' tab appears in the Dashboard page navigation",
-        "Interface displays all existing description templates with their names and content preview",
-        "Create button opens a form to add a new description template",
-        "Each template has edit and delete action buttons",
-        "Templates are saved and persisted in the backend"
-      ]
-    },
-    {
-      "id": "REQ-69",
-      "text": "Create a DescriptionTemplateManager component (frontend/src/components/DescriptionTemplateManager.tsx) that provides a form interface for creating and editing description templates with fields for template name and template content text, with save and cancel controls",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "i want to create the templates",
-          "product description generation to be managed by product description generation options, where i can add new ones"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Form includes template name input field",
-        "Form includes template content textarea for the description text",
-        "Save button validates required fields and submits to backend",
-        "Cancel button resets form or closes the editor",
-        "Form supports both create and edit modes",
-        "Success feedback displays after successful save"
-      ]
-    },
-    {
-      "id": "REQ-70",
-      "text": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching all description templates (useDescriptionTemplates) and mutating description templates (useCreateDescriptionTemplate, useUpdateDescriptionTemplate, useDeleteDescriptionTemplate) with admin authentication",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "i want to create the templates"
-        ]
-      },
-      "acceptanceCriteria": [
-        "useDescriptionTemplates hook fetches all templates from backend",
-        "useCreateDescriptionTemplate hook creates new templates",
-        "useUpdateDescriptionTemplate hook updates existing templates",
-        "useDeleteDescriptionTemplate hook removes templates",
-        "All mutation hooks invalidate the templates query on success",
-        "Hooks include proper error handling and loading states"
-      ]
-    },
-    {
-      "id": "REQ-71",
-      "text": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to replace the single default description template with a dropdown selector that displays all available description templates from the template management system, allowing the trader to select which template to use as the default pre-populated description for bulk uploaded products",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "i want to create the templates",
-          "product description generation to be managed by product description generation options"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Template selector dropdown appears above the product upload grid",
-        "Dropdown displays all available templates by name",
-        "Selecting a template pre-populates the description field for all products with that template's content",
-        "Template selection works with the existing auto-copy functionality",
-        "Default template is selected automatically if only one exists",
-        "Template selection persists during the upload session"
-      ]
-    },
-    {
-      "id": "REQ-72",
-      "text": "Create backend data structure in backend/main.mo to store description templates with fields for template ID, template name, template content text, and creation timestamp",
+      "id": "REQ-75",
+      "text": "Add a 'category' field to the Product type in backend/main.mo as a separate field distinct from the shape field, storing category as Text type",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-latest"
         ],
         "quotes": [
-          "i want to create the templates"
+          "2 a separate field on products"
         ]
       },
       "acceptanceCriteria": [
-        "DescriptionTemplate type includes id, name, content, and created timestamp fields",
-        "Backend maintains a stable data structure for storing templates",
-        "Templates are persisted across canister upgrades",
-        "Each template has a unique identifier"
+        "Product type includes a category field of type Text",
+        "Category field is independent from the shape field",
+        "Existing products can be migrated to include the category field"
       ]
     },
     {
-      "id": "REQ-73",
-      "text": "Create backend methods in backend/main.mo for managing description templates: getDescriptionTemplates() to retrieve all templates, createDescriptionTemplate(name, content) to add new templates, updateDescriptionTemplate(id, name, content) to modify existing templates, and deleteDescriptionTemplate(id) to remove templates, all with admin authentication",
+      "id": "REQ-76",
+      "text": "Update the createProduct backend method in backend/main.mo to accept and store the category field when creating new products",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-latest"
         ],
         "quotes": [
-          "i want to create the templates"
+          "2 a separate field on products"
         ]
       },
       "acceptanceCriteria": [
-        "getDescriptionTemplates returns array of all templates",
-        "createDescriptionTemplate validates inputs and creates new template with unique ID",
-        "updateDescriptionTemplate finds and updates the specified template",
-        "deleteDescriptionTemplate removes the specified template",
-        "All methods verify admin authentication before execution",
-        "Methods return appropriate success/error responses"
+        "createProduct method accepts category parameter",
+        "Category value is stored with the product record",
+        "Category can be set independently from shape"
       ]
     },
     {
-      "id": "REQ-74",
-      "text": "Create a default description template in the backend initialization with the current template text: 'Original 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike'",
+      "id": "REQ-77",
+      "text": "Update the updateProduct backend method in backend/main.mo to support updating the category field independently from other product fields",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-latest"
         ],
         "quotes": [
-          "i want to create the templates"
+          "2 a separate field on products"
         ]
       },
       "acceptanceCriteria": [
-        "System initializes with one default template on first deployment",
-        "Default template uses the specified content text",
-        "Default template is named appropriately (e.g., 'Default Product Description')",
-        "Default template can be edited or deleted by admin like any other template"
+        "updateProduct supports category field updates",
+        "Category can be updated without modifying other product fields",
+        "Category changes are persisted correctly"
+      ]
+    },
+    {
+      "id": "REQ-78",
+      "text": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include a separate category input field for each uploaded product alongside the existing shape field",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "2 a separate field on products"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Category input field is displayed for each product in bulk upload",
+        "Category field is independent from shape field",
+        "Auto-copy functionality includes category when enabled",
+        "Category value is sent to backend when creating products"
+      ]
+    },
+    {
+      "id": "REQ-79",
+      "text": "Update the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) to display the category field as a separate column and support inline editing of category independently from shape",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "2 a separate field on products"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Category column is displayed in the product management table",
+        "Category can be edited inline with save/cancel controls",
+        "Category dropdown or input allows selecting/entering category values",
+        "Category updates are saved to backend correctly"
+      ]
+    },
+    {
+      "id": "REQ-80",
+      "text": "Add a separate 'Category' filter section in the Marketplace page (frontend/src/pages/Marketplace.tsx) header alongside the existing 'Shape' filter section, displaying all unique category values as clickable filter tabs",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "1 separate \"Category\" filter section alongside the existing \"Shape\" filter section"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Category filter section is visually separate from Shape filter section",
+        "All unique category values from products are displayed as filter tabs",
+        "Category filter tabs are clickable and toggle selection state",
+        "Multiple category filters can be selected simultaneously",
+        "Category filters work independently from shape filters"
+      ]
+    },
+    {
+      "id": "REQ-81",
+      "text": "Update the filter logic in Marketplace.tsx to support filtering products by both shape and category independently, where products must match selected shape filters AND selected category filters",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "1 separate \"Category\" filter section alongside the existing \"Shape\" filter section"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Products are filtered by both shape and category selections",
+        "If no shape filters are selected, all shapes are shown (filtered only by category)",
+        "If no category filters are selected, all categories are shown (filtered only by shape)",
+        "If both filters are selected, products must match both criteria",
+        "Filtered results update all product sections (featured, most viewed, best selling, newest)"
+      ]
+    },
+    {
+      "id": "REQ-82",
+      "text": "Update the ProductCard component (frontend/src/components/ProductCard.tsx) to display both shape and category information on each product card",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "2 a separate field on products"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Both shape and category are displayed on product cards",
+        "Shape and category are visually distinguishable from each other",
+        "Layout accommodates both fields without cluttering the card design"
+      ]
+    },
+    {
+      "id": "REQ-83",
+      "text": "Update the ProductDetailView component (frontend/src/components/ProductDetailView.tsx) to display both shape and category fields in the product detail modal",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "2 a separate field on products"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Shape is displayed in product detail view",
+        "Category is displayed in product detail view as a separate field",
+        "Both fields are clearly labeled and distinguishable"
+      ]
+    },
+    {
+      "id": "REQ-84",
+      "text": "Update all React Query hooks in frontend/src/hooks/useQueries.ts to handle the new category field in product data structures for fetching and mutating products",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "2 a separate field on products"
+        ]
+      },
+      "acceptanceCriteria": [
+        "useProducts hook returns products with category field",
+        "useCreateProduct mutation includes category parameter",
+        "useUpdateProduct mutation supports category updates",
+        "TypeScript types are updated to include category field"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the shape field implementation that already exists in the BulkProductUpload component",
-    "Preserve the existing auto-copy functionality when adding template selection",
-    "Filter tabs must not interfere with existing hero section or product section layouts",
-    "Template management is admin-only functionality"
+    "Maintain single-actor backend architecture in backend/main.mo",
+    "Do not modify immutable frontend paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui",
+    "Keep shape and category as completely independent fields that can be set and filtered separately",
+    "Ensure backward compatibility with existing products that may not have category values"
   ],
   "nonGoals": [
-    "Creating a search bar or text-based search functionality",
-    "Filtering by price ranges or other product attributes beyond shape and category",
-    "Advanced template features like variables, placeholders, or AI prompt configuration",
-    "Template versioning or history tracking"
+    "Combining shape and category into a single field",
+    "Removing the existing shape filter functionality",
+    "Creating predefined category lists or validation (allow free text entry)",
+    "Adding category hierarchies or subcategories"
   ],
   "imageRequirements": {
     "required": [],

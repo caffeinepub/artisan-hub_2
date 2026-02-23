@@ -22,6 +22,7 @@ export interface Product {
     shape: string;
     viewCount: bigint;
     stripeProductDescription: string;
+    category: string;
     inventoryCount: bigint;
     price: bigint;
     images: Array<ExternalBlob>;
@@ -135,7 +136,7 @@ export enum UserRole {
 export interface backendInterface {
     addCartItem(productId: bigint, quantity: bigint): Promise<void>;
     addOrUpdateProductImage(productId: bigint, image: ExternalBlob): Promise<void>;
-    addProduct(name: string, shape: string, price: bigint, stripeProductId: string, stripeProductDescription: string, images: Array<ExternalBlob>, inventoryCount: bigint): Promise<void>;
+    addProduct(name: string, shape: string, price: bigint, stripeProductId: string, stripeProductDescription: string, images: Array<ExternalBlob>, inventoryCount: bigint, category: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     checkoutCartItems(successUrl: string, cancelUrl: string): Promise<string | null>;
     clearAllCarts(): Promise<void>;
@@ -176,6 +177,6 @@ export interface backendInterface {
     updateDescriptionTemplate(id: bigint, name: string, content: string): Promise<void>;
     updateHomepageConfig(config: HomepageConfig): Promise<void>;
     updateInventoryCount(productId: bigint, inventoryCount: bigint): Promise<void>;
-    updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null): Promise<void>;
+    updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null, category: string | null): Promise<void>;
     updateShopDetails(details: ShopDetails): Promise<void>;
 }

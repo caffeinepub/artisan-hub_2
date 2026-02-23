@@ -97,6 +97,7 @@ export interface Product {
     shape: string;
     viewCount: bigint;
     stripeProductDescription: string;
+    category: string;
     inventoryCount: bigint;
     price: bigint;
     images: Array<ExternalBlob>;
@@ -228,7 +229,7 @@ export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     addCartItem(productId: bigint, quantity: bigint): Promise<void>;
     addOrUpdateProductImage(productId: bigint, image: ExternalBlob): Promise<void>;
-    addProduct(name: string, shape: string, price: bigint, stripeProductId: string, stripeProductDescription: string, images: Array<ExternalBlob>, inventoryCount: bigint): Promise<void>;
+    addProduct(name: string, shape: string, price: bigint, stripeProductId: string, stripeProductDescription: string, images: Array<ExternalBlob>, inventoryCount: bigint, category: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
     checkoutCartItems(successUrl: string, cancelUrl: string): Promise<string | null>;
     clearAllCarts(): Promise<void>;
@@ -269,7 +270,7 @@ export interface backendInterface {
     updateDescriptionTemplate(id: bigint, name: string, content: string): Promise<void>;
     updateHomepageConfig(config: HomepageConfig): Promise<void>;
     updateInventoryCount(productId: bigint, inventoryCount: bigint): Promise<void>;
-    updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null): Promise<void>;
+    updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null, category: string | null): Promise<void>;
     updateShopDetails(details: ShopDetails): Promise<void>;
 }
 import type { BrandingConfig as _BrandingConfig, CartItem as _CartItem, ExternalBlob as _ExternalBlob, HomepageConfig as _HomepageConfig, Product as _Product, ShopDetails as _ShopDetails, SortingOrder as _SortingOrder, StripeSessionStatus as _StripeSessionStatus, Time as _Time, UserProfile as _UserProfile, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
@@ -401,17 +402,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async addProduct(arg0: string, arg1: string, arg2: bigint, arg3: string, arg4: string, arg5: Array<ExternalBlob>, arg6: bigint): Promise<void> {
+    async addProduct(arg0: string, arg1: string, arg2: bigint, arg3: string, arg4: string, arg5: Array<ExternalBlob>, arg6: bigint, arg7: string): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.addProduct(arg0, arg1, arg2, arg3, arg4, await to_candid_vec_n9(this._uploadFile, this._downloadFile, arg5), arg6);
+                const result = await this.actor.addProduct(arg0, arg1, arg2, arg3, arg4, await to_candid_vec_n9(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.addProduct(arg0, arg1, arg2, arg3, arg4, await to_candid_vec_n9(this._uploadFile, this._downloadFile, arg5), arg6);
+            const result = await this.actor.addProduct(arg0, arg1, arg2, arg3, arg4, await to_candid_vec_n9(this._uploadFile, this._downloadFile, arg5), arg6, arg7);
             return result;
         }
     }
@@ -975,17 +976,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async updateProduct(arg0: bigint, arg1: string | null, arg2: string | null, arg3: bigint | null, arg4: string | null, arg5: string | null, arg6: Array<ExternalBlob> | null, arg7: bigint | null): Promise<void> {
+    async updateProduct(arg0: bigint, arg1: string | null, arg2: string | null, arg3: bigint | null, arg4: string | null, arg5: string | null, arg6: Array<ExternalBlob> | null, arg7: bigint | null, arg8: string | null): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.updateProduct(arg0, to_candid_opt_n47(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n48(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg5), await to_candid_opt_n49(this._uploadFile, this._downloadFile, arg6), to_candid_opt_n48(this._uploadFile, this._downloadFile, arg7));
+                const result = await this.actor.updateProduct(arg0, to_candid_opt_n47(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n48(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg5), await to_candid_opt_n49(this._uploadFile, this._downloadFile, arg6), to_candid_opt_n48(this._uploadFile, this._downloadFile, arg7), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg8));
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.updateProduct(arg0, to_candid_opt_n47(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n48(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg5), await to_candid_opt_n49(this._uploadFile, this._downloadFile, arg6), to_candid_opt_n48(this._uploadFile, this._downloadFile, arg7));
+            const result = await this.actor.updateProduct(arg0, to_candid_opt_n47(this._uploadFile, this._downloadFile, arg1), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg2), to_candid_opt_n48(this._uploadFile, this._downloadFile, arg3), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg4), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg5), await to_candid_opt_n49(this._uploadFile, this._downloadFile, arg6), to_candid_opt_n48(this._uploadFile, this._downloadFile, arg7), to_candid_opt_n47(this._uploadFile, this._downloadFile, arg8));
             return result;
         }
     }
@@ -1063,6 +1064,7 @@ async function from_candid_record_n15(_uploadFile: (file: ExternalBlob) => Promi
     shape: string;
     viewCount: bigint;
     stripeProductDescription: string;
+    category: string;
     inventoryCount: bigint;
     price: bigint;
     images: Array<_ExternalBlob>;
@@ -1074,6 +1076,7 @@ async function from_candid_record_n15(_uploadFile: (file: ExternalBlob) => Promi
     shape: string;
     viewCount: bigint;
     stripeProductDescription: string;
+    category: string;
     inventoryCount: bigint;
     price: bigint;
     images: Array<ExternalBlob>;
@@ -1086,6 +1089,7 @@ async function from_candid_record_n15(_uploadFile: (file: ExternalBlob) => Promi
         shape: value.shape,
         viewCount: value.viewCount,
         stripeProductDescription: value.stripeProductDescription,
+        category: value.category,
         inventoryCount: value.inventoryCount,
         price: value.price,
         images: await from_candid_vec_n16(_uploadFile, _downloadFile, value.images)

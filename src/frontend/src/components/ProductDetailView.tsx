@@ -60,9 +60,15 @@ export default function ProductDetailView({ product, open, onOpenChange }: Produ
             />
           </div>
           <div className="space-y-4">
-            <div>
-              <p className="text-sm text-muted-foreground mb-1">Shape</p>
-              <p className="text-lg">{product.shape}</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Shape</p>
+                <p className="text-lg">{product.shape}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1">Category</p>
+                <p className="text-lg">{product.category}</p>
+              </div>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Description</p>

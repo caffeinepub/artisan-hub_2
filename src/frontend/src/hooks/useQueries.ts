@@ -128,6 +128,7 @@ export function useAddProduct() {
       stripeProductDescription: string;
       images: ExternalBlob[];
       inventoryCount: bigint;
+      category: string;
     }) => {
       if (!actor) throw new Error('Actor not available');
       await actor.addProduct(
@@ -137,7 +138,8 @@ export function useAddProduct() {
         params.stripeProductId,
         params.stripeProductDescription,
         params.images,
-        params.inventoryCount
+        params.inventoryCount,
+        params.category
       );
     },
     onSuccess: () => {
@@ -162,6 +164,7 @@ export function useUpdateProduct() {
       stripeProductDescription?: string;
       images?: ExternalBlob[];
       inventoryCount?: bigint;
+      category?: string;
     }) => {
       if (!actor) throw new Error('Actor not available');
       await actor.updateProduct(
@@ -172,7 +175,8 @@ export function useUpdateProduct() {
         params.stripeProductId ?? null,
         params.stripeProductDescription ?? null,
         params.images ?? null,
-        params.inventoryCount ?? null
+        params.inventoryCount ?? null,
+        params.category ?? null
       );
     },
     onSuccess: () => {

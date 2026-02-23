@@ -1,16 +1,16 @@
 # Specification
 
 ## Summary
-**Goal:** Add product filtering by shape and category to the Marketplace header and create a description template management system for admins.
+**Goal:** Add a separate Category field to products and implement independent Category filtering alongside the existing Shape filter in the marketplace.
 
 **Planned changes:**
-- Add clickable filter tabs to Marketplace header for filtering products by shape and/or category
-- Implement filter state management and dynamic product filtering logic
-- Add "Description Templates" tab to admin Dashboard with template management interface
-- Create DescriptionTemplateManager component for creating and editing templates
-- Add React Query hooks for template CRUD operations with admin authentication
-- Update BulkProductUpload to use template selector dropdown instead of single default description
-- Create backend data structure and methods for storing and managing description templates
-- Initialize backend with default description template on first deployment
+- Add category as a separate Text field on the Product type in the backend
+- Update backend createProduct and updateProduct methods to handle category field
+- Add category input field in BulkProductUpload component alongside shape field
+- Add category column with inline editing in ProductManagementTable
+- Create separate "Category" filter section in Marketplace header alongside "Shape" filter section
+- Implement independent filtering logic where products can be filtered by shape AND/OR category
+- Display both shape and category on ProductCard and ProductDetailView components
+- Update React Query hooks to handle category field in product data structures
 
-**User-visible outcome:** Customers can filter marketplace products by clicking shape/category tabs in the header. Admins can create, edit, and delete description templates in the Dashboard, then select which template to use when bulk uploading products.
+**User-visible outcome:** Users can assign and edit categories on products separately from shapes, and filter marketplace products using independent Shape and Category filter sections that work together or separately.

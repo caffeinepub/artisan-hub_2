@@ -13,7 +13,9 @@ import Time "mo:core/Time";
 import Order "mo:core/Order";
 import Int "mo:core/Int";
 import Iter "mo:core/Iter";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   include MixinStorage();
 
@@ -112,6 +114,7 @@ actor {
     inventoryCount : Nat;
     viewCount : Nat;
     createdAt : Time.Time;
+    category : Text;
   };
 
   let products = Map.empty<Nat, Product>();
@@ -192,6 +195,7 @@ actor {
     stripeProductDescription : Text,
     images : [Storage.ExternalBlob],
     inventoryCount : Nat,
+    category : Text,
   ) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can add products");
@@ -208,6 +212,7 @@ actor {
       inventoryCount;
       createdAt = Time.now();
       viewCount = 0;
+      category;
     };
 
     products.add(nextProductId, product);
@@ -223,6 +228,7 @@ actor {
     stripeProductDescription : ?Text,
     images : ?[Storage.ExternalBlob],
     inventoryCount : ?Nat,
+    category : ?Text,
   ) : async () {
     if (not (AccessControl.isAdmin(accessControlState, caller))) {
       Runtime.trap("Unauthorized: Only admins can update products");
@@ -251,6 +257,7 @@ actor {
         case (null) { existingProduct.inventoryCount };
         case (?count) { count };
       };
+      category = switch (category) { case (null) { existingProduct.category }; case (?c) { c } };
     };
 
     products.add(productId, updatedProduct);

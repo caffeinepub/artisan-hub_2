@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 29,
+  "projectStateVersion": 31,
   "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -469,6 +469,62 @@
         "REQ-71"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-include-a-separate-category-input-field-for-each-uploaded-product-alongside-the-existing-shape-field",
+      "title": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include a separate category input field for each uploaded product alongside the existing shape field",
+      "reqIds": [
+        "REQ-78"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-productmanagementtable-component-frontend-src-components-productmanagementtable-tsx-to-display-the-category-field-as-a-separate-column-and-support-inline-editing-of-category-independently-from-shape",
+      "title": "Update the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) to display the category field as a separate column and support inline editing of category independently from shape",
+      "reqIds": [
+        "REQ-79"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-separate-category-filter-section-in-the-marketplace-page-frontend-src-pages-marketplace-tsx-header-alongside-the-existing-shape-filter-section-displaying-all-unique-category-values-as-clickable-filter-tabs",
+      "title": "Add a separate 'Category' filter section in the Marketplace page (frontend/src/pages/Marketplace.tsx) header alongside the existing 'Shape' filter section, displaying all unique category values as clickable filter tabs",
+      "reqIds": [
+        "REQ-80"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-filter-logic-in-marketplace-tsx-to-support-filtering-products-by-both-shape-and-category-independently-where-products-must-match-selected-shape-filters-and-selected-category-filters",
+      "title": "Update the filter logic in Marketplace.tsx to support filtering products by both shape and category independently, where products must match selected shape filters AND selected category filters",
+      "reqIds": [
+        "REQ-81"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-productcard-component-frontend-src-components-productcard-tsx-to-display-both-shape-and-category-information-on-each-product-card",
+      "title": "Update the ProductCard component (frontend/src/components/ProductCard.tsx) to display both shape and category information on each product card",
+      "reqIds": [
+        "REQ-82"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-productdetailview-component-frontend-src-components-productdetailview-tsx-to-display-both-shape-and-category-fields-in-the-product-detail-modal",
+      "title": "Update the ProductDetailView component (frontend/src/components/ProductDetailView.tsx) to display both shape and category fields in the product detail modal",
+      "reqIds": [
+        "REQ-83"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-all-react-query-hooks-in-frontend-src-hooks-usequeries-ts-to-handle-the-new-category-field-in-product-data-structures-for-fetching-and-mutating-products",
+      "title": "Update all React Query hooks in frontend/src/hooks/useQueries.ts to handle the new category field in product data structures for fetching and mutating products",
+      "reqIds": [
+        "REQ-84"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -793,6 +849,36 @@
       "summary": "Create a default description template in the backend initialization with the current template text: 'Original 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike'",
       "reqIds": [
         "REQ-74"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-75",
+      "summary": "Add separate Category filter section alongside the existing Shape filter section on the Marketplace home page",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-76",
+      "summary": "Add a 'category' field to the Product type in backend/main.mo as a separate field distinct from the shape field, storing category as Text type",
+      "reqIds": [
+        "REQ-75"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-77",
+      "summary": "Update the createProduct backend method in backend/main.mo to accept and store the category field when creating new products",
+      "reqIds": [
+        "REQ-76"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-78",
+      "summary": "Update the updateProduct backend method in backend/main.mo to support updating the category field independently from other product fields",
+      "reqIds": [
+        "REQ-77"
       ],
       "status": "pending"
     }

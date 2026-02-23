@@ -14,6 +14,8 @@ interface EditingProduct {
   id: bigint;
   name: string;
   description: string;
+  shape: string;
+  category: string;
   price: string;
   imageFile: File | null;
   uploadProgress: number;
@@ -31,6 +33,8 @@ export default function ProductManagementTable() {
       id: product.id,
       name: product.name,
       description: product.stripeProductDescription,
+      shape: product.shape,
+      category: product.category,
       price: (Number(product.price) / 100).toFixed(2),
       imageFile: null,
       uploadProgress: 0,
@@ -80,6 +84,8 @@ export default function ProductManagementTable() {
       await updateProduct.mutateAsync({
         productId: editingProduct.id,
         name: editingProduct.name,
+        shape: editingProduct.shape,
+        category: editingProduct.category,
         price: BigInt(priceInCents),
         stripeProductDescription: editingProduct.description,
         images: imageBlob ? [imageBlob] : undefined,
@@ -163,6 +169,8 @@ export default function ProductManagementTable() {
               <TableRow>
                 <TableHead>Image</TableHead>
                 <TableHead>Name</TableHead>
+                <TableHead>Shape</TableHead>
+                <TableHead>Category</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Price (AUD)</TableHead>
                 <TableHead>Inventory</TableHead>
@@ -208,6 +216,32 @@ export default function ProductManagementTable() {
                         />
                       ) : (
                         <span className="font-medium">{product.name}</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {isEditing ? (
+                        <Input
+                          value={editingProduct.shape}
+                          onChange={(e) =>
+                            setEditingProduct((prev) => (prev ? { ...prev, shape: e.target.value } : null))
+                          }
+                          className="max-w-[120px]"
+                        />
+                      ) : (
+                        <span className="text-sm">{product.shape}</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {isEditing ? (
+                        <Input
+                          value={editingProduct.category}
+                          onChange={(e) =>
+                            setEditingProduct((prev) => (prev ? { ...prev, category: e.target.value } : null))
+                          }
+                          className="max-w-[120px]"
+                        />
+                      ) : (
+                        <span className="text-sm">{product.category}</span>
                       )}
                     </TableCell>
                     <TableCell>

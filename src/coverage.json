@@ -1,71 +1,39 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-23T00:52:06.342Z",
+  "generatedAt": "2026-02-23T01:10:04.301Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 9,
-    "implemented": 5,
+    "total": 10,
+    "implemented": 7,
     "items": [
       {
-        "id": "REQ-66",
-        "summary": "Add filter tabs to the Marketplace home page header (frontend/src/pages/Marketplace.tsx) that display all available shapes and categories as clickable tabs, allowing customers to filter the displayed products by selecting one or multiple shape/category filters",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Marketplace.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Marketplace.tsx"
-        ]
-      },
-      {
-        "id": "REQ-67",
-        "summary": "Create React state management in Marketplace.tsx to track selected shape and category filters, and implement filtering logic that filters the product arrays (featured, most viewed, best selling, newest) based on the active filter selections",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Marketplace.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Marketplace.tsx"
-        ]
-      },
-      {
-        "id": "REQ-68",
-        "summary": "Add a new 'Description Templates' tab to the admin Dashboard page (frontend/src/pages/Dashboard.tsx) with a management interface that displays all existing description templates in a list or table format with options to create new templates, edit existing templates, and delete templates",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Dashboard.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Dashboard.tsx"
-        ]
-      },
-      {
-        "id": "REQ-69",
-        "summary": "Create a DescriptionTemplateManager component (frontend/src/components/DescriptionTemplateManager.tsx) that provides a form interface for creating and editing description templates with fields for template name and template content text, with save and cancel controls",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/components/DescriptionTemplateManager.tsx"
-        ],
+        "id": "REQ-75",
+        "summary": "Add a 'category' field to the Product type in backend/main.mo as a separate field distinct from the shape field, storing category as Text type",
+        "status": "unknown",
+        "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-70",
-        "summary": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching all description templates (useDescriptionTemplates) and mutating description templates (useCreateDescriptionTemplate, useUpdateDescriptionTemplate, useDeleteDescriptionTemplate) with admin authentication",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts"
-        ]
+        "id": "REQ-76",
+        "summary": "Update the createProduct backend method in backend/main.mo to accept and store the category field when creating new products",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-71",
-        "summary": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to replace the single default description template with a dropdown selector that displays all available description templates from the template management system, allowing the trader to select which template to use as the default pre-populated description for bulk uploaded products",
+        "id": "REQ-77",
+        "summary": "Update the updateProduct backend method in backend/main.mo to support updating the category field independently from other product fields",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-78",
+        "summary": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include a separate category input field for each uploaded product alongside the existing shape field",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/components/BulkProductUpload.tsx"
@@ -75,30 +43,76 @@
         ]
       },
       {
-        "id": "REQ-72",
-        "summary": "Create backend data structure in backend/main.mo to store description templates with fields for template ID, template name, template content text, and creation timestamp",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "id": "REQ-79",
+        "summary": "Update the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) to display the category field as a separate column and support inline editing of category independently from shape",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ]
       },
       {
-        "id": "REQ-73",
-        "summary": "Create backend methods in backend/main.mo for managing description templates: getDescriptionTemplates() to retrieve all templates, createDescriptionTemplate(name, content) to add new templates, updateDescriptionTemplate(id, name, content) to modify existing templates, and deleteDescriptionTemplate(id) to remove templates, all with admin authentication",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "id": "REQ-80",
+        "summary": "Add a separate 'Category' filter section in the Marketplace page (frontend/src/pages/Marketplace.tsx) header alongside the existing 'Shape' filter section, displaying all unique category values as clickable filter tabs",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/Marketplace.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/Marketplace.tsx"
+        ]
       },
       {
-        "id": "REQ-74",
-        "summary": "Create a default description template in the backend initialization with the current template text: 'Original 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike'",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
+        "id": "REQ-81",
+        "summary": "Update the filter logic in Marketplace.tsx to support filtering products by both shape and category independently, where products must match selected shape filters AND selected category filters",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/Marketplace.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/Marketplace.tsx"
+        ]
+      },
+      {
+        "id": "REQ-82",
+        "summary": "Update the ProductCard component (frontend/src/components/ProductCard.tsx) to display both shape and category information on each product card",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductCard.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductCard.tsx"
+        ]
+      },
+      {
+        "id": "REQ-83",
+        "summary": "Update the ProductDetailView component (frontend/src/components/ProductDetailView.tsx) to display both shape and category fields in the product detail modal",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductDetailView.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductDetailView.tsx"
+        ]
+      },
+      {
+        "id": "REQ-84",
+        "summary": "Update all React Query hooks in frontend/src/hooks/useQueries.ts to handle the new category field in product data structures for fetching and mutating products",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useQueries.ts"
+        ]
       }
     ]
   },
   "changedFiles": [
     "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
@@ -106,12 +120,12 @@
     "frontend/src/backend.d.ts",
     "frontend/src/backend.ts",
     "frontend/src/components/BulkProductUpload.tsx",
-    "frontend/src/components/DescriptionTemplateEditor.tsx",
-    "frontend/src/components/DescriptionTemplatesManager.tsx",
+    "frontend/src/components/ProductCard.tsx",
+    "frontend/src/components/ProductDetailView.tsx",
+    "frontend/src/components/ProductManagementTable.tsx",
     "frontend/src/declarations/backend.did.d.ts",
     "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/Dashboard.tsx",
     "frontend/src/pages/Marketplace.tsx",
     "project_state.json",
     "scratch/component-selection.json",

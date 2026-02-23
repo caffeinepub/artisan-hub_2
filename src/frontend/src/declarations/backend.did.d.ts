@@ -39,6 +39,7 @@ export interface Product {
   'shape' : string,
   'viewCount' : bigint,
   'stripeProductDescription' : string,
+  'category' : string,
   'inventoryCount' : bigint,
   'price' : bigint,
   'images' : Array<ExternalBlob>,
@@ -136,7 +137,16 @@ export interface _SERVICE {
   'addCartItem' : ActorMethod<[bigint, bigint], undefined>,
   'addOrUpdateProductImage' : ActorMethod<[bigint, ExternalBlob], undefined>,
   'addProduct' : ActorMethod<
-    [string, string, bigint, string, string, Array<ExternalBlob>, bigint],
+    [
+      string,
+      string,
+      bigint,
+      string,
+      string,
+      Array<ExternalBlob>,
+      bigint,
+      string,
+    ],
     undefined
   >,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
@@ -201,6 +211,7 @@ export interface _SERVICE {
       [] | [string],
       [] | [Array<ExternalBlob>],
       [] | [bigint],
+      [] | [string],
     ],
     undefined
   >,
