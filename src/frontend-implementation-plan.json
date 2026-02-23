@@ -1,91 +1,22 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Replace AI generation with template selection in bulk upload and add bulk delete capability to product management",
+  "title": "Add Stripe configuration status indicator with green checkmark",
   "requirements": [
     {
-      "id": "REQ-85",
-      "summary": "Remove the 'Generate AI Description' button from BulkProductUpload component, eliminating AI description generation functionality from the bulk upload flow",
+      "id": "REQ-97",
+      "summary": "Add visual status indicator to StripeSetup component showing Stripe configuration status with green checkmark",
       "acceptanceCriteria": [
-        "The 'Generate AI Description' button is no longer visible in the bulk upload interface",
-        "No AI description generation logic is triggered during bulk upload",
-        "The description field remains editable but uses only template-based pre-population"
+        "A green checkmark icon appears in the StripeSetup component when Stripe is configured",
+        "Status indicator text reads 'Stripe Configured' or similar when active",
+        "The status indicator fetches current Stripe configuration from the backend using the useStripeConfig query hook",
+        "Status updates immediately when Stripe configuration is saved"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/BulkProductUpload.tsx",
+          "path": "frontend/src/components/StripeSetup.tsx",
           "operation": "modify",
-          "description": "Remove the 'Generate AI Description' button and all associated AI generation logic including state variables, event handlers, and mutation hooks. Keep the description field editable and ensure the template selector dropdown remains functional."
-        }
-      ]
-    },
-    {
-      "id": "REQ-86",
-      "summary": "Update BulkProductUpload to automatically populate description fields using the selected template from the dropdown without requiring additional button clicks",
-      "acceptanceCriteria": [
-        "When a template is selected from the dropdown, all product description fields are immediately populated with the template content",
-        "The description field remains manually editable after template population",
-        "Template selection works seamlessly with the existing auto-copy functionality when enabled"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/BulkProductUpload.tsx",
-          "operation": "modify",
-          "description": "Modify the template selection handler to immediately populate all product description fields when a template is chosen from the dropdown. Ensure this works with the existing auto-copy functionality by updating the description fields in the products state array. The descriptions should remain editable after population."
-        }
-      ]
-    },
-    {
-      "id": "REQ-87",
-      "summary": "Add checkbox selection controls to ProductManagementTable allowing admin to select multiple products for bulk operations",
-      "acceptanceCriteria": [
-        "Each product row displays a checkbox in the first column",
-        "A 'select all' checkbox in the table header allows selecting/deselecting all products at once",
-        "Selected rows are visually distinguished (e.g., highlighted background)",
-        "The selection state persists across inline edits but clears after bulk delete operation"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductManagementTable.tsx",
-          "operation": "modify",
-          "description": "Add a new column at the beginning of the table with checkboxes for each product row. Add a 'select all' checkbox in the table header. Implement selection state management using useState to track selected product IDs. Apply visual highlighting (e.g., bg-blue-50) to selected rows. Ensure selection state persists during inline edits but provide a method to clear selections after delete operations."
-        }
-      ]
-    },
-    {
-      "id": "REQ-88",
-      "summary": "Add 'Delete Selected' button to ProductManagementTable that shows confirmation dialog before deleting multiple products",
-      "acceptanceCriteria": [
-        "The 'Delete Selected' button is disabled when no products are selected",
-        "The button shows the count of selected products (e.g., 'Delete Selected (3)')",
-        "Clicking the button displays a confirmation dialog asking 'Are you sure you want to delete X products?'",
-        "After confirmation, all selected products are deleted via backend calls",
-        "A success toast notification displays the number of products deleted",
-        "The table refreshes to remove deleted products and clears all selections"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductManagementTable.tsx",
-          "operation": "modify",
-          "description": "Add a 'Delete Selected' button above or below the table that is disabled when no products are selected. Display the count of selected products in the button label. Implement a confirmation dialog using shadcn/ui Dialog or AlertDialog component that shows 'Are you sure you want to delete X products?' before proceeding. Wire the button to use the useBulkDeleteProducts mutation hook. Display a success toast showing the number of deleted products. Clear selection state and refresh the products query after successful deletion."
-        }
-      ]
-    },
-    {
-      "id": "REQ-89",
-      "summary": "Create useBulkDeleteProducts React Query mutation hook that deletes multiple products by calling deleteProduct for each ID with proper error handling and cache invalidation",
-      "acceptanceCriteria": [
-        "The mutation hook accepts an array of product ID strings",
-        "All delete operations are executed and their results aggregated",
-        "On success, the products query cache is invalidated to refresh the product list",
-        "Errors during bulk delete are captured and reported to the user",
-        "The hook returns loading state and error information for UI feedback"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add a new useBulkDeleteProducts mutation hook that accepts an array of product IDs (bigint[]). Use Promise.allSettled or sequential calls to execute actor.deleteProduct for each ID. Aggregate results to track successes and failures. On success, invalidate the 'products' query key to refresh the product list. Return loading state, error information, and success/failure counts for UI feedback. Handle partial failures gracefully by reporting which products failed to delete."
+          "description": "Add a visual status indicator section that displays a green checkmark icon with 'Stripe Configured' text when the backend reports Stripe is configured. Use the existing useStripeConfig hook from useQueries.ts to fetch configuration status. The hook queries the isStripeConfigured() backend method which returns a boolean. Display the status indicator prominently above or near the configuration form. When the configuration is saved successfully via setStripeConfiguration mutation, the query cache invalidates automatically and the status indicator updates to show the green checkmark. Use a Check icon from lucide-react for the checkmark visual. Style the indicator with green color scheme to match success state (e.g., text-green-600, bg-green-50)."
         }
       ]
     }

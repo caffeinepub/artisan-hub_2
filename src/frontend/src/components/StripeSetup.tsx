@@ -3,9 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useSetStripeConfiguration } from '../hooks/useQueries';
+import { useSetStripeConfiguration, useIsStripeConfigured } from '../hooks/useQueries';
 import { toast } from 'sonner';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, Check } from 'lucide-react';
 
 interface StripeSetupProps {
   onComplete?: () => void;
@@ -15,6 +15,7 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
   const [secretKey, setSecretKey] = useState('');
   const [countries, setCountries] = useState('US,CA,GB');
   const setConfig = useSetStripeConfiguration();
+  const { data: isConfigured, isLoading: isCheckingConfig } = useIsStripeConfigured();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +40,7 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
         allowedCountries: countryList,
       });
       toast.success('Stripe configured successfully!');
+      setSecretKey('');
       onComplete?.();
     } catch (error) {
       toast.error('Failed to configure Stripe');
@@ -59,6 +61,20 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {!isCheckingConfig && isConfigured && (
+            <div className="mb-6 rounded-lg bg-green-50 border border-green-200 p-4 flex items-center gap-3">
+              <div className="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center">
+                <Check className="h-5 w-5 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-green-900">Stripe Configured</p>
+                <p className="text-xs text-green-700 mt-0.5">
+                  Your Stripe payment integration is active and ready to accept payments
+                </p>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="secretKey">Stripe Secret Key</Label>
@@ -90,7 +106,7 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
             </div>
 
             <Button type="submit" className="w-full" disabled={setConfig.isPending}>
-              {setConfig.isPending ? 'Configuring...' : 'Configure Stripe'}
+              {setConfig.isPending ? 'Configuring...' : isConfigured ? 'Update Stripe Configuration' : 'Configure Stripe'}
             </Button>
           </form>
         </CardContent>

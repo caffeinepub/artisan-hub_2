@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 33,
+  "projectStateVersion": 39,
   "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -18,7 +18,8 @@
     "Images fail to persist when creating products through bulk upload interface",
     "Buy Now button redirects to 'no products selected' page instead of Stripe checkout",
     "Platform shows signup prompts after Internet Identity login",
-    "Checkout flow collects shipping information before redirecting to Stripe"
+    "Checkout flow collects shipping information before redirecting to Stripe",
+    "Product images fail to load properly on marketplace page"
   ],
   "isFixRequest": false,
   "existing_features": [
@@ -541,6 +542,46 @@
         "REQ-86"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-homepagesettings-component-frontend-src-components-homepagesettings-tsx-to-add-a-new-hero-background-image-upload-field-that-allows-the-trader-to-upload-a-custom-background-image-showcasing-3d-printed-ocarinas-for-the-marketplace-hero-section",
+      "title": "Update the HomepageSettings component (frontend/src/components/HomepageSettings.tsx) to add a new 'Hero Background Image' upload field that allows the trader to upload a custom background image showcasing 3D printed ocarinas for the marketplace hero section",
+      "reqIds": [
+        "REQ-90"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-marketplace-page-hero-section-frontend-src-pages-marketplace-tsx-to-render-the-configured-hero-background-image-from-homepage-configuration-using-the-dynamically-loaded-background-image-url-instead-of-any-hardcoded-background",
+      "title": "Update the Marketplace page hero section (frontend/src/pages/Marketplace.tsx) to render the configured hero background image from homepage configuration using the dynamically loaded background image URL instead of any hardcoded background",
+      "reqIds": [
+        "REQ-91"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-the-product-image-loading-issue-in-the-marketplace-page-frontend-src-pages-marketplace-tsx-where-product-images-fail-to-display-properly-by-verifying-the-image-url-construction-blob-storage-retrieval-and-productcard-image-rendering-logic",
+      "title": "Investigate and fix the product image loading issue in the Marketplace page (frontend/src/pages/Marketplace.tsx) where product images fail to display properly by verifying the image URL construction, blob storage retrieval, and ProductCard image rendering logic",
+      "reqIds": [
+        "REQ-92"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-and-fix-the-productcard-component-frontend-src-components-productcard-tsx-image-rendering-to-ensure-it-correctly-handles-image-urls-from-the-backend-includes-proper-error-handling-for-failed-image-loads-and-displays-a-fallback-placeholder-if-image-loading-fails",
+      "title": "Verify and fix the ProductCard component (frontend/src/components/ProductCard.tsx) image rendering to ensure it correctly handles image URLs from the backend, includes proper error handling for failed image loads, and displays a fallback placeholder if image loading fails",
+      "reqIds": [
+        "REQ-93"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-stripesetup-component-frontend-src-components-stripesetup-tsx-to-display-a-visual-status-indicator-showing-whether-stripe-has-been-configured-display-a-green-checkmark-icon-with-stripe-configured-text-when-a-valid-stripe-secret-key-is-stored-in-the-backend",
+      "title": "Update the StripeSetup component (frontend/src/components/StripeSetup.tsx) to display a visual status indicator showing whether Stripe has been configured. Display a green checkmark icon with 'Stripe Configured' text when a valid Stripe secret key is stored in the backend.",
+      "reqIds": [
+        "REQ-97"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -931,6 +972,62 @@
       "summary": "Create a React Query mutation hook useBulkDeleteProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and calls the backend deleteProduct method sequentially or in parallel for each ID, with proper error handling and cache invalidation",
       "reqIds": [
         "REQ-89"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-86",
+      "summary": "Create custom background for marketplace/main page hero section showcasing 3D printed ocarinas with simple visual representation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-87",
+      "summary": "Fix product image loading issue on marketplace page where images fail to display properly",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-92",
+      "summary": "Verify that the backend getProducts, getFeaturedProducts, getMostViewedProducts, getBestSellingProducts, and getNewestProducts methods in backend/main.mo correctly return product image blob references and ensure images are properly stored and retrievable from blob storage",
+      "reqIds": [
+        "REQ-94"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-93",
+      "summary": "Create backend migration to update all existing products to have \"3D print\" as their category",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-94",
+      "summary": "Create a backend migration function in backend/migration.mo that retrieves all existing products from the product storage and updates each product's category field to '3D print' without modifying any other product fields",
+      "reqIds": [
+        "REQ-95"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-95",
+      "summary": "Update the backend main.mo to include the migration logic that sets category to '3D print' for all products during the post-upgrade hook, ensuring the migration runs once and completes successfully",
+      "reqIds": [
+        "REQ-96"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-96",
+      "summary": "Add Stripe configuration status indicator in admin dashboard showing green checkmark when Stripe API key is configured and stored",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-98",
+      "summary": "Add a backend method hasStripeConfiguration() or extend the existing getStripeConfig() method in backend/main.mo to return a boolean flag or status indicating whether a Stripe secret key has been stored, without exposing the actual key value.",
+      "reqIds": [
+        "REQ-98"
       ],
       "status": "pending"
     }

@@ -108,7 +108,7 @@ export default function HomepageSettings() {
     <Card>
       <CardHeader>
         <CardTitle>Homepage Settings</CardTitle>
-        <CardDescription>Customize your marketplace homepage hero section</CardDescription>
+        <CardDescription>Customize your homepage hero section</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -120,12 +120,9 @@ export default function HomepageSettings() {
               type="text"
               value={heroMotto}
               onChange={(e) => setHeroMotto(e.target.value)}
-              placeholder="e.g., Discover Original Creations"
+              placeholder="Enter your hero motto"
               required
             />
-            <p className="text-sm text-muted-foreground">
-              The main headline displayed on your homepage
-            </p>
           </div>
 
           {/* Promotional Text */}
@@ -135,45 +132,39 @@ export default function HomepageSettings() {
               id="promotionalText"
               value={promotionalText}
               onChange={(e) => setPromotionalText(e.target.value)}
-              placeholder="e.g., Explore unique, custom-made pieces crafted with passion and precision."
+              placeholder="Enter promotional text"
               rows={3}
               required
             />
-            <p className="text-sm text-muted-foreground">
-              Supporting text that appears below the hero motto
-            </p>
           </div>
 
           {/* Hero Background Image Upload */}
           <div className="space-y-2">
             <Label htmlFor="heroImage">Hero Background Image</Label>
-            <div className="space-y-4">
+            <div className="flex items-start gap-4">
               {heroImagePreview ? (
                 <div className="relative">
                   <img
                     src={heroImagePreview}
                     alt="Hero background preview"
-                    className="w-full h-48 object-cover border rounded-lg"
+                    className="h-32 w-auto max-w-md object-cover border rounded-lg"
                   />
                   <Button
                     type="button"
                     variant="destructive"
                     size="icon"
-                    className="absolute top-2 right-2 h-8 w-8"
+                    className="absolute -top-2 -right-2 h-6 w-6"
                     onClick={clearHeroImage}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
-                <div className="h-48 w-full border-2 border-dashed rounded-lg flex items-center justify-center text-muted-foreground">
-                  <div className="text-center">
-                    <Upload className="h-12 w-12 mx-auto mb-2" />
-                    <p className="text-sm">No background image set</p>
-                  </div>
+                <div className="h-32 w-48 border-2 border-dashed rounded-lg flex items-center justify-center text-muted-foreground">
+                  <Upload className="h-8 w-8" />
                 </div>
               )}
-              <div>
+              <div className="flex-1">
                 <Input
                   id="heroImage"
                   type="file"
@@ -182,7 +173,7 @@ export default function HomepageSettings() {
                   className="cursor-pointer"
                 />
                 <p className="text-sm text-muted-foreground mt-1">
-                  Recommended: 1920x600px or larger, JPG or PNG
+                  Recommended: 1920x800px, JPG or PNG
                 </p>
                 {heroImageUploadProgress > 0 && heroImageUploadProgress < 100 && (
                   <p className="text-sm text-primary mt-1">Uploading: {heroImageUploadProgress}%</p>
@@ -191,29 +182,25 @@ export default function HomepageSettings() {
             </div>
           </div>
 
-          {/* Preview Section */}
-          <div className="space-y-2 pt-4 border-t">
-            <Label>Preview</Label>
-            <div className="border rounded-lg overflow-hidden">
-              <div
-                className="relative h-64 bg-cover bg-center flex items-center"
-                style={{
-                  backgroundImage: heroImagePreview
-                    ? `url(${heroImagePreview})`
-                    : 'url(/assets/generated/hero-background.dim_1920x600.png)',
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/60" />
-                <div className="container relative z-10 px-6">
-                  <div className="max-w-2xl">
-                    <h1 className="font-serif text-3xl md:text-4xl font-bold mb-3 text-foreground">
-                      {heroMotto || 'Your Hero Motto Here'}
-                    </h1>
-                    <p className="text-base md:text-lg text-muted-foreground">
-                      {promotionalText || 'Your promotional text will appear here'}
-                    </p>
-                  </div>
-                </div>
+          {/* Live Preview Section */}
+          <div className="space-y-2">
+            <Label>Live Preview</Label>
+            <div
+              className="relative h-48 rounded-lg overflow-hidden border"
+              style={{
+                backgroundImage: `url(${heroImagePreview || '/assets/generated/hero-ocarinas.dim_1920x800.png'})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/60" />
+              <div className="relative z-10 p-6 flex flex-col justify-center h-full">
+                <h2 className="font-serif text-2xl font-bold mb-2 text-foreground">
+                  {heroMotto || 'Your Hero Motto'}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {promotionalText || 'Your promotional text'}
+                </p>
               </div>
             </div>
           </div>

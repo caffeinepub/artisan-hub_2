@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-remove-the-generate-ai-description-button-from-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-entirely-eliminating-the-ai-description-generation-functionality-from-the-bulk-upload-flow",
-      "featureTitle": "Remove the 'Generate AI Description' button from the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) entirely, eliminating the AI description generation functionality from the bulk upload flow",
+      "featureId": "feature-update-the-stripesetup-component-frontend-src-components-stripesetup-tsx-to-display-a-visual-status-indicator-showing-whether-stripe-has-been-configured-display-a-green-checkmark-icon-with-stripe-configured-text-when-a-valid-stripe-secret-key-is-stored-in-the-backend",
+      "featureTitle": "Update the StripeSetup component (frontend/src/components/StripeSetup.tsx) to display a visual status indicator showing whether Stripe has been configured. Display a green checkmark icon with 'Stripe Configured' text when a valid Stripe secret key is stored in the backend.",
       "files": [
-        "frontend/src/components/BulkProductUpload.tsx"
+        "frontend/src/components/StripeSetup.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,29 +19,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-85"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-bulkproductupload-component-to-automatically-populate-the-description-field-for-each-product-using-the-selected-description-template-from-the-dropdown-selector-without-requiring-any-additional-button-click-or-ai-generation-step",
-      "featureTitle": "Update the BulkProductUpload component to automatically populate the description field for each product using the selected description template from the dropdown selector, without requiring any additional button click or AI generation step",
-      "files": [
-        "frontend/src/components/BulkProductUpload.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-86"
+        "REQ-97"
       ],
       "confidence": "high"
     }

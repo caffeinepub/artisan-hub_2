@@ -14,8 +14,6 @@ import Order "mo:core/Order";
 import Int "mo:core/Int";
 import Iter "mo:core/Iter";
 
-
-
 actor {
   include MixinStorage();
 
@@ -186,6 +184,24 @@ actor {
   };
 
   var configuration : ?Stripe.StripeConfiguration = null;
+
+  public query func isStripeConfigured() : async Bool {
+    configuration != null;
+  };
+
+  public shared ({ caller }) func setStripeConfiguration(config : Stripe.StripeConfiguration) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can configure Stripe");
+    };
+    configuration := ?config;
+  };
+
+  func getStripeConfiguration() : Stripe.StripeConfiguration {
+    switch (configuration) {
+      case (null) { Runtime.trap("Stripe needs to be first configured") };
+      case (?value) { value };
+    };
+  };
 
   public shared ({ caller }) func addProduct(
     name : Text,
@@ -414,24 +430,6 @@ actor {
       case (?cart) { for (item in cart.values()) { total += item.product.price * item.quantity } };
     };
     total;
-  };
-
-  public query func isStripeConfigured() : async Bool {
-    configuration != null;
-  };
-
-  public shared ({ caller }) func setStripeConfiguration(config : Stripe.StripeConfiguration) : async () {
-    if (not (AccessControl.isAdmin(accessControlState, caller))) {
-      Runtime.trap("Unauthorized: Only admins can configure Stripe");
-    };
-    configuration := ?config;
-  };
-
-  func getStripeConfiguration() : Stripe.StripeConfiguration {
-    switch (configuration) {
-      case (null) { Runtime.trap("Stripe needs to be first configured") };
-      case (?value) { value };
-    };
   };
 
   public func getStripeSessionStatus(sessionId : Text) : async Stripe.StripeSessionStatus {

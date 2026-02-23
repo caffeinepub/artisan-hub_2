@@ -12,7 +12,7 @@ interface ProductCardProps {
 export default function ProductCard({ product }: ProductCardProps) {
   const addToCart = useAddToCart();
   
-  const imageUrl = product.images.length > 0 
+  const imageUrl = product.images && product.images.length > 0
     ? product.images[0].getDirectURL() 
     : '/assets/generated/product-placeholder.dim_400x400.png';
 
@@ -41,6 +41,10 @@ export default function ProductCard({ product }: ProductCardProps) {
           src={imageUrl}
           alt={product.name}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = '/assets/generated/product-placeholder.dim_400x400.png';
+          }}
         />
       </div>
       <CardContent className="p-4">

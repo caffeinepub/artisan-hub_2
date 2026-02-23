@@ -1,119 +1,55 @@
 {
   "kind": "build_request",
-  "title": "Replace AI generation with template selection in bulk upload and add bulk delete capability to product management",
-  "projectName": "Original Creations Hub",
+  "title": "Add Stripe configuration status indicator with green checkmark",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-85",
-      "text": "Remove the 'Generate AI Description' button from the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) entirely, eliminating the AI description generation functionality from the bulk upload flow",
+      "id": "REQ-97",
+      "text": "Update the StripeSetup component (frontend/src/components/StripeSetup.tsx) to display a visual status indicator showing whether Stripe has been configured. Display a green checkmark icon with 'Stripe Configured' text when a valid Stripe secret key is stored in the backend.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-latest"
         ],
         "quotes": [
-          "Swap ai generation for use template function"
+          "Show stripe has been configured and stored Key with a green tick that shows stripe status in configuration"
         ]
       },
       "acceptanceCriteria": [
-        "The 'Generate AI Description' button is no longer visible in the bulk upload interface",
-        "No AI description generation logic is triggered during bulk upload",
-        "The description field remains editable but uses only template-based pre-population"
+        "A green checkmark icon appears in the StripeSetup component when Stripe is configured",
+        "Status indicator text reads 'Stripe Configured' or similar when active",
+        "The status indicator fetches current Stripe configuration from the backend using the useStripeConfig query hook",
+        "Status updates immediately when Stripe configuration is saved"
       ]
     },
     {
-      "id": "REQ-86",
-      "text": "Update the BulkProductUpload component to automatically populate the description field for each product using the selected description template from the dropdown selector, without requiring any additional button click or AI generation step",
-      "target": "frontend",
+      "id": "REQ-98",
+      "text": "Add a backend method hasStripeConfiguration() or extend the existing getStripeConfig() method in backend/main.mo to return a boolean flag or status indicating whether a Stripe secret key has been stored, without exposing the actual key value.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-latest"
         ],
         "quotes": [
-          "Swap ai generation for use template function"
+          "Show stripe has been configured and stored Key"
         ]
       },
       "acceptanceCriteria": [
-        "When a template is selected from the dropdown, all product description fields are immediately populated with the template content",
-        "The description field remains manually editable after template population",
-        "Template selection works seamlessly with the existing auto-copy functionality when enabled"
-      ]
-    },
-    {
-      "id": "REQ-87",
-      "text": "Add checkbox selection controls to each row in the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) allowing the admin to select multiple products for bulk operations",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "bulk delete capability"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Each product row displays a checkbox in the first column",
-        "A 'select all' checkbox in the table header allows selecting/deselecting all products at once",
-        "Selected rows are visually distinguished (e.g., highlighted background)",
-        "The selection state persists across inline edits but clears after bulk delete operation"
-      ]
-    },
-    {
-      "id": "REQ-88",
-      "text": "Add a 'Delete Selected' button above or below the ProductManagementTable that becomes enabled when one or more products are selected via checkboxes, and displays a confirmation dialog before deleting multiple products",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "bulk delete capability"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The 'Delete Selected' button is disabled when no products are selected",
-        "The button shows the count of selected products (e.g., 'Delete Selected (3)')",
-        "Clicking the button displays a confirmation dialog asking 'Are you sure you want to delete X products?'",
-        "After confirmation, all selected products are deleted via backend calls",
-        "A success toast notification displays the number of products deleted",
-        "The table refreshes to remove deleted products and clears all selections"
-      ]
-    },
-    {
-      "id": "REQ-89",
-      "text": "Create a React Query mutation hook useBulkDeleteProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and calls the backend deleteProduct method sequentially or in parallel for each ID, with proper error handling and cache invalidation",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "bulk delete capability"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The mutation hook accepts an array of product ID strings",
-        "All delete operations are executed and their results aggregated",
-        "On success, the products query cache is invalidated to refresh the product list",
-        "Errors during bulk delete are captured and reported to the user",
-        "The hook returns loading state and error information for UI feedback"
+        "Backend method returns true/false or status field indicating if Stripe is configured",
+        "Method does not expose the actual Stripe secret key value",
+        "Method requires admin authentication to check configuration status",
+        "Frontend can reliably determine configuration status from backend response"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the existing description template management system in the Dashboard page",
-    "Preserve the existing dropdown selector for choosing templates in BulkProductUpload",
-    "Use the existing backend deleteProduct method; do not create a new bulk delete backend method",
-    "Maintain the current auto-copy functionality that includes description field when enabled",
-    "Do not change the ProductManagementTable inline editing functionality"
+    "Do not expose the actual Stripe secret key in any frontend response",
+    "Maintain admin-only access control for Stripe configuration endpoints"
   ],
   "nonGoals": [
-    "Adding new AI generation features or alternative AI integration methods",
-    "Creating a dedicated bulk delete backend endpoint (use existing deleteProduct per item)",
-    "Modifying the template creation/editing interface",
-    "Adding undo/restore functionality for deleted products",
-    "Implementing advanced selection features like range selection or filter-based selection"
+    "Validating the Stripe API key with Stripe servers",
+    "Testing Stripe connection status",
+    "Displaying partial key values or hints about the stored key"
   ],
   "imageRequirements": {
     "required": [],

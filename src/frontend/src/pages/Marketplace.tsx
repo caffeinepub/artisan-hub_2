@@ -81,12 +81,14 @@ export default function Marketplace() {
   // Get hero configuration with fallbacks
   const heroMotto = homepageConfig?.heroMotto || 'Discover Original Creations';
   const promotionalText = homepageConfig?.promotionalText || 'Browse our collection of unique handcrafted items';
+  
+  // Use configured hero image or fallback to the ocarina background
   const heroBackgroundUrl = homepageConfig?.heroImage
     ? homepageConfig.heroImage.getDirectURL()
-    : '/assets/generated/hero-background.dim_1920x600.png';
+    : '/assets/generated/hero-ocarinas.dim_1920x800.png';
 
   const renderProductCard = (product: Product) => {
-    const imageUrl = product.images.length > 0
+    const imageUrl = product.images && product.images.length > 0
       ? product.images[0].getDirectURL()
       : '/assets/generated/product-placeholder.dim_400x400.png';
 
@@ -101,6 +103,10 @@ export default function Marketplace() {
             src={imageUrl}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = '/assets/generated/product-placeholder.dim_400x400.png';
+            }}
           />
         </div>
         <CardContent className="p-4">
@@ -183,10 +189,15 @@ export default function Marketplace() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
+      {/* Hero Section with Custom Background */}
       <section
-        className="relative h-[400px] md:h-[500px] bg-cover bg-center flex items-center"
-        style={{ backgroundImage: `url(${heroBackgroundUrl})` }}
+        className="relative h-[400px] md:h-[500px] flex items-center"
+        style={{
+          backgroundImage: `url(${heroBackgroundUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
         <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/60" />
         <div className="container relative z-10">

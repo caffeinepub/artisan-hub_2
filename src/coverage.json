@@ -1,72 +1,42 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-23T02:03:09.053Z",
+  "generatedAt": "2026-02-23T15:31:38.633Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 2,
+    "total": 2,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-85",
-        "summary": "Remove the 'Generate AI Description' button from the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) entirely, eliminating the AI description generation functionality from the bulk upload flow",
+        "id": "REQ-97",
+        "summary": "Update the StripeSetup component (frontend/src/components/StripeSetup.tsx) to display a visual status indicator showing whether Stripe has been configured. Display a green checkmark icon with 'Stripe Configured' text when a valid Stripe secret key is stored in the backend.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/BulkProductUpload.tsx"
+          "frontend/src/components/StripeSetup.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/BulkProductUpload.tsx"
+          "frontend/src/components/StripeSetup.tsx"
         ]
       },
       {
-        "id": "REQ-86",
-        "summary": "Update the BulkProductUpload component to automatically populate the description field for each product using the selected description template from the dropdown selector, without requiring any additional button click or AI generation step",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/BulkProductUpload.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/BulkProductUpload.tsx"
-        ]
-      },
-      {
-        "id": "REQ-87",
-        "summary": "Add checkbox selection controls to each row in the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) allowing the admin to select multiple products for bulk operations",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/components/ProductManagementTable.tsx"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-88",
-        "summary": "Add a 'Delete Selected' button above or below the ProductManagementTable that becomes enabled when one or more products are selected via checkboxes, and displays a confirmation dialog before deleting multiple products",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/components/ProductManagementTable.tsx"
-        ],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-89",
-        "summary": "Create a React Query mutation hook useBulkDeleteProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and calls the backend deleteProduct method sequentially or in parallel for each ID, with proper error handling and cache invalidation",
-        "status": "missing",
-        "plannedFiles": [
-          "frontend/src/hooks/useQueries.ts"
-        ],
+        "id": "REQ-98",
+        "summary": "Add a backend method hasStripeConfiguration() or extend the existing getStripeConfig() method in backend/main.mo to return a boolean flag or status indicating whether a Stripe secret key has been stored, without exposing the actual key value.",
+        "status": "unknown",
+        "plannedFiles": [],
         "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/BulkProductUpload.tsx",
+    "frontend/src/components/StripeSetup.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

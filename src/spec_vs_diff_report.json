@@ -1,35 +1,15 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-23T02:03:09.049Z",
-  "summary": "The diff is incomplete (truncated files), making full verification impossible. Based on available evidence: REQ-85 and REQ-86 appear implemented in BulkProductUpload.tsx with AI button removed and template auto-population added. REQ-87, REQ-88, and REQ-89 (bulk delete functionality) show no evidence of implementation - ProductManagementTable.tsx and useQueries.ts modifications are not visible in the diff.",
-  "missing_requirements": [
-    {
-      "id": "REQ-87",
-      "requirement": "Add checkbox selection controls to each row in the ProductManagementTable component allowing the admin to select multiple products for bulk operations",
-      "reason": "ProductManagementTable.tsx is not present in the modified files list. No evidence of checkbox implementation in any visible file.",
-      "evidence": []
-    },
-    {
-      "id": "REQ-88",
-      "requirement": "Add a 'Delete Selected' button above or below the ProductManagementTable that becomes enabled when one or more products are selected via checkboxes, and displays a confirmation dialog before deleting multiple products",
-      "reason": "ProductManagementTable.tsx is not present in the modified files list. No evidence of Delete Selected button implementation.",
-      "evidence": []
-    },
-    {
-      "id": "REQ-89",
-      "requirement": "Create a React Query mutation hook useBulkDeleteProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and calls the backend deleteProduct method sequentially or in parallel for each ID",
-      "reason": "useQueries.ts is listed in modified files but its diff content is not shown. The visible frontend-file-summaries.txt description of useQueries.ts does not mention bulk delete functionality, only listing existing hooks without useBulkDeleteProducts.",
-      "evidence": [
-        "frontend/src/hooks/useQueries.ts"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-23T15:31:38.630Z",
+  "summary": "The implementation successfully addresses both requirements. REQ-97 is implemented with a green checkmark status indicator in StripeSetup.tsx that fetches configuration status using useIsStripeConfigured hook. REQ-98 is implemented via the backend with useIsStripeConfigured hook in useQueries.ts (referenced in StripeSetup.tsx), though the backend main.mo implementation details are truncated in the diff.",
+  "missing_requirements": [],
   "hallucinated_features": [],
-  "confidence": 0.65,
+  "confidence": 0.85,
   "changed_files": [
+    "backend/main.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/BulkProductUpload.tsx",
+    "frontend/src/components/StripeSetup.tsx",
     "project_state.json"
   ]
 }
