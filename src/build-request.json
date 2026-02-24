@@ -1,106 +1,187 @@
 {
   "kind": "build_request",
-  "title": "Add shape filter with bulk inline editing to product management",
-  "priority": "normal",
+  "title": "Fix Add to Cart error and implement drag-and-drop product reordering with marketplace display order persistence",
+  "projectName": "Original Creations Hub",
+  "priority": "high",
   "requirements": [
     {
-      "id": "REQ-109",
-      "text": "Add shape filter buttons above the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) that display all unique shape values from the product list as clickable button tabs, similar to the marketplace filter UI implementation. Include an 'All' button to show all products without shape filtering.",
-      "target": "frontend",
+      "id": "REQ-113",
+      "text": "Investigate and fix the Add to Cart functionality error in ProductCard component (frontend/src/components/ProductCard.tsx) where clicking the 'Add to Basket' button fails with an error message. Verify the useAddToCart mutation hook implementation in useQueries.ts calls the correct backend addToCart method with proper parameters, handles authentication state correctly for both authenticated and guest users, and displays appropriate success/error toast notifications.",
+      "target": "both",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-last"
         ],
         "quotes": [
-          "1 the shape filter be added as buttons above the product management table (similar to the marketplace filters"
+          "1 it won't add the item to cart, error message"
         ]
       },
       "acceptanceCriteria": [
-        "Shape filter buttons appear above the product management table",
-        "Buttons display all unique shape values from products plus 'All' option",
-        "Button styling matches the marketplace filter button design",
-        "Active filter button has distinct visual styling",
-        "Clicking a shape button filters the table to show only products with that shape",
-        "Clicking 'All' shows all products regardless of shape"
+        "Clicking 'Add to Basket' on ProductCard successfully adds the item to the shopping cart without error messages",
+        "Success toast notification displays when item is added to cart",
+        "Cart icon badge updates to reflect the new item count",
+        "Backend addToCart method is called with correct product ID and user principal",
+        "Error handling displays user-friendly error messages if the operation fails"
       ]
     },
     {
-      "id": "REQ-110",
-      "text": "Create React state management in ProductManagementTable component to track the selected shape filter and implement filtering logic that filters the displayed product rows based on the active shape selection, working in conjunction with the existing checkbox selection system.",
-      "target": "frontend",
+      "id": "REQ-114",
+      "text": "Add a displayOrder numeric field to the Product type in backend/main.mo to store custom ordering position for products. Initialize displayOrder for all existing products with sequential values based on their current order, and ensure all new products receive a displayOrder value when created.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-last"
         ],
         "quotes": [
-          "3 the shape filter work with those same checkboxes"
+          "Define the listed order"
         ]
       },
       "acceptanceCriteria": [
-        "State tracks currently selected shape filter (or 'All')",
-        "Product table rows are filtered based on selected shape",
-        "Filter works independently of checkbox selection state",
-        "Existing checkbox selection remains functional after filtering",
-        "Selected products remain selected when changing shape filter",
-        "Filter state persists during inline editing operations"
+        "Product type includes displayOrder field as a Nat or Int type",
+        "All existing products have displayOrder values assigned during migration",
+        "New products receive appropriate displayOrder values when created via bulk upload or manual creation",
+        "displayOrder values are unique and sequential across all products"
       ]
     },
     {
-      "id": "REQ-111",
-      "text": "Add bulk inline editing functionality to ProductManagementTable component where modifying any field (title, description, shape, category, price, inventory count) on one product while that product and other products are selected via checkboxes will apply those same changes to all selected products simultaneously. Display a visual indicator showing which products are selected for bulk editing.",
-      "target": "frontend",
+      "id": "REQ-115",
+      "text": "Update backend getProducts, getFeaturedProducts, getMostViewedProducts, getBestSellingProducts, and getNewestProducts methods in backend/main.mo to sort products by displayOrder field in ascending order as the default sort behavior when no other sorting criteria is specified, ensuring the marketplace storefront displays products in the order defined by drag-and-drop reordering.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-last"
         ],
         "quotes": [
-          "2 Inline editing where you modify one product and apply those changes to all selected products"
+          "it affect how products appear on the public Marketplace storefront"
         ]
       },
       "acceptanceCriteria": [
-        "When multiple products are selected via checkboxes and one product enters edit mode, changes apply to all selected products",
-        "All editable fields support bulk editing: title, description, shape, category, price, inventory count",
-        "Visual indicator shows which products will receive bulk changes",
-        "Confirmation dialog appears before applying bulk changes",
-        "Success notification displays count of products updated",
-        "Error handling shows which products failed to update if any",
-        "Bulk edit works with filtered product views (shape filter active)",
-        "After bulk update, all affected products show updated values immediately"
+        "All product retrieval methods sort by displayOrder by default",
+        "Marketplace home page displays products in the custom order defined in the admin dashboard",
+        "Product sections (featured, most viewed, best selling, newest) respect displayOrder when displaying products",
+        "Reordering products in the dashboard immediately affects marketplace display order"
       ]
     },
     {
-      "id": "REQ-112",
-      "text": "Create a React Query mutation hook useBulkUpdateProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and a set of field updates, calls the backend updateProduct method for each selected product with the same field values, handles errors for individual updates, and invalidates the product list cache after successful completion.",
-      "target": "frontend",
+      "id": "REQ-116",
+      "text": "Create a backend method updateProductDisplayOrder(productIds: [Text]) in backend/main.mo with admin authentication that accepts an array of product IDs in the desired display order and updates the displayOrder field for each product to match the new sequence. Implement efficient batch updating to handle reordering operations.",
+      "target": "backend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-last"
         ],
         "quotes": [
-          "2 Inline editing where you modify one product and apply those changes to all selected products"
+          "Define the listed order"
         ]
       },
       "acceptanceCriteria": [
-        "Hook accepts array of product IDs and update object with modified fields",
-        "Calls backend updateProduct for each product ID with same field values",
-        "Returns success/failure status for each product update",
-        "Invalidates product queries after successful bulk update",
-        "Provides error details for any failed updates",
-        "Supports optimistic updates for immediate UI feedback"
+        "updateProductDisplayOrder method requires admin authentication",
+        "Method accepts an ordered array of product IDs",
+        "Each product's displayOrder field is updated to reflect its position in the array",
+        "Method handles errors gracefully if product IDs are invalid",
+        "Updates are atomic and complete successfully or roll back on failure"
+      ]
+    },
+    {
+      "id": "REQ-117",
+      "text": "Create a React Query mutation hook useUpdateProductDisplayOrder in frontend/src/hooks/useQueries.ts that calls the backend updateProductDisplayOrder method with an ordered array of product IDs, includes admin authentication, and invalidates the product list cache after successful reordering.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "Define the listed order"
+        ]
+      },
+      "acceptanceCriteria": [
+        "useUpdateProductDisplayOrder mutation hook is available in useQueries.ts",
+        "Hook accepts an array of product IDs representing the new order",
+        "Successful mutation invalidates product list queries to refresh the display",
+        "Hook includes proper error handling and loading states",
+        "Toast notification displays success or error messages"
+      ]
+    },
+    {
+      "id": "REQ-118",
+      "text": "Install and configure a drag-and-drop library (such as @dnd-kit/core and @dnd-kit/sortable) in the frontend to enable drag-and-drop functionality for product rows in the ProductManagementTable component.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "select hold and drag"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Drag-and-drop library is installed as a frontend dependency",
+        "Library is properly imported and initialized in the ProductManagementTable component",
+        "Drag-and-drop functionality works smoothly on desktop browsers",
+        "Visual feedback indicates when an item is being dragged",
+        "Drop zones are clearly indicated during drag operations"
+      ]
+    },
+    {
+      "id": "REQ-119",
+      "text": "Add drag-and-drop functionality to the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) allowing admin users to reorder products by dragging and dropping table rows. Enable drag-and-drop only when the 'All' shape filter is active (no shape filters applied). When products are reordered, call the useUpdateProductDisplayOrder mutation hook to persist the new order to the backend.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "select hold and drag",
+          "only when viewing all products"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each product row in ProductManagementTable has a drag handle or is fully draggable",
+        "Drag-and-drop is enabled only when 'All' shape filter is selected",
+        "Drag-and-drop is disabled when any specific shape filter is active",
+        "Visual indicator shows that drag-and-drop is disabled when filters are applied",
+        "Dragging a row displays visual feedback showing the drag operation",
+        "Dropping a row at a new position immediately updates the table display",
+        "After dropping, useUpdateProductDisplayOrder mutation is called with the new order",
+        "Table displays products in the new order after successful backend update",
+        "Error messages display if the reorder operation fails"
+      ]
+    },
+    {
+      "id": "REQ-120",
+      "text": "Add visual indicators to the ProductManagementTable component showing when drag-and-drop reordering is available versus when it is disabled due to active shape filters. Display a message or tooltip explaining that drag-and-drop reordering is only available when viewing all products without filters.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "only when viewing all products"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Visual indicator shows drag-and-drop is available when 'All' filter is active",
+        "Visual indicator shows drag-and-drop is disabled when shape filters are applied",
+        "Tooltip or help text explains the drag-and-drop availability conditions",
+        "Drag handles are visually distinct when enabled versus disabled",
+        "User understands why drag-and-drop is unavailable when filters are active"
       ]
     }
   ],
   "constraints": [
-    "Shape filter UI must match the existing marketplace filter button design and layout",
-    "Bulk editing must work with the existing checkbox selection system without breaking bulk delete functionality",
-    "All inline editing validation rules must apply to bulk updates (e.g., price validation, inventory count validation)",
-    "Filtered views must maintain checkbox selection state when switching between shape filters"
+    "Drag-and-drop reordering must only be enabled when viewing all products (no shape filters active)",
+    "Product reordering must persist to the backend and affect marketplace display order",
+    "Add to Cart fix must work for both authenticated and guest users",
+    "Drag-and-drop must not interfere with existing checkbox selection and bulk editing features",
+    "Display order changes must immediately reflect on the public marketplace storefront"
   ],
   "nonGoals": [
-    "Creating new bulk edit interfaces separate from inline editing",
-    "Adding shape filter to other pages besides product management",
-    "Modifying the backend updateProduct method structure",
-    "Adding bulk operations beyond editing (e.g., bulk publish, bulk archive)"
+    "Drag-and-drop reordering within filtered views (only when viewing all products)",
+    "Reordering products within individual product sections on the marketplace page",
+    "Touch/mobile drag-and-drop support (desktop drag-and-drop is sufficient)",
+    "Undo/redo functionality for reordering operations",
+    "Changing the shape filter UI or filter behavior",
+    "Modifying the bulk editing checkbox system"
   ],
   "imageRequirements": {
     "required": [],

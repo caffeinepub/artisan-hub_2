@@ -1,83 +1,104 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add shape filter with bulk inline editing to product management",
+  "title": "Fix Add to Cart error and implement drag-and-drop product reordering with marketplace display order persistence",
   "requirements": [
     {
-      "id": "REQ-109",
-      "summary": "Add shape filter buttons above ProductManagementTable displaying unique shape values with 'All' option, matching marketplace filter UI styling",
+      "id": "REQ-113",
+      "summary": "Fix Add to Cart functionality error in ProductCard component where clicking 'Add to Basket' button fails with error message",
       "acceptanceCriteria": [
-        "Shape filter buttons appear above the product management table",
-        "Buttons display all unique shape values from products plus 'All' option",
-        "Button styling matches the marketplace filter button design",
-        "Active filter button has distinct visual styling",
-        "Clicking a shape button filters the table to show only products with that shape",
-        "Clicking 'All' shows all products regardless of shape"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductManagementTable.tsx",
-          "operation": "modify",
-          "description": "Add shape filter button UI above the table. Extract unique shape values from the products array using useMemo. Create a filter button row that includes 'All' plus each unique shape. Apply the same button styling used in the Marketplace component for shape filters (verify Marketplace component styling before implementing). Ensure the active filter button has distinct visual styling to indicate the selected filter."
-        }
-      ]
-    },
-    {
-      "id": "REQ-110",
-      "summary": "Implement React state management for shape filter selection and product filtering logic that works with checkbox selection",
-      "acceptanceCriteria": [
-        "State tracks currently selected shape filter (or 'All')",
-        "Product table rows are filtered based on selected shape",
-        "Filter works independently of checkbox selection state",
-        "Existing checkbox selection remains functional after filtering",
-        "Selected products remain selected when changing shape filter",
-        "Filter state persists during inline editing operations"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductManagementTable.tsx",
-          "operation": "modify",
-          "description": "Add useState hook to track the selected shape filter (default to 'All'). Apply filtering logic using useMemo to create a filteredProducts array based on the active shape filter. Use filteredProducts for rendering table rows instead of the full products array. Ensure the existing checkbox selection state (selectedProductIds) remains intact when switching between shape filters. Verify that selectedProductIds can reference products not currently visible due to filtering."
-        }
-      ]
-    },
-    {
-      "id": "REQ-111",
-      "summary": "Add bulk inline editing functionality where editing one selected product applies changes to all selected products simultaneously with visual feedback",
-      "acceptanceCriteria": [
-        "When multiple products are selected via checkboxes and one product enters edit mode, changes apply to all selected products",
-        "All editable fields support bulk editing: title, description, shape, category, price, inventory count",
-        "Visual indicator shows which products will receive bulk changes",
-        "Confirmation dialog appears before applying bulk changes",
-        "Success notification displays count of products updated",
-        "Error handling shows which products failed to update if any",
-        "Bulk edit works with filtered product views (shape filter active)",
-        "After bulk update, all affected products show updated values immediately"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductManagementTable.tsx",
-          "operation": "modify",
-          "description": "Modify the inline editing logic to detect when multiple products are selected via checkboxes. When a user edits a field (name, description, shape, category, price, or inventory count) on one product and that product is part of a multi-selection, capture the change and prepare for bulk update. Add visual indicators (e.g., background highlighting or badge) on selected product rows to show they will receive bulk changes. Before applying changes, display a confirmation dialog showing the count of products that will be updated. On confirmation, call the useBulkUpdateProducts mutation hook (REQ-112) passing all selected product IDs and the changed field values. Display a toast notification with the count of successfully updated products. Handle errors by showing which products failed to update. Ensure the table reflects updated values immediately after successful bulk update. Verify that bulk editing works correctly when the shape filter is active (i.e., only visible selected products should be editable, but all selected product IDs should receive updates)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-112",
-      "summary": "Create useBulkUpdateProducts React Query mutation hook that updates multiple products with the same field values and invalidates cache",
-      "acceptanceCriteria": [
-        "Hook accepts array of product IDs and update object with modified fields",
-        "Calls backend updateProduct for each product ID with same field values",
-        "Returns success/failure status for each product update",
-        "Invalidates product queries after successful bulk update",
-        "Provides error details for any failed updates",
-        "Supports optimistic updates for immediate UI feedback"
+        "Clicking 'Add to Basket' on ProductCard successfully adds the item to the shopping cart without error messages",
+        "Success toast notification displays when item is added to cart",
+        "Cart icon badge updates to reflect the new item count",
+        "Backend addToCart method is called with correct product ID and user principal",
+        "Error handling displays user-friendly error messages if the operation fails"
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add a new useBulkUpdateProducts mutation hook. The hook should accept an input object containing an array of product IDs and an update object with the modified field values (name, shape, price, stripeProductId, stripeProductDescription, images, inventoryCount, category). Use Promise.allSettled to call actor.updateProduct for each product ID with the same field values. Collect the results to track which updates succeeded and which failed. On successful completion, invalidate the 'products' query key to refresh the product list. Return detailed status information including the count of successful updates and any error details for failed updates. Optionally implement optimistic updates by updating the query cache before the backend calls complete."
+          "description": "Review and fix the useAddToCart mutation hook implementation. Verify it calls the correct backend method (addCartItem) with proper parameters (productId as bigint, quantity as bigint). Ensure the mutation invalidates the cart queries on success and displays appropriate toast notifications for success and error states. Check that the hook handles both authenticated and guest user scenarios correctly."
+        },
+        {
+          "path": "frontend/src/components/ProductCard.tsx",
+          "operation": "modify",
+          "description": "Review the 'Add to Basket' button click handler implementation. Ensure it calls the useAddToCart mutation with the correct product ID (converted to bigint if needed) and quantity value. Verify error handling displays user-friendly messages and that the component responds appropriately to loading states. Ensure the button is properly wired to trigger the mutation."
+        }
+      ]
+    },
+    {
+      "id": "REQ-117",
+      "summary": "Create React Query mutation hook useUpdateProductDisplayOrder that calls backend updateProductDisplayOrder with ordered array of product IDs",
+      "acceptanceCriteria": [
+        "useUpdateProductDisplayOrder mutation hook is available in useQueries.ts",
+        "Hook accepts an array of product IDs representing the new order",
+        "Successful mutation invalidates product list queries to refresh the display",
+        "Hook includes proper error handling and loading states",
+        "Toast notification displays success or error messages"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a new mutation hook useUpdateProductDisplayOrder that accepts an array of product IDs (as bigint[]) and calls actor.updateProductDisplayOrder. The mutation should invalidate 'products', 'featuredProducts', 'bestSellingProducts', 'mostViewedProducts', and 'newestProducts' query keys on success to refresh the product displays. Include onSuccess toast notification for successful reordering and onError toast for failures. Return the mutation with proper TypeScript typing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-118",
+      "summary": "Install and configure drag-and-drop library to enable drag-and-drop functionality for product rows in ProductManagementTable",
+      "acceptanceCriteria": [
+        "Drag-and-drop library is installed as a frontend dependency",
+        "Library is properly imported and initialized in the ProductManagementTable component",
+        "Drag-and-drop functionality works smoothly on desktop browsers",
+        "Visual feedback indicates when an item is being dragged",
+        "Drop zones are clearly indicated during drag operations"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/package.json",
+          "operation": "modify",
+          "description": "Add @dnd-kit/core and @dnd-kit/sortable as dependencies with compatible versions (e.g., ^6.0.0 or latest stable). These libraries provide the drag-and-drop infrastructure needed for the ProductManagementTable component."
+        }
+      ]
+    },
+    {
+      "id": "REQ-119",
+      "summary": "Add drag-and-drop functionality to ProductManagementTable allowing admin users to reorder products by dragging rows, enabled only when 'All' shape filter is active",
+      "acceptanceCriteria": [
+        "Each product row in ProductManagementTable has a drag handle or is fully draggable",
+        "Drag-and-drop is enabled only when 'All' shape filter is selected",
+        "Drag-and-drop is disabled when any specific shape filter is active",
+        "Visual indicator shows that drag-and-drop is disabled when filters are applied",
+        "Dragging a row displays visual feedback showing the drag operation",
+        "Dropping a row at a new position immediately updates the table display",
+        "After dropping, useUpdateProductDisplayOrder mutation is called with the new order",
+        "Table displays products in the new order after successful backend update",
+        "Error messages display if the reorder operation fails"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductManagementTable.tsx",
+          "operation": "modify",
+          "description": "Integrate @dnd-kit/core and @dnd-kit/sortable into the ProductManagementTable component. Wrap the table body with DndContext and SortableContext. Make each product row a SortableItem with a drag handle icon (e.g., grip-vertical icon from lucide-react). Enable drag-and-drop only when selectedShape is 'All' or empty. When a drag operation ends (onDragEnd), update the local product array order and call the useUpdateProductDisplayOrder mutation with the reordered array of product IDs (as bigint[]). Display visual feedback during dragging (e.g., opacity change, cursor change). Show disabled state styling for drag handles when filters are active. Ensure drag-and-drop does not interfere with existing checkbox selection or inline editing features."
+        }
+      ]
+    },
+    {
+      "id": "REQ-120",
+      "summary": "Add visual indicators to ProductManagementTable showing when drag-and-drop reordering is available versus disabled due to active shape filters",
+      "acceptanceCriteria": [
+        "Visual indicator shows drag-and-drop is available when 'All' filter is active",
+        "Visual indicator shows drag-and-drop is disabled when shape filters are applied",
+        "Tooltip or help text explains the drag-and-drop availability conditions",
+        "Drag handles are visually distinct when enabled versus disabled",
+        "User understands why drag-and-drop is unavailable when filters are active"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductManagementTable.tsx",
+          "operation": "modify",
+          "description": "Add visual indicators to communicate drag-and-drop availability. When selectedShape is not 'All', display drag handles with disabled styling (e.g., opacity-50, cursor-not-allowed) and add a tooltip explaining 'Drag-and-drop reordering is only available when viewing all products without filters'. When selectedShape is 'All', show drag handles with active styling (e.g., cursor-grab, hover:bg-gray-100) and a tooltip saying 'Drag to reorder products'. Consider adding an info banner or alert above the table when filters are active stating 'Product reordering is disabled when filters are applied. Select All to enable drag-and-drop reordering.'"
         }
       ]
     }

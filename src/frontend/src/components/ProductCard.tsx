@@ -1,9 +1,9 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 import type { Product } from '../backend';
 import { useAddToCart } from '../hooks/useQueries';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
 
 interface ProductCardProps {
   product: Product;
@@ -11,6 +11,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const addToCart = useAddToCart();
+  const { identity } = useInternetIdentity();
   
   const imageUrl = product.images && product.images.length > 0
     ? product.images[0].getDirectURL() 
@@ -18,12 +19,21 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const handleAddToBasket = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    
+    if (!identity) {
+      // User not logged in - show error via mutation
+      try {
+        await addToCart.mutateAsync({ productId: product.id, quantity: 1 });
+      } catch (error) {
+        // Error handling is done in the mutation's onError
+      }
+      return;
+    }
+
     try {
       await addToCart.mutateAsync({ productId: product.id, quantity: 1 });
-      toast.success('Added to basket!');
     } catch (error) {
-      toast.error('Failed to add to basket');
-      console.error(error);
+      // Error handling is done in the mutation's onError
     }
   };
 

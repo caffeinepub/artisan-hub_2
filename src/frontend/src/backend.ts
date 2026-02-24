@@ -91,6 +91,7 @@ export class ExternalBlob {
 }
 export interface Product {
     id: bigint;
+    displayOrder: bigint;
     name: string;
     createdAt: Time;
     stripeProductId: string;
@@ -246,6 +247,7 @@ export interface backendInterface {
     getCart(): Promise<Array<CartItem>>;
     getCartTotal(): Promise<bigint>;
     getDescriptionTemplates(): Promise<Array<DescriptionTemplate>>;
+    getFeaturedProducts(): Promise<Array<Product>>;
     getHomepageConfig(): Promise<HomepageConfig>;
     getMostViewedProducts(): Promise<Array<Product>>;
     getNewestProducts(): Promise<Array<Product>>;
@@ -273,6 +275,7 @@ export interface backendInterface {
     updateHomepageConfig(config: HomepageConfig): Promise<void>;
     updateInventoryCount(productId: bigint, inventoryCount: bigint): Promise<void>;
     updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null, category: string | null): Promise<void>;
+    updateProductDisplayOrder(productIds: Array<bigint>): Promise<void>;
     updateShopDetails(details: ShopDetails): Promise<void>;
 }
 import type { BrandingConfig as _BrandingConfig, CartItem as _CartItem, ExternalBlob as _ExternalBlob, HomepageConfig as _HomepageConfig, Product as _Product, ShopDetails as _ShopDetails, SortingOrder as _SortingOrder, StripeSessionStatus as _StripeSessionStatus, Time as _Time, UserProfile as _UserProfile, UserRole as _UserRole, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
@@ -640,6 +643,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getDescriptionTemplates();
             return result;
+        }
+    }
+    async getFeaturedProducts(): Promise<Array<Product>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getFeaturedProducts();
+                return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getFeaturedProducts();
+            return from_candid_vec_n13(this._uploadFile, this._downloadFile, result);
         }
     }
     async getHomepageConfig(): Promise<HomepageConfig> {
@@ -1020,6 +1037,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async updateProductDisplayOrder(arg0: Array<bigint>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateProductDisplayOrder(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateProductDisplayOrder(arg0);
+            return result;
+        }
+    }
     async updateShopDetails(arg0: ShopDetails): Promise<void> {
         if (this.processError) {
             try {
@@ -1088,6 +1119,7 @@ function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Ar
 }
 async function from_candid_record_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     id: bigint;
+    displayOrder: bigint;
     name: string;
     createdAt: _Time;
     stripeProductId: string;
@@ -1100,6 +1132,7 @@ async function from_candid_record_n15(_uploadFile: (file: ExternalBlob) => Promi
     images: Array<_ExternalBlob>;
 }): Promise<{
     id: bigint;
+    displayOrder: bigint;
     name: string;
     createdAt: Time;
     stripeProductId: string;
@@ -1113,6 +1146,7 @@ async function from_candid_record_n15(_uploadFile: (file: ExternalBlob) => Promi
 }> {
     return {
         id: value.id,
+        displayOrder: value.displayOrder,
         name: value.name,
         createdAt: value.createdAt,
         stripeProductId: value.stripeProductId,

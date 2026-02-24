@@ -16,6 +16,7 @@ export class ExternalBlob {
 }
 export interface Product {
     id: bigint;
+    displayOrder: bigint;
     name: string;
     createdAt: Time;
     stripeProductId: string;
@@ -153,6 +154,7 @@ export interface backendInterface {
     getCart(): Promise<Array<CartItem>>;
     getCartTotal(): Promise<bigint>;
     getDescriptionTemplates(): Promise<Array<DescriptionTemplate>>;
+    getFeaturedProducts(): Promise<Array<Product>>;
     getHomepageConfig(): Promise<HomepageConfig>;
     getMostViewedProducts(): Promise<Array<Product>>;
     getNewestProducts(): Promise<Array<Product>>;
@@ -180,5 +182,6 @@ export interface backendInterface {
     updateHomepageConfig(config: HomepageConfig): Promise<void>;
     updateInventoryCount(productId: bigint, inventoryCount: bigint): Promise<void>;
     updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null, category: string | null): Promise<void>;
+    updateProductDisplayOrder(productIds: Array<bigint>): Promise<void>;
     updateShopDetails(details: ShopDetails): Promise<void>;
 }

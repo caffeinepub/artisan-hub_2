@@ -457,21 +457,11 @@ export default function ProductManagementTable() {
                                 />
                               </>
                             )}
-                            <Button
-                              variant="default"
-                              size="sm"
-                              onClick={handleSave}
-                              disabled={updateProduct.isPending || bulkUpdateProducts.isPending}
-                              className="gap-1"
-                            >
-                              {(updateProduct.isPending || bulkUpdateProducts.isPending) ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                              ) : (
-                                <Save className="h-3 w-3" />
-                              )}
+                            <Button variant="default" size="sm" onClick={handleSave} className="gap-1">
+                              <Save className="h-3 w-3" />
                               Save
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={handleCancel} className="gap-1">
+                            <Button variant="outline" size="sm" onClick={handleCancel} className="gap-1">
                               <X className="h-3 w-3" />
                               Cancel
                             </Button>
@@ -492,29 +482,17 @@ export default function ProductManagementTable() {
         </CardContent>
       </Card>
 
-      {/* Bulk Update Confirmation Dialog */}
       <AlertDialog open={showBulkConfirmDialog} onOpenChange={setShowBulkConfirmDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Confirm Bulk Update</AlertDialogTitle>
             <AlertDialogDescription>
-              You are about to update {selectedProductIds.size} product{selectedProductIds.size !== 1 ? 's' : ''} with the same values. 
-              This action will apply the changes to all selected products.
-              {selectedProductIds.size > 1 && ' Note: Image uploads are not included in bulk updates.'}
+              You are about to update {selectedProductIds.size} products with the same values. This action cannot be undone. Do you want to continue?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={handleBulkCancel}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleBulkConfirm} disabled={bulkUpdateProducts.isPending}>
-              {bulkUpdateProducts.isPending ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Updating...
-                </>
-              ) : (
-                'Confirm Update'
-              )}
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleBulkConfirm}>Continue</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

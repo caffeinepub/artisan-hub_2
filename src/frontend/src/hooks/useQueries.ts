@@ -384,6 +384,15 @@ export function useAddCartItem() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
+      toast.success('Added to basket!');
+    },
+    onError: (error: any) => {
+      if (error?.message?.includes('Unauthorized')) {
+        toast.error('Please log in to add items to your basket');
+      } else {
+        toast.error('Failed to add to basket');
+      }
+      console.error(error);
     },
   });
 }
@@ -399,6 +408,15 @@ export function useAddToCart() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['cart'] });
+      toast.success('Added to basket!');
+    },
+    onError: (error: any) => {
+      if (error?.message?.includes('Unauthorized')) {
+        toast.error('Please log in to add items to your basket');
+      } else {
+        toast.error('Failed to add to basket');
+      }
+      console.error(error);
     },
   });
 }
@@ -667,6 +685,11 @@ export function useCreateDescriptionTemplate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['descriptionTemplates'] });
+      toast.success('Template created successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to create template');
+      console.error(error);
     },
   });
 }
@@ -682,6 +705,11 @@ export function useUpdateDescriptionTemplate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['descriptionTemplates'] });
+      toast.success('Template updated successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to update template');
+      console.error(error);
     },
   });
 }
@@ -697,6 +725,11 @@ export function useDeleteDescriptionTemplate() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['descriptionTemplates'] });
+      toast.success('Template deleted successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete template');
+      console.error(error);
     },
   });
 }

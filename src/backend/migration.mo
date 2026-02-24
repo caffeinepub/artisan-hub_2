@@ -1,10 +1,10 @@
 import Map "mo:core/Map";
-import Iter "mo:core/Iter";
 import Nat "mo:core/Nat";
-import Time "mo:core/Time";
+import Principal "mo:core/Principal";
+import Blob "mo:core/Blob";
+import Int "mo:core/Int";
 
 module {
-  // Old product type without category field
   type OldProduct = {
     id : Nat;
     name : Text;
@@ -12,10 +12,11 @@ module {
     price : Nat;
     stripeProductId : Text;
     stripeProductDescription : Text;
-    images : [Blob]; // Adjusted for Blob compatibility
+    images : [Blob];
     inventoryCount : Nat;
     viewCount : Nat;
-    createdAt : Time.Time;
+    createdAt : Int;
+    category : Text;
   };
 
   type OldCartItem = {
@@ -28,7 +29,6 @@ module {
     shoppingCarts : Map.Map<Principal, [OldCartItem]>;
   };
 
-  // New product type with category field
   type NewProduct = {
     id : Nat;
     name : Text;
@@ -36,11 +36,12 @@ module {
     price : Nat;
     stripeProductId : Text;
     stripeProductDescription : Text;
-    images : [Blob]; // Adjusted for Blob compatibility
+    images : [Blob];
     inventoryCount : Nat;
     viewCount : Nat;
-    createdAt : Time.Time;
+    createdAt : Int;
     category : Text;
+    displayOrder : Nat;
   };
 
   type NewCartItem = {
@@ -53,26 +54,33 @@ module {
     shoppingCarts : Map.Map<Principal, [NewCartItem]>;
   };
 
+  func migrateCartItems(items : [OldCartItem]) : [NewCartItem] {
+    items.map(
+      func(oldCartItem) {
+        {
+          oldCartItem with
+          product = { oldCartItem.product with displayOrder = oldCartItem.product.id };
+        };
+      }
+    );
+  };
+
   public func run(old : OldActor) : NewActor {
     let newProducts = old.products.map<Nat, OldProduct, NewProduct>(
       func(_id, oldProduct) {
-        { oldProduct with category = "Uncategorized" };
+        { oldProduct with displayOrder = oldProduct.id };
       }
     );
 
     let newShoppingCarts = old.shoppingCarts.map<Principal, [OldCartItem], [NewCartItem]>(
-      func(_principal, oldCartItems) {
-        oldCartItems.map(
-          func(oldCartItem) {
-            {
-              oldCartItem with
-              product = { oldCartItem.product with category = "Uncategorized" };
-            };
-          }
-        );
+      func(_id, oldItems) {
+        migrateCartItems(oldItems);
       }
     );
 
-    { products = newProducts; shoppingCarts = newShoppingCarts };
+    {
+      products = newProducts;
+      shoppingCarts = newShoppingCarts;
+    };
   };
 };

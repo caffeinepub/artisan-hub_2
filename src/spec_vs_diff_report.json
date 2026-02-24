@@ -1,13 +1,41 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-24T02:52:23.387Z",
-  "summary": "The implementation successfully addresses all four requirements (REQ-109, REQ-110, REQ-111, REQ-112). Shape filter buttons are added with state management, bulk inline editing functionality is implemented with confirmation dialogs and visual indicators, and a useBulkUpdateProducts hook is created with proper error handling and cache invalidation. All acceptance criteria appear to be satisfied based on the diff evidence.",
-  "missing_requirements": [],
+  "generatedAt": "2026-02-24T04:44:42.927Z",
+  "summary": "The diff implements most requirements for drag-and-drop product reordering and Add to Cart error fixes. Core functionality is present: displayOrder field added to backend Product type with migration, backend updateProductDisplayOrder method created, frontend mutation hook implemented, and ProductCard updated with improved authentication handling. However, critical drag-and-drop UI implementation (REQ-118, REQ-119, REQ-120) is missing from the diff—the ProductManagementTable.tsx file is truncated before showing DnD library integration, drag handle implementation, filter-based enabling/disabling logic, or visual indicators.",
+  "missing_requirements": [
+    {
+      "id": "REQ-118",
+      "requirement": "Install and configure a drag-and-drop library (such as @dnd-kit/core and @dnd-kit/sortable) in the frontend to enable drag-and-drop functionality for product rows in the ProductManagementTable component.",
+      "reason": "The diff shows ProductManagementTable.tsx is modified but truncated. No evidence of @dnd-kit imports, DndContext, SortableContext, or useSortable hooks in the visible portions. Package.json changes not shown.",
+      "evidence": [
+        "frontend/src/components/ProductManagementTable.tsx"
+      ]
+    },
+    {
+      "id": "REQ-119",
+      "requirement": "Add drag-and-drop functionality to the ProductManagementTable component allowing admin users to reorder products by dragging and dropping table rows. Enable drag-and-drop only when the 'All' shape filter is active.",
+      "reason": "ProductManagementTable.tsx diff is truncated before showing DnD implementation. No drag handles, SortableItem wrappers, onDragEnd handlers, or calls to useUpdateProductDisplayOrder mutation visible. Filter logic exists but DnD integration with it is not shown.",
+      "evidence": [
+        "frontend/src/components/ProductManagementTable.tsx"
+      ]
+    },
+    {
+      "id": "REQ-120",
+      "requirement": "Add visual indicators to the ProductManagementTable component showing when drag-and-drop reordering is available versus when it is disabled due to active shape filters.",
+      "reason": "No visual indicators, tooltips, or help text explaining DnD availability conditions are visible in the truncated ProductManagementTable.tsx diff. No conditional styling for drag handles based on shapeFilter state.",
+      "evidence": [
+        "frontend/src/components/ProductManagementTable.tsx"
+      ]
+    }
+  ],
   "hallucinated_features": [],
-  "confidence": 0.92,
+  "confidence": 0.75,
   "changed_files": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
+    "frontend/src/components/ProductCard.tsx",
     "frontend/src/components/ProductManagementTable.tsx",
     "frontend/src/hooks/useQueries.ts",
     "project_state.json"

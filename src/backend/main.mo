@@ -13,7 +13,9 @@ import Time "mo:core/Time";
 import Int "mo:core/Int";
 import Iter "mo:core/Iter";
 import Order "mo:core/Order";
+import Migration "migration";
 
+(with migration = Migration.run)
 actor {
   include MixinStorage();
 
@@ -113,6 +115,7 @@ actor {
     viewCount : Nat;
     createdAt : Time.Time;
     category : Text;
+    displayOrder : Nat;
   };
 
   let products = Map.empty<Nat, Product>();
@@ -224,6 +227,11 @@ actor {
       Runtime.trap("Unauthorized: Only admins can add products");
     };
 
+    var maxOrder = 0;
+    for (_product in products.values()) {
+      maxOrder += 1;
+    };
+
     let product : Product = {
       id = nextProductId;
       name;
@@ -236,6 +244,7 @@ actor {
       createdAt = Time.now();
       viewCount = 0;
       category;
+      displayOrder = maxOrder;
     };
 
     products.add(nextProductId, product);
@@ -303,12 +312,45 @@ actor {
     products.add(productId, updatedProduct);
   };
 
+  module ProductOrdering {
+    public func compareByDisplayOrder(a : Product, b : Product) : Order.Order {
+      Nat.compare(a.displayOrder, b.displayOrder);
+    };
+
+    public func compareByViewCountDescending(a : Product, b : Product) : Order.Order {
+      Nat.compare(b.viewCount, a.viewCount);
+    };
+
+    public func compareByCreatedAtDescending(a : Product, b : Product) : Order.Order {
+      Int.compare(b.createdAt, a.createdAt);
+    };
+  };
+
   public query func getProducts() : async [Product] {
-    products.values().toArray();
+    itemsFromIter(products.values()).sort(ProductOrdering.compareByDisplayOrder);
   };
 
   public query func getProduct(productId : Nat) : async ?Product {
     products.get(productId);
+  };
+
+  public shared ({ caller }) func updateProductDisplayOrder(productIds : [Nat]) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can update product order");
+    };
+
+    var i = 0;
+    for (productId in productIds.values()) {
+      let currentProduct = switch (products.get(productId)) {
+        case (null) { Runtime.trap("Product not found") };
+        case (?product) { product };
+      };
+      let updatedProduct : Product = {
+        currentProduct with displayOrder = i;
+      };
+      products.add(productId, updatedProduct);
+      i += 1;
+    };
   };
 
   public query ({ caller }) func getProductCount() : async Nat {
@@ -319,9 +361,6 @@ actor {
   };
 
   public query ({ caller }) func getCart() : async [CartItem] {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can access shopping cart");
-    };
     switch (shoppingCarts.get(caller)) {
       case (null) { [] };
       case (?items) { items };
@@ -428,7 +467,7 @@ actor {
 
   public query ({ caller }) func getCartTotal() : async Nat {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can view cart total");
+      Runtime.trap("Unauthorized: Only authenticated users can view cart total");
     };
 
     var total = 0;
@@ -516,7 +555,7 @@ actor {
 
   public shared ({ caller }) func checkoutCartItems(successUrl : Text, cancelUrl : Text) : async ?Text {
     if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can checkout");
+      Runtime.trap("Unauthorized: Only authenticated users can checkout");
     };
 
     let items = switch (shoppingCarts.get(caller)) {
@@ -565,14 +604,9 @@ actor {
     #newest;
   };
 
-  module ProductOrdering {
-    public func compareByViewCountDescending(a : Product, b : Product) : Order.Order {
-      Nat.compare(b.viewCount, a.viewCount);
-    };
-
-    public func compareByCreatedAtDescending(a : Product, b : Product) : Order.Order {
-      Int.compare(b.createdAt, a.createdAt);
-    };
+  public query func getFeaturedProducts() : async [Product] {
+    let allProducts = products.values().toArray();
+    allProducts.sort(ProductOrdering.compareByDisplayOrder);
   };
 
   public query func getMostViewedProducts() : async [Product] {
@@ -696,5 +730,10 @@ actor {
 
   public query ({ caller }) func isAdmin() : async Bool {
     AccessControl.isAdmin(accessControlState, caller);
+  };
+
+  // Helper function to convert Iter to array
+  func itemsFromIter<A>(iter : Iter.Iter<A>) : [A] {
+    iter.toArray();
   };
 };

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 47,
+  "projectStateVersion": 49,
   "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -17,8 +17,8 @@
   "known_issues": [
     "Images fail to persist when creating products through bulk upload interface",
     "Product images fail to load properly on marketplace page",
-    "Admin Dashboard link missing from header navigation after Version 20 deployment",
-    "Marketplace filter UI changed to dropdown icon instead of static button tabs"
+    "Marketplace filter UI changed to dropdown icon instead of static button tabs",
+    "Add to Cart functionality is failing with error message when attempting to add items to shopping cart"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -669,6 +669,38 @@
         "REQ-112"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-the-add-to-cart-functionality-error-in-productcard-component-frontend-src-components-productcard-tsx-where-clicking-the-add-to-basket-button-fails-with-an-error-message-verify-the-useaddtocart-mutation-hook-implementation-in-usequeries-ts-calls-the-correct-backend-addtocart-method-with-proper-parameters-handles-authentication-state-correctly-for-both-authenticated-and-guest-users-and-displays-appropriate-success-error-toast-notifications",
+      "title": "Investigate and fix the Add to Cart functionality error in ProductCard component (frontend/src/components/ProductCard.tsx) where clicking the 'Add to Basket' button fails with an error message. Verify the useAddToCart mutation hook implementation in useQueries.ts calls the correct backend addToCart method with proper parameters, handles authentication state correctly for both authenticated and guest users, and displays appropriate success/error toast notifications.",
+      "reqIds": [
+        "REQ-113"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-react-query-mutation-hook-useupdateproductdisplayorder-in-frontend-src-hooks-usequeries-ts-that-calls-the-backend-updateproductdisplayorder-method-with-an-ordered-array-of-product-ids-includes-admin-authentication-and-invalidates-the-product-list-cache-after-successful-reordering",
+      "title": "Create a React Query mutation hook useUpdateProductDisplayOrder in frontend/src/hooks/useQueries.ts that calls the backend updateProductDisplayOrder method with an ordered array of product IDs, includes admin authentication, and invalidates the product list cache after successful reordering.",
+      "reqIds": [
+        "REQ-117"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-drag-and-drop-functionality-to-the-productmanagementtable-component-frontend-src-components-productmanagementtable-tsx-allowing-admin-users-to-reorder-products-by-dragging-and-dropping-table-rows-enable-drag-and-drop-only-when-the-all-shape-filter-is-active-no-shape-filters-applied-when-products-are-reordered-call-the-useupdateproductdisplayorder-mutation-hook-to-persist-the-new-order-to-the-backend",
+      "title": "Add drag-and-drop functionality to the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) allowing admin users to reorder products by dragging and dropping table rows. Enable drag-and-drop only when the 'All' shape filter is active (no shape filters applied). When products are reordered, call the useUpdateProductDisplayOrder mutation hook to persist the new order to the backend.",
+      "reqIds": [
+        "REQ-119"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-visual-indicators-to-the-productmanagementtable-component-showing-when-drag-and-drop-reordering-is-available-versus-when-it-is-disabled-due-to-active-shape-filters-display-a-message-or-tooltip-explaining-that-drag-and-drop-reordering-is-only-available-when-viewing-all-products-without-filters",
+      "title": "Add visual indicators to the ProductManagementTable component showing when drag-and-drop reordering is available versus when it is disabled due to active shape filters. Display a message or tooltip explaining that drag-and-drop reordering is only available when viewing all products without filters.",
+      "reqIds": [
+        "REQ-120"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -1182,6 +1214,56 @@
       "id": "AR-111",
       "summary": "Integrate shape filter with existing checkbox selection system to enable filtering by shape before selecting products for bulk operations",
       "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-112",
+      "summary": "Add drag-and-drop functionality to ProductManagementTable allowing products to be reordered when viewing all products (no filters active), persisting the display order to backend and affecting marketplace storefront display order",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-113",
+      "summary": "Add a displayOrder or sortPosition numeric field to the Product type in backend to store the custom ordering position defined by drag-and-drop reordering",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-114",
+      "summary": "Update backend getProducts and marketplace product retrieval methods to sort products by displayOrder field by default when no other sorting is applied",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-116",
+      "summary": "Add a displayOrder numeric field to the Product type in backend/main.mo to store custom ordering position for products. Initialize displayOrder for all existing products with sequential values based on their current order, and ensure all new products receive a displayOrder value when created.",
+      "reqIds": [
+        "REQ-114"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-117",
+      "summary": "Update backend getProducts, getFeaturedProducts, getMostViewedProducts, getBestSellingProducts, and getNewestProducts methods in backend/main.mo to sort products by displayOrder field in ascending order as the default sort behavior when no other sorting criteria is specified, ensuring the marketplace storefront displays products in the order defined by drag-and-drop reordering.",
+      "reqIds": [
+        "REQ-115"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-118",
+      "summary": "Create a backend method updateProductDisplayOrder(productIds: [Text]) in backend/main.mo with admin authentication that accepts an array of product IDs in the desired display order and updates the displayOrder field for each product to match the new sequence. Implement efficient batch updating to handle reordering operations.",
+      "reqIds": [
+        "REQ-116"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-120",
+      "summary": "Install and configure a drag-and-drop library (such as @dnd-kit/core and @dnd-kit/sortable) in the frontend to enable drag-and-drop functionality for product rows in the ProductManagementTable component.",
+      "reqIds": [
+        "REQ-118"
+      ],
       "status": "pending"
     }
   ],

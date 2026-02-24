@@ -33,6 +33,7 @@ export interface HomepageConfig {
 }
 export interface Product {
   'id' : bigint,
+  'displayOrder' : bigint,
   'name' : string,
   'createdAt' : Time,
   'stripeProductId' : string,
@@ -171,6 +172,7 @@ export interface _SERVICE {
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getCartTotal' : ActorMethod<[], bigint>,
   'getDescriptionTemplates' : ActorMethod<[], Array<DescriptionTemplate>>,
+  'getFeaturedProducts' : ActorMethod<[], Array<Product>>,
   'getHomepageConfig' : ActorMethod<[], HomepageConfig>,
   'getMostViewedProducts' : ActorMethod<[], Array<Product>>,
   'getNewestProducts' : ActorMethod<[], Array<Product>>,
@@ -217,6 +219,7 @@ export interface _SERVICE {
     ],
     undefined
   >,
+  'updateProductDisplayOrder' : ActorMethod<[Array<bigint>], undefined>,
   'updateShopDetails' : ActorMethod<[ShopDetails], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;

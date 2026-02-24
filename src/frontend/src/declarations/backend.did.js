@@ -35,6 +35,7 @@ export const ShoppingItem = IDL.Record({
 export const Time = IDL.Int;
 export const Product = IDL.Record({
   'id' : IDL.Nat,
+  'displayOrder' : IDL.Nat,
   'name' : IDL.Text,
   'createdAt' : Time,
   'stripeProductId' : IDL.Text,
@@ -201,6 +202,7 @@ export const idlService = IDL.Service({
       [IDL.Vec(DescriptionTemplate)],
       ['query'],
     ),
+  'getFeaturedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getHomepageConfig' : IDL.Func([], [HomepageConfig], ['query']),
   'getMostViewedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getNewestProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
@@ -254,6 +256,7 @@ export const idlService = IDL.Service({
       [],
       [],
     ),
+  'updateProductDisplayOrder' : IDL.Func([IDL.Vec(IDL.Nat)], [], []),
   'updateShopDetails' : IDL.Func([ShopDetails], [], []),
 });
 
@@ -287,6 +290,7 @@ export const idlFactory = ({ IDL }) => {
   const Time = IDL.Int;
   const Product = IDL.Record({
     'id' : IDL.Nat,
+    'displayOrder' : IDL.Nat,
     'name' : IDL.Text,
     'createdAt' : Time,
     'stripeProductId' : IDL.Text,
@@ -451,6 +455,7 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(DescriptionTemplate)],
         ['query'],
       ),
+    'getFeaturedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getHomepageConfig' : IDL.Func([], [HomepageConfig], ['query']),
     'getMostViewedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getNewestProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
@@ -508,6 +513,7 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
+    'updateProductDisplayOrder' : IDL.Func([IDL.Vec(IDL.Nat)], [], []),
     'updateShopDetails' : IDL.Func([ShopDetails], [], []),
   });
 };

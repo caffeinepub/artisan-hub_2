@@ -1,67 +1,106 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-24T02:52:23.393Z",
+  "generatedAt": "2026-02-24T04:44:42.934Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
+    "total": 8,
     "implemented": 4,
     "items": [
       {
-        "id": "REQ-109",
-        "summary": "Add shape filter buttons above the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) that display all unique shape values from the product list as clickable button tabs, similar to the marketplace filter UI implementation. Include an 'All' button to show all products without shape filtering.",
+        "id": "REQ-113",
+        "summary": "Investigate and fix the Add to Cart functionality error in ProductCard component (frontend/src/components/ProductCard.tsx) where clicking the 'Add to Basket' button fails with an error message. Verify the useAddToCart mutation hook implementation in useQueries.ts calls the correct backend addToCart method with proper parameters, handles authentication state correctly for both authenticated and guest users, and displays appropriate success/error toast notifications.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/ProductManagementTable.tsx"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/ProductCard.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/ProductManagementTable.tsx"
+          "frontend/src/hooks/useQueries.ts",
+          "frontend/src/components/ProductCard.tsx"
         ]
       },
       {
-        "id": "REQ-110",
-        "summary": "Create React state management in ProductManagementTable component to track the selected shape filter and implement filtering logic that filters the displayed product rows based on the active shape selection, working in conjunction with the existing checkbox selection system.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/ProductManagementTable.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/ProductManagementTable.tsx"
-        ]
+        "id": "REQ-114",
+        "summary": "Add a displayOrder numeric field to the Product type in backend/main.mo to store custom ordering position for products. Initialize displayOrder for all existing products with sequential values based on their current order, and ensure all new products receive a displayOrder value when created.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-111",
-        "summary": "Add bulk inline editing functionality to ProductManagementTable component where modifying any field (title, description, shape, category, price, inventory count) on one product while that product and other products are selected via checkboxes will apply those same changes to all selected products simultaneously. Display a visual indicator showing which products are selected for bulk editing.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/ProductManagementTable.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/ProductManagementTable.tsx"
-        ]
+        "id": "REQ-115",
+        "summary": "Update backend getProducts, getFeaturedProducts, getMostViewedProducts, getBestSellingProducts, and getNewestProducts methods in backend/main.mo to sort products by displayOrder field in ascending order as the default sort behavior when no other sorting criteria is specified, ensuring the marketplace storefront displays products in the order defined by drag-and-drop reordering.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
       },
       {
-        "id": "REQ-112",
-        "summary": "Create a React Query mutation hook useBulkUpdateProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and a set of field updates, calls the backend updateProduct method for each selected product with the same field values, handles errors for individual updates, and invalidates the product list cache after successful completion.",
+        "id": "REQ-116",
+        "summary": "Create a backend method updateProductDisplayOrder(productIds: [Text]) in backend/main.mo with admin authentication that accepts an array of product IDs in the desired display order and updates the displayOrder field for each product to match the new sequence. Implement efficient batch updating to handle reordering operations.",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-117",
+        "summary": "Create a React Query mutation hook useUpdateProductDisplayOrder in frontend/src/hooks/useQueries.ts that calls the backend updateProductDisplayOrder method with an ordered array of product IDs, includes admin authentication, and invalidates the product list cache after successful reordering.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
           "frontend/src/hooks/useQueries.ts"
+        ]
+      },
+      {
+        "id": "REQ-118",
+        "summary": "Install and configure a drag-and-drop library (such as @dnd-kit/core and @dnd-kit/sortable) in the frontend to enable drag-and-drop functionality for product rows in the ProductManagementTable component.",
+        "status": "missing",
+        "plannedFiles": [
+          "frontend/package.json"
+        ],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-119",
+        "summary": "Add drag-and-drop functionality to the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) allowing admin users to reorder products by dragging and dropping table rows. Enable drag-and-drop only when the 'All' shape filter is active (no shape filters applied). When products are reordered, call the useUpdateProductDisplayOrder mutation hook to persist the new order to the backend.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ]
+      },
+      {
+        "id": "REQ-120",
+        "summary": "Add visual indicators to the ProductManagementTable component showing when drag-and-drop reordering is available versus when it is disabled due to active shape filters. Display a message or tooltip explaining that drag-and-drop reordering is only available when viewing all products without filters.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
+    "backend/migration.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/ProductCard.tsx",
     "frontend/src/components/ProductManagementTable.tsx",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
     "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
