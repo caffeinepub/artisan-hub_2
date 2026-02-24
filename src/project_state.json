@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 45,
+  "projectStateVersion": 47,
   "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -637,6 +637,38 @@
         "REQ-108"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-shape-filter-buttons-above-the-productmanagementtable-component-frontend-src-components-productmanagementtable-tsx-that-display-all-unique-shape-values-from-the-product-list-as-clickable-button-tabs-similar-to-the-marketplace-filter-ui-implementation-include-an-all-button-to-show-all-products-without-shape-filtering",
+      "title": "Add shape filter buttons above the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) that display all unique shape values from the product list as clickable button tabs, similar to the marketplace filter UI implementation. Include an 'All' button to show all products without shape filtering.",
+      "reqIds": [
+        "REQ-109"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-state-management-in-productmanagementtable-component-to-track-the-selected-shape-filter-and-implement-filtering-logic-that-filters-the-displayed-product-rows-based-on-the-active-shape-selection-working-in-conjunction-with-the-existing-checkbox-selection-system",
+      "title": "Create React state management in ProductManagementTable component to track the selected shape filter and implement filtering logic that filters the displayed product rows based on the active shape selection, working in conjunction with the existing checkbox selection system.",
+      "reqIds": [
+        "REQ-110"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-bulk-inline-editing-functionality-to-productmanagementtable-component-where-modifying-any-field-title-description-shape-category-price-inventory-count-on-one-product-while-that-product-and-other-products-are-selected-via-checkboxes-will-apply-those-same-changes-to-all-selected-products-simultaneously-display-a-visual-indicator-showing-which-products-are-selected-for-bulk-editing",
+      "title": "Add bulk inline editing functionality to ProductManagementTable component where modifying any field (title, description, shape, category, price, inventory count) on one product while that product and other products are selected via checkboxes will apply those same changes to all selected products simultaneously. Display a visual indicator showing which products are selected for bulk editing.",
+      "reqIds": [
+        "REQ-111"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-react-query-mutation-hook-usebulkupdateproducts-in-frontend-src-hooks-usequeries-ts-that-accepts-an-array-of-product-ids-and-a-set-of-field-updates-calls-the-backend-updateproduct-method-for-each-selected-product-with-the-same-field-values-handles-errors-for-individual-updates-and-invalidates-the-product-list-cache-after-successful-completion",
+      "title": "Create a React Query mutation hook useBulkUpdateProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and a set of field updates, calls the backend updateProduct method for each selected product with the same field values, handles errors for individual updates, and invalidates the product list cache after successful completion.",
+      "reqIds": [
+        "REQ-112"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -1132,6 +1164,24 @@
       "reqIds": [
         "REQ-107"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-109",
+      "summary": "Add shape filter buttons above product management table similar to marketplace filters",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-110",
+      "summary": "Add inline bulk editing capability where modifying one product's fields applies changes to all selected products",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-111",
+      "summary": "Integrate shape filter with existing checkbox selection system to enable filtering by shape before selecting products for bulk operations",
+      "reqIds": [],
       "status": "pending"
     }
   ],

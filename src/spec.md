@@ -1,13 +1,14 @@
 # Specification
 
 ## Summary
-**Goal:** Allow admins to delete Stripe payment configuration from the admin panel.
+**Goal:** Add shape filter with bulk inline editing capabilities to the product management table.
 
 **Planned changes:**
-- Add a "Delete Stripe Configuration" button to the StripeSetup component that is visible when Stripe is configured
-- Implement a confirmation dialog that warns about disabling payment processing before deletion
-- Create a useDeleteStripeConfig React Query mutation hook that calls the backend and invalidates the cache
-- Add a backend deleteStripeConfig() method with admin authentication that clears the stored Stripe secret key and allowed countries
-- Update the StripeSetup component to refresh and show the configuration form again after successful deletion
+- Add shape filter buttons above the product management table that display all unique shape values plus an 'All' option
+- Implement filtering logic that shows only products matching the selected shape
+- Add bulk inline editing where modifying any field on one selected product applies those changes to all selected products
+- Create visual indicators showing which products are selected for bulk editing
+- Display confirmation dialog before applying bulk changes
+- Create React Query mutation hook for bulk product updates
 
-**User-visible outcome:** Admins can remove Stripe payment settings with a delete button that shows a confirmation dialog, and after deletion the configuration form becomes available again for entering new credentials.
+**User-visible outcome:** Admins can filter products by shape using button tabs above the product management table. When multiple products are selected via checkboxes, editing any field on one product will apply those same changes to all selected products after confirmation.

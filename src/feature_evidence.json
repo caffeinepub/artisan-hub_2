@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-delete-stripe-configuration-button-to-the-stripesetup-component-frontend-src-components-stripesetup-tsx-that-allows-the-admin-to-remove-the-stored-stripe-api-key-and-reset-the-stripe-configuration",
-      "featureTitle": "Add a 'Delete Stripe Configuration' button to the StripeSetup component (frontend/src/components/StripeSetup.tsx) that allows the admin to remove the stored Stripe API key and reset the Stripe configuration",
+      "featureId": "feature-add-shape-filter-buttons-above-the-productmanagementtable-component-frontend-src-components-productmanagementtable-tsx-that-display-all-unique-shape-values-from-the-product-list-as-clickable-button-tabs-similar-to-the-marketplace-filter-ui-implementation-include-an-all-button-to-show-all-products-without-shape-filtering",
+      "featureTitle": "Add shape filter buttons above the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) that display all unique shape values from the product list as clickable button tabs, similar to the marketplace filter UI implementation. Include an 'All' button to show all products without shape filtering.",
       "files": [
-        "frontend/src/components/StripeSetup.tsx"
+        "frontend/src/components/ProductManagementTable.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,13 +19,57 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-105"
+        "REQ-109"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-create-a-react-query-mutation-hook-usedeletestripeconfig-in-frontend-src-hooks-usequeries-ts-that-calls-the-backend-deletestripeconfig-method-and-invalidates-the-stripe-configuration-cache-after-successful-deletion",
-      "featureTitle": "Create a React Query mutation hook useDeleteStripeConfig in frontend/src/hooks/useQueries.ts that calls the backend deleteStripeConfig method and invalidates the Stripe configuration cache after successful deletion",
+      "featureId": "feature-create-react-state-management-in-productmanagementtable-component-to-track-the-selected-shape-filter-and-implement-filtering-logic-that-filters-the-displayed-product-rows-based-on-the-active-shape-selection-working-in-conjunction-with-the-existing-checkbox-selection-system",
+      "featureTitle": "Create React state management in ProductManagementTable component to track the selected shape filter and implement filtering logic that filters the displayed product rows based on the active shape selection, working in conjunction with the existing checkbox selection system.",
+      "files": [
+        "frontend/src/components/ProductManagementTable.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-110"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-bulk-inline-editing-functionality-to-productmanagementtable-component-where-modifying-any-field-title-description-shape-category-price-inventory-count-on-one-product-while-that-product-and-other-products-are-selected-via-checkboxes-will-apply-those-same-changes-to-all-selected-products-simultaneously-display-a-visual-indicator-showing-which-products-are-selected-for-bulk-editing",
+      "featureTitle": "Add bulk inline editing functionality to ProductManagementTable component where modifying any field (title, description, shape, category, price, inventory count) on one product while that product and other products are selected via checkboxes will apply those same changes to all selected products simultaneously. Display a visual indicator showing which products are selected for bulk editing.",
+      "files": [
+        "frontend/src/components/ProductManagementTable.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-111"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-react-query-mutation-hook-usebulkupdateproducts-in-frontend-src-hooks-usequeries-ts-that-accepts-an-array-of-product-ids-and-a-set-of-field-updates-calls-the-backend-updateproduct-method-for-each-selected-product-with-the-same-field-values-handles-errors-for-individual-updates-and-invalidates-the-product-list-cache-after-successful-completion",
+      "featureTitle": "Create a React Query mutation hook useBulkUpdateProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and a set of field updates, calls the backend updateProduct method for each selected product with the same field values, handles errors for individual updates, and invalidates the product list cache after successful completion.",
       "files": [
         "frontend/src/hooks/useQueries.ts"
       ],
@@ -41,29 +85,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-106"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-stripesetup-component-to-refresh-the-configuration-status-after-deletion-and-show-the-configuration-form-again-when-stripe-settings-are-removed",
-      "featureTitle": "Update the StripeSetup component to refresh the configuration status after deletion and show the configuration form again when Stripe settings are removed",
-      "files": [
-        "frontend/src/components/StripeSetup.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-108"
+        "REQ-112"
       ],
       "confidence": "high"
     }

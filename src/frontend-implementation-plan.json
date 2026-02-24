@@ -1,57 +1,83 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add delete button to remove Stripe configuration",
+  "title": "Add shape filter with bulk inline editing to product management",
   "requirements": [
     {
-      "id": "REQ-105",
-      "summary": "Add a 'Delete Stripe Configuration' button to the StripeSetup component that allows the admin to remove the stored Stripe API key and reset the Stripe configuration",
+      "id": "REQ-109",
+      "summary": "Add shape filter buttons above ProductManagementTable displaying unique shape values with 'All' option, matching marketplace filter UI styling",
       "acceptanceCriteria": [
-        "Delete button is visible in the StripeSetup component when Stripe is already configured",
-        "Button is labeled 'Delete Stripe Configuration' or similar clear text",
-        "Clicking the button shows a confirmation dialog before deletion",
-        "Confirmation dialog warns that deleting will disable payment processing",
-        "After confirmation, the button calls the backend to remove the Stripe configuration"
+        "Shape filter buttons appear above the product management table",
+        "Buttons display all unique shape values from products plus 'All' option",
+        "Button styling matches the marketplace filter button design",
+        "Active filter button has distinct visual styling",
+        "Clicking a shape button filters the table to show only products with that shape",
+        "Clicking 'All' shows all products regardless of shape"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/StripeSetup.tsx",
+          "path": "frontend/src/components/ProductManagementTable.tsx",
           "operation": "modify",
-          "description": "Add a 'Delete Stripe Configuration' button that appears when Stripe is already configured. The button should trigger a confirmation dialog (using shadcn/ui AlertDialog component) that warns the user about disabling payment processing. On confirmation, call the useDeleteStripeConfig mutation hook. Position the button below the success indicator when configuration exists. Use destructive button styling to indicate the dangerous action."
+          "description": "Add shape filter button UI above the table. Extract unique shape values from the products array using useMemo. Create a filter button row that includes 'All' plus each unique shape. Apply the same button styling used in the Marketplace component for shape filters (verify Marketplace component styling before implementing). Ensure the active filter button has distinct visual styling to indicate the selected filter."
         }
       ]
     },
     {
-      "id": "REQ-106",
-      "summary": "Create a React Query mutation hook useDeleteStripeConfig that calls the backend deleteStripeConfig method and invalidates the Stripe configuration cache after successful deletion",
+      "id": "REQ-110",
+      "summary": "Implement React state management for shape filter selection and product filtering logic that works with checkbox selection",
       "acceptanceCriteria": [
-        "Hook is named useDeleteStripeConfig and follows the existing React Query mutation pattern",
-        "Hook requires admin authentication via the actor",
-        "After successful deletion, the hook invalidates the 'stripeConfig' query cache",
-        "Hook includes proper error handling and shows toast notifications on success/failure"
+        "State tracks currently selected shape filter (or 'All')",
+        "Product table rows are filtered based on selected shape",
+        "Filter works independently of checkbox selection state",
+        "Existing checkbox selection remains functional after filtering",
+        "Selected products remain selected when changing shape filter",
+        "Filter state persists during inline editing operations"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductManagementTable.tsx",
+          "operation": "modify",
+          "description": "Add useState hook to track the selected shape filter (default to 'All'). Apply filtering logic using useMemo to create a filteredProducts array based on the active shape filter. Use filteredProducts for rendering table rows instead of the full products array. Ensure the existing checkbox selection state (selectedProductIds) remains intact when switching between shape filters. Verify that selectedProductIds can reference products not currently visible due to filtering."
+        }
+      ]
+    },
+    {
+      "id": "REQ-111",
+      "summary": "Add bulk inline editing functionality where editing one selected product applies changes to all selected products simultaneously with visual feedback",
+      "acceptanceCriteria": [
+        "When multiple products are selected via checkboxes and one product enters edit mode, changes apply to all selected products",
+        "All editable fields support bulk editing: title, description, shape, category, price, inventory count",
+        "Visual indicator shows which products will receive bulk changes",
+        "Confirmation dialog appears before applying bulk changes",
+        "Success notification displays count of products updated",
+        "Error handling shows which products failed to update if any",
+        "Bulk edit works with filtered product views (shape filter active)",
+        "After bulk update, all affected products show updated values immediately"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/ProductManagementTable.tsx",
+          "operation": "modify",
+          "description": "Modify the inline editing logic to detect when multiple products are selected via checkboxes. When a user edits a field (name, description, shape, category, price, or inventory count) on one product and that product is part of a multi-selection, capture the change and prepare for bulk update. Add visual indicators (e.g., background highlighting or badge) on selected product rows to show they will receive bulk changes. Before applying changes, display a confirmation dialog showing the count of products that will be updated. On confirmation, call the useBulkUpdateProducts mutation hook (REQ-112) passing all selected product IDs and the changed field values. Display a toast notification with the count of successfully updated products. Handle errors by showing which products failed to update. Ensure the table reflects updated values immediately after successful bulk update. Verify that bulk editing works correctly when the shape filter is active (i.e., only visible selected products should be editable, but all selected product IDs should receive updates)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-112",
+      "summary": "Create useBulkUpdateProducts React Query mutation hook that updates multiple products with the same field values and invalidates cache",
+      "acceptanceCriteria": [
+        "Hook accepts array of product IDs and update object with modified fields",
+        "Calls backend updateProduct for each product ID with same field values",
+        "Returns success/failure status for each product update",
+        "Invalidates product queries after successful bulk update",
+        "Provides error details for any failed updates",
+        "Supports optimistic updates for immediate UI feedback"
       ],
       "file_operations": [
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add a new mutation hook named useDeleteStripeConfig that follows the existing pattern in the file. The hook should call actor.deleteStripeConfig() with admin authentication check. On success, invalidate the 'stripeConfig' query key using queryClient.invalidateQueries. Show a success toast notification confirming deletion and an error toast on failure. Follow the same structure as other mutation hooks in this file."
-        }
-      ]
-    },
-    {
-      "id": "REQ-108",
-      "summary": "Update the StripeSetup component to refresh the configuration status after deletion and show the configuration form again when Stripe settings are removed",
-      "acceptanceCriteria": [
-        "After successful deletion, the green checkmark status indicator is hidden",
-        "The Stripe configuration form becomes visible and editable again",
-        "A success toast notification confirms the deletion",
-        "The form is ready for the admin to enter new Stripe credentials if needed"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/StripeSetup.tsx",
-          "operation": "modify",
-          "description": "Update the component to conditionally render the success indicator and configuration form based on the isStripeConfigured query result. When the deleteStripeConfig mutation succeeds, the invalidated query will automatically refetch and update the UI state. Ensure the green checkmark and 'Stripe is configured' message are hidden when isStripeConfigured returns false, and the configuration form (secret key and countries inputs) becomes visible and editable. The toast notification is already handled by the mutation hook in useQueries.ts."
+          "description": "Add a new useBulkUpdateProducts mutation hook. The hook should accept an input object containing an array of product IDs and an update object with the modified field values (name, shape, price, stripeProductId, stripeProductDescription, images, inventoryCount, category). Use Promise.allSettled to call actor.updateProduct for each product ID with the same field values. Collect the results to track which updates succeeded and which failed. On successful completion, invalidate the 'products' query key to refresh the product list. Return detailed status information including the count of successful updates and any error details for failed updates. Optionally implement optimistic updates by updating the query cache before the backend calls complete."
         }
       ]
     }

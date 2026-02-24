@@ -188,6 +188,63 @@ export function useUpdateProduct() {
   });
 }
 
+export function useBulkUpdateProducts() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: {
+      productIds: bigint[];
+      updates: {
+        name?: string;
+        shape?: string;
+        price?: bigint;
+        stripeProductDescription?: string;
+        inventoryCount?: bigint;
+        category?: string;
+      };
+    }) => {
+      if (!actor) throw new Error('Actor not available');
+      
+      const results = await Promise.allSettled(
+        params.productIds.map((productId) =>
+          actor.updateProduct(
+            productId,
+            params.updates.name ?? null,
+            params.updates.shape ?? null,
+            params.updates.price ?? null,
+            null, // stripeProductId
+            params.updates.stripeProductDescription ?? null,
+            null, // images
+            params.updates.inventoryCount ?? null,
+            params.updates.category ?? null
+          )
+        )
+      );
+
+      const successCount = results.filter((r) => r.status === 'fulfilled').length;
+      const failedCount = results.filter((r) => r.status === 'rejected').length;
+
+      return { successCount, failedCount, results };
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: ['product'] });
+      queryClient.invalidateQueries({ queryKey: ['totalInventoryValue'] });
+      
+      if (data.failedCount > 0) {
+        toast.warning(`${data.successCount} products updated, ${data.failedCount} failed`);
+      } else {
+        toast.success(`${data.successCount} products updated successfully`);
+      }
+    },
+    onError: (error) => {
+      toast.error('Failed to update products');
+      console.error(error);
+    },
+  });
+}
+
 export function useUpdateInventoryCount() {
   const { actor } = useActor();
   const queryClient = useQueryClient();

@@ -1,98 +1,106 @@
 {
   "kind": "build_request",
-  "title": "Add delete button to remove Stripe configuration",
+  "title": "Add shape filter with bulk inline editing to product management",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-105",
-      "text": "Add a 'Delete Stripe Configuration' button to the StripeSetup component (frontend/src/components/StripeSetup.tsx) that allows the admin to remove the stored Stripe API key and reset the Stripe configuration",
+      "id": "REQ-109",
+      "text": "Add shape filter buttons above the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) that display all unique shape values from the product list as clickable button tabs, similar to the marketplace filter UI implementation. Include an 'All' button to show all products without shape filtering.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-user-1"
         ],
         "quotes": [
-          "Make a delete settings button for stripe"
+          "1 the shape filter be added as buttons above the product management table (similar to the marketplace filters"
         ]
       },
       "acceptanceCriteria": [
-        "Delete button is visible in the StripeSetup component when Stripe is already configured",
-        "Button is labeled 'Delete Stripe Configuration' or similar clear text",
-        "Clicking the button shows a confirmation dialog before deletion",
-        "Confirmation dialog warns that deleting will disable payment processing",
-        "After confirmation, the button calls the backend to remove the Stripe configuration"
+        "Shape filter buttons appear above the product management table",
+        "Buttons display all unique shape values from products plus 'All' option",
+        "Button styling matches the marketplace filter button design",
+        "Active filter button has distinct visual styling",
+        "Clicking a shape button filters the table to show only products with that shape",
+        "Clicking 'All' shows all products regardless of shape"
       ]
     },
     {
-      "id": "REQ-106",
-      "text": "Create a React Query mutation hook useDeleteStripeConfig in frontend/src/hooks/useQueries.ts that calls the backend deleteStripeConfig method and invalidates the Stripe configuration cache after successful deletion",
+      "id": "REQ-110",
+      "text": "Create React state management in ProductManagementTable component to track the selected shape filter and implement filtering logic that filters the displayed product rows based on the active shape selection, working in conjunction with the existing checkbox selection system.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-user-1"
         ],
         "quotes": [
-          "Make a delete settings button for stripe"
+          "3 the shape filter work with those same checkboxes"
         ]
       },
       "acceptanceCriteria": [
-        "Hook is named useDeleteStripeConfig and follows the existing React Query mutation pattern",
-        "Hook requires admin authentication via the actor",
-        "After successful deletion, the hook invalidates the 'stripeConfig' query cache",
-        "Hook includes proper error handling and shows toast notifications on success/failure"
+        "State tracks currently selected shape filter (or 'All')",
+        "Product table rows are filtered based on selected shape",
+        "Filter works independently of checkbox selection state",
+        "Existing checkbox selection remains functional after filtering",
+        "Selected products remain selected when changing shape filter",
+        "Filter state persists during inline editing operations"
       ]
     },
     {
-      "id": "REQ-107",
-      "text": "Create a backend method deleteStripeConfig() in backend/main.mo with admin authentication that removes the stored Stripe secret key and allowed countries configuration from the StripeConfig storage",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-last"
-        ],
-        "quotes": [
-          "Make a delete settings button for stripe"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Method is named deleteStripeConfig and returns a success/error result",
-        "Method requires admin authentication using requireAdmin() or equivalent",
-        "Method clears the Stripe secret key from storage",
-        "Method resets or clears the allowed countries list",
-        "After deletion, getStripeConfig should return null or empty configuration",
-        "Method includes appropriate error handling for edge cases"
-      ]
-    },
-    {
-      "id": "REQ-108",
-      "text": "Update the StripeSetup component to refresh the configuration status after deletion and show the configuration form again when Stripe settings are removed",
+      "id": "REQ-111",
+      "text": "Add bulk inline editing functionality to ProductManagementTable component where modifying any field (title, description, shape, category, price, inventory count) on one product while that product and other products are selected via checkboxes will apply those same changes to all selected products simultaneously. Display a visual indicator showing which products are selected for bulk editing.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-last"
+          "msg-user-1"
         ],
         "quotes": [
-          "Make a delete settings button for stripe"
+          "2 Inline editing where you modify one product and apply those changes to all selected products"
         ]
       },
       "acceptanceCriteria": [
-        "After successful deletion, the green checkmark status indicator is hidden",
-        "The Stripe configuration form becomes visible and editable again",
-        "A success toast notification confirms the deletion",
-        "The form is ready for the admin to enter new Stripe credentials if needed"
+        "When multiple products are selected via checkboxes and one product enters edit mode, changes apply to all selected products",
+        "All editable fields support bulk editing: title, description, shape, category, price, inventory count",
+        "Visual indicator shows which products will receive bulk changes",
+        "Confirmation dialog appears before applying bulk changes",
+        "Success notification displays count of products updated",
+        "Error handling shows which products failed to update if any",
+        "Bulk edit works with filtered product views (shape filter active)",
+        "After bulk update, all affected products show updated values immediately"
+      ]
+    },
+    {
+      "id": "REQ-112",
+      "text": "Create a React Query mutation hook useBulkUpdateProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and a set of field updates, calls the backend updateProduct method for each selected product with the same field values, handles errors for individual updates, and invalidates the product list cache after successful completion.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "2 Inline editing where you modify one product and apply those changes to all selected products"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Hook accepts array of product IDs and update object with modified fields",
+        "Calls backend updateProduct for each product ID with same field values",
+        "Returns success/failure status for each product update",
+        "Invalidates product queries after successful bulk update",
+        "Provides error details for any failed updates",
+        "Supports optimistic updates for immediate UI feedback"
       ]
     }
   ],
   "constraints": [
-    "Deletion must require admin authentication",
-    "Show confirmation dialog before deleting to prevent accidental removal",
-    "Backend must properly clear all Stripe-related stored data"
+    "Shape filter UI must match the existing marketplace filter button design and layout",
+    "Bulk editing must work with the existing checkbox selection system without breaking bulk delete functionality",
+    "All inline editing validation rules must apply to bulk updates (e.g., price validation, inventory count validation)",
+    "Filtered views must maintain checkbox selection state when switching between shape filters"
   ],
   "nonGoals": [
-    "Archiving or backing up deleted Stripe configurations",
-    "Deleting historical transaction data or payment records",
-    "Notifying customers about Stripe configuration changes",
-    "Automatically disabling checkout functionality when Stripe is deleted"
+    "Creating new bulk edit interfaces separate from inline editing",
+    "Adding shape filter to other pages besides product management",
+    "Modifying the backend updateProduct method structure",
+    "Adding bulk operations beyond editing (e.g., bulk publish, bulk archive)"
   ],
   "imageRequirements": {
     "required": [],

@@ -1,68 +1,67 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-24T01:13:56.709Z",
+  "generatedAt": "2026-02-24T02:52:23.393Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 4,
-    "implemented": 3,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-105",
-        "summary": "Add a 'Delete Stripe Configuration' button to the StripeSetup component (frontend/src/components/StripeSetup.tsx) that allows the admin to remove the stored Stripe API key and reset the Stripe configuration",
+        "id": "REQ-109",
+        "summary": "Add shape filter buttons above the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) that display all unique shape values from the product list as clickable button tabs, similar to the marketplace filter UI implementation. Include an 'All' button to show all products without shape filtering.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/StripeSetup.tsx"
+          "frontend/src/components/ProductManagementTable.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/StripeSetup.tsx"
+          "frontend/src/components/ProductManagementTable.tsx"
         ]
       },
       {
-        "id": "REQ-106",
-        "summary": "Create a React Query mutation hook useDeleteStripeConfig in frontend/src/hooks/useQueries.ts that calls the backend deleteStripeConfig method and invalidates the Stripe configuration cache after successful deletion",
+        "id": "REQ-110",
+        "summary": "Create React state management in ProductManagementTable component to track the selected shape filter and implement filtering logic that filters the displayed product rows based on the active shape selection, working in conjunction with the existing checkbox selection system.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ]
+      },
+      {
+        "id": "REQ-111",
+        "summary": "Add bulk inline editing functionality to ProductManagementTable component where modifying any field (title, description, shape, category, price, inventory count) on one product while that product and other products are selected via checkboxes will apply those same changes to all selected products simultaneously. Display a visual indicator showing which products are selected for bulk editing.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/ProductManagementTable.tsx"
+        ]
+      },
+      {
+        "id": "REQ-112",
+        "summary": "Create a React Query mutation hook useBulkUpdateProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and a set of field updates, calls the backend updateProduct method for each selected product with the same field values, handles errors for individual updates, and invalidates the product list cache after successful completion.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
           "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-107",
-        "summary": "Create a backend method deleteStripeConfig() in backend/main.mo with admin authentication that removes the stored Stripe secret key and allowed countries configuration from the StripeConfig storage",
-        "status": "unknown",
-        "plannedFiles": [],
-        "matchedFiles": []
-      },
-      {
-        "id": "REQ-108",
-        "summary": "Update the StripeSetup component to refresh the configuration status after deletion and show the configuration form again when Stripe settings are removed",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/StripeSetup.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/StripeSetup.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
-    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/StripeSetup.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
+    "frontend/src/components/ProductManagementTable.tsx",
     "frontend/src/hooks/useQueries.ts",
     "project_state.json",
     "scratch/component-selection.json",
