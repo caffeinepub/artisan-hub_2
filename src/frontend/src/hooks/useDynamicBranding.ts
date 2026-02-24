@@ -1,38 +1,29 @@
 import { useEffect } from 'react';
-import { useBrandingConfig } from './useQueries';
+import { useGetBrandingConfig } from './useQueries';
 
 export function useDynamicBranding() {
-  const { data: brandingConfig } = useBrandingConfig();
+  const { data: brandingConfig } = useGetBrandingConfig();
 
   useEffect(() => {
-    // Update document title
-    if (brandingConfig?.siteName) {
-      document.title = brandingConfig.siteName;
-    } else {
-      document.title = 'Artisan Market';
-    }
-
-    // Update favicon
-    const updateFavicon = () => {
-      // Remove existing favicon links
-      const existingLinks = document.querySelectorAll('link[rel*="icon"]');
-      existingLinks.forEach((link) => link.remove());
-
-      if (brandingConfig?.favicon) {
-        // Create new favicon link
-        const link = document.createElement('link');
-        link.rel = 'icon';
-        link.href = brandingConfig.favicon.getDirectURL();
-        document.head.appendChild(link);
-      } else {
-        // Restore default favicon if exists
-        const link = document.createElement('link');
-        link.rel = 'icon';
-        link.href = '/favicon.ico';
-        document.head.appendChild(link);
+    if (brandingConfig) {
+      // Update document title
+      if (brandingConfig.siteName) {
+        document.title = brandingConfig.siteName;
       }
-    };
 
-    updateFavicon();
+      // Update favicon
+      if (brandingConfig.favicon) {
+        const faviconUrl = brandingConfig.favicon.getDirectURL();
+        let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+        if (!link) {
+          link = document.createElement('link');
+          link.rel = 'icon';
+          document.head.appendChild(link);
+        }
+        link.href = faviconUrl;
+      }
+    }
   }, [brandingConfig]);
+
+  return brandingConfig;
 }

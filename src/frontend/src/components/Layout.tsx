@@ -1,17 +1,24 @@
-import { Outlet, useNavigate } from '@tanstack/react-router';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import { Link, Outlet, useNavigate } from '@tanstack/react-router';
+import { ShoppingCart, Menu, X, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { ShoppingBag, User, LogOut, LayoutDashboard, ShoppingBasket } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import Footer from './Footer';
-import { useGetCartItemCount, useBrandingConfig } from '../hooks/useQueries';
+import { useInternetIdentity } from '../hooks/useInternetIdentity';
+import { useGetCartItemCount, useGetBrandingConfig, useIsAdmin } from '../hooks/useQueries';
 
 export default function Layout() {
   const navigate = useNavigate();
-  const { identity, login, clear, loginStatus } = useInternetIdentity();
+  const { login, clear, loginStatus, identity } = useInternetIdentity();
+  const { data: cartItemCount = 0 } = useGetCartItemCount();
+  const { data: brandingConfig } = useGetBrandingConfig();
+  const { data: isAdmin = false } = useIsAdmin();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const isAuthenticated = !!identity;
-  const { data: cartCount = 0 } = useGetCartItemCount();
-  const { data: brandingConfig } = useBrandingConfig();
+  const isLoggingIn = loginStatus === 'logging-in';
+
+  const siteName = brandingConfig?.siteName || 'Original Creations Market';
+  const logoUrl = brandingConfig?.logo?.getDirectURL();
 
   const handleAuth = async () => {
     if (isAuthenticated) {
@@ -21,90 +28,124 @@ export default function Layout() {
         await login();
       } catch (error: any) {
         console.error('Login error:', error);
-        if (error.message === 'User is already authenticated') {
-          await clear();
-          setTimeout(() => login(), 300);
-        }
       }
     }
   };
 
-  const siteName = brandingConfig?.siteName || 'Original Creations Market';
-  const logoUrl = brandingConfig?.logo?.getDirectURL();
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
-          <button
-            onClick={() => navigate({ to: '/' })}
-            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
-          >
+          {/* Logo and Site Name */}
+          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             {logoUrl ? (
-              <img src={logoUrl} alt={siteName} className="h-8 w-auto max-h-8 object-contain" />
+              <img src={logoUrl} alt={siteName} className="h-10 w-auto object-contain" />
             ) : (
-              <>
-                <ShoppingBag className="h-6 w-6 text-primary" />
-                <span className="font-serif text-xl font-bold">{siteName}</span>
-              </>
+              <span className="font-serif text-2xl font-bold">{siteName}</span>
             )}
-          </button>
-          <nav className="flex items-center gap-4">
-            {isAuthenticated && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate({ to: '/basket' })}
-                  className="relative gap-2"
-                >
-                  <ShoppingBasket className="h-4 w-4" />
-                  Basket
-                  {cartCount > 0 && (
-                    <Badge 
-                      variant="destructive" 
-                      className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                    >
-                      {cartCount}
-                    </Badge>
-                  )}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate({ to: '/dashboard' })}
-                  className="gap-2"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </Button>
-              </>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-6">
+            <Link
+              to="/"
+              className="text-sm font-medium transition-colors hover:text-primary"
+            >
+              Home
+            </Link>
+            {isAdmin && (
+              <Link
+                to="/dashboard"
+                className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-2"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                Dashboard
+              </Link>
             )}
+            <Link
+              to="/basket"
+              className="relative"
+            >
+              <Button variant="ghost" size="icon">
+                <ShoppingCart className="h-5 w-5" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </Button>
+            </Link>
             <Button
               onClick={handleAuth}
-              disabled={loginStatus === 'logging-in'}
+              disabled={isLoggingIn}
               variant={isAuthenticated ? 'outline' : 'default'}
-              size="sm"
-              className="gap-2"
             >
-              {isAuthenticated ? (
-                <>
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </>
-              ) : (
-                <>
-                  <User className="h-4 w-4" />
-                  {loginStatus === 'logging-in' ? 'Logging in...' : 'Login'}
-                </>
-              )}
+              {isLoggingIn ? 'Logging in...' : isAuthenticated ? 'Logout' : 'Login'}
             </Button>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden p-2"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {/* Mobile Navigation */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t">
+            <nav className="container py-4 flex flex-col gap-4">
+              <Link
+                to="/"
+                className="text-sm font-medium transition-colors hover:text-primary"
+              >
+                Home
+              </Link>
+              {isAdmin && (
+                <Link
+                  to="/dashboard"
+                  className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+                >
+                  <LayoutDashboard className="h-5 w-5" />
+                  Dashboard
+                </Link>
+              )}
+              <Link
+                to="/basket"
+                className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                Shopping Basket
+                {cartItemCount > 0 && (
+                  <span className="ml-auto h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </Link>
+              <Button
+                onClick={handleAuth}
+                disabled={isLoggingIn}
+                variant={isAuthenticated ? 'outline' : 'default'}
+                className="w-full"
+              >
+                {isLoggingIn ? 'Logging in...' : isAuthenticated ? 'Logout' : 'Login'}
+              </Button>
+            </nav>
+          </div>
+        )}
       </header>
+
       <main className="flex-1">
         <Outlet />
       </main>
+
       <Footer />
     </div>
   );

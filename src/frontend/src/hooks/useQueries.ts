@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
 import type { Product, UserProfile, ShoppingItem, StripeConfiguration, ExternalBlob, CartItem, BrandingConfig, ShopDetails, HomepageConfig, DescriptionTemplate } from '../backend';
+import { toast } from 'sonner';
 
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
@@ -418,6 +419,26 @@ export function useSetStripeConfiguration() {
   });
 }
 
+export function useDeleteStripeConfig() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      await actor.deleteStripeConfig();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['stripeConfigured'] });
+      toast.success('Stripe configuration deleted successfully');
+    },
+    onError: (error) => {
+      toast.error('Failed to delete Stripe configuration');
+      console.error(error);
+    },
+  });
+}
+
 export function useCreateCheckoutSession() {
   const { actor } = useActor();
 
@@ -442,11 +463,24 @@ export function useCreateCheckoutSession() {
   });
 }
 
-export function useIsCallerAdmin() {
+export function useIsAdmin() {
   const { actor, isFetching } = useActor();
 
   return useQuery<boolean>({
     queryKey: ['isAdmin'],
+    queryFn: async () => {
+      if (!actor) return false;
+      return actor.isAdmin();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useIsCallerAdmin() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<boolean>({
+    queryKey: ['isCallerAdmin'],
     queryFn: async () => {
       if (!actor) return false;
       return actor.isCallerAdmin();
@@ -455,7 +489,7 @@ export function useIsCallerAdmin() {
   });
 }
 
-export function useBrandingConfig() {
+export function useGetBrandingConfig() {
   const { actor, isFetching } = useActor();
 
   return useQuery<BrandingConfig>({
@@ -483,7 +517,7 @@ export function useUpdateBrandingConfig() {
   });
 }
 
-export function useShopDetails() {
+export function useGetShopDetails() {
   const { actor, isFetching } = useActor();
 
   return useQuery<ShopDetails | null>({
@@ -511,7 +545,7 @@ export function useUpdateShopDetails() {
   });
 }
 
-export function useHomepageConfig() {
+export function useGetHomepageConfig() {
   const { actor, isFetching } = useActor();
 
   return useQuery<HomepageConfig>({
@@ -539,7 +573,7 @@ export function useUpdateHomepageConfig() {
   });
 }
 
-export function useTotalInventoryValue() {
+export function useGetTotalInventoryValue() {
   const { actor, isFetching } = useActor();
 
   return useQuery<bigint>({
@@ -552,7 +586,7 @@ export function useTotalInventoryValue() {
   });
 }
 
-export function useDescriptionTemplates() {
+export function useGetDescriptionTemplates() {
   const { actor, isFetching } = useActor();
 
   return useQuery<DescriptionTemplate[]>({
@@ -572,7 +606,7 @@ export function useCreateDescriptionTemplate() {
   return useMutation({
     mutationFn: async (params: { name: string; content: string }) => {
       if (!actor) throw new Error('Actor not available');
-      return await actor.createDescriptionTemplate(params.name, params.content);
+      return actor.createDescriptionTemplate(params.name, params.content);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['descriptionTemplates'] });

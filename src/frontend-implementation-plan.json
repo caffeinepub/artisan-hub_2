@@ -1,22 +1,57 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Add Stripe configuration status indicator with green checkmark",
+  "title": "Add delete button to remove Stripe configuration",
   "requirements": [
     {
-      "id": "REQ-97",
-      "summary": "Add visual status indicator to StripeSetup component showing Stripe configuration status with green checkmark",
+      "id": "REQ-105",
+      "summary": "Add a 'Delete Stripe Configuration' button to the StripeSetup component that allows the admin to remove the stored Stripe API key and reset the Stripe configuration",
       "acceptanceCriteria": [
-        "A green checkmark icon appears in the StripeSetup component when Stripe is configured",
-        "Status indicator text reads 'Stripe Configured' or similar when active",
-        "The status indicator fetches current Stripe configuration from the backend using the useStripeConfig query hook",
-        "Status updates immediately when Stripe configuration is saved"
+        "Delete button is visible in the StripeSetup component when Stripe is already configured",
+        "Button is labeled 'Delete Stripe Configuration' or similar clear text",
+        "Clicking the button shows a confirmation dialog before deletion",
+        "Confirmation dialog warns that deleting will disable payment processing",
+        "After confirmation, the button calls the backend to remove the Stripe configuration"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/StripeSetup.tsx",
           "operation": "modify",
-          "description": "Add a visual status indicator section that displays a green checkmark icon with 'Stripe Configured' text when the backend reports Stripe is configured. Use the existing useStripeConfig hook from useQueries.ts to fetch configuration status. The hook queries the isStripeConfigured() backend method which returns a boolean. Display the status indicator prominently above or near the configuration form. When the configuration is saved successfully via setStripeConfiguration mutation, the query cache invalidates automatically and the status indicator updates to show the green checkmark. Use a Check icon from lucide-react for the checkmark visual. Style the indicator with green color scheme to match success state (e.g., text-green-600, bg-green-50)."
+          "description": "Add a 'Delete Stripe Configuration' button that appears when Stripe is already configured. The button should trigger a confirmation dialog (using shadcn/ui AlertDialog component) that warns the user about disabling payment processing. On confirmation, call the useDeleteStripeConfig mutation hook. Position the button below the success indicator when configuration exists. Use destructive button styling to indicate the dangerous action."
+        }
+      ]
+    },
+    {
+      "id": "REQ-106",
+      "summary": "Create a React Query mutation hook useDeleteStripeConfig that calls the backend deleteStripeConfig method and invalidates the Stripe configuration cache after successful deletion",
+      "acceptanceCriteria": [
+        "Hook is named useDeleteStripeConfig and follows the existing React Query mutation pattern",
+        "Hook requires admin authentication via the actor",
+        "After successful deletion, the hook invalidates the 'stripeConfig' query cache",
+        "Hook includes proper error handling and shows toast notifications on success/failure"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Add a new mutation hook named useDeleteStripeConfig that follows the existing pattern in the file. The hook should call actor.deleteStripeConfig() with admin authentication check. On success, invalidate the 'stripeConfig' query key using queryClient.invalidateQueries. Show a success toast notification confirming deletion and an error toast on failure. Follow the same structure as other mutation hooks in this file."
+        }
+      ]
+    },
+    {
+      "id": "REQ-108",
+      "summary": "Update the StripeSetup component to refresh the configuration status after deletion and show the configuration form again when Stripe settings are removed",
+      "acceptanceCriteria": [
+        "After successful deletion, the green checkmark status indicator is hidden",
+        "The Stripe configuration form becomes visible and editable again",
+        "A success toast notification confirms the deletion",
+        "The form is ready for the admin to enter new Stripe credentials if needed"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/StripeSetup.tsx",
+          "operation": "modify",
+          "description": "Update the component to conditionally render the success indicator and configuration form based on the isStripeConfigured query result. When the deleteStripeConfig mutation succeeds, the invalidated query will automatically refetch and update the UI state. Ensure the green checkmark and 'Stripe is configured' message are hidden when isStripeConfigured returns false, and the configuration form (secret key and countries inputs) becomes visible and editable. The toast notification is already handled by the mutation hook in useQueries.ts."
         }
       ]
     }

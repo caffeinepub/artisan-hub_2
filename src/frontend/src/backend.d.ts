@@ -144,6 +144,7 @@ export interface backendInterface {
     createDescriptionTemplate(name: string, content: string): Promise<bigint>;
     createNoShippingCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     deleteDescriptionTemplate(id: bigint): Promise<void>;
+    deleteStripeConfig(): Promise<void>;
     emptyCart(): Promise<void>;
     getBestSellingProducts(): Promise<Array<Product>>;
     getBrandingConfig(): Promise<BrandingConfig>;
@@ -163,6 +164,7 @@ export interface backendInterface {
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getTotalInventoryValue(): Promise<bigint>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    isAdmin(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
     removeAllCartItems(): Promise<void>;

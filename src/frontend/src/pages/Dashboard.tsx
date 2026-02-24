@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useIsCallerAdmin, useGetProducts, useGetProductCount, useIsStripeConfigured, useTotalInventoryValue } from '../hooks/useQueries';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
+import { useIsCallerAdmin, useGetProducts, useGetProductCount, useIsStripeConfigured, useGetTotalInventoryValue } from '../hooks/useQueries';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Package, Upload, Settings, TrendingUp, Edit, Palette, Store, Home, DollarSign, FileText } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Package, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react';
 import ProductManagementTable from '../components/ProductManagementTable';
 import BulkProductUpload from '../components/BulkProductUpload';
 import StripeSetup from '../components/StripeSetup';
@@ -14,38 +13,18 @@ import HomepageSettings from '../components/HomepageSettings';
 import DescriptionTemplatesManager from '../components/DescriptionTemplatesManager';
 
 export default function Dashboard() {
-  const { identity } = useInternetIdentity();
-  const { data: isAdmin, isLoading: isAdminLoading } = useIsCallerAdmin();
-  const { data: products = [], isLoading: productsLoading } = useGetProducts();
-  const { data: productCount = BigInt(0), isLoading: countLoading } = useGetProductCount();
-  const { data: isStripeConfigured, isLoading: stripeLoading } = useIsStripeConfigured();
-  const { data: totalInventoryValue = BigInt(0), isLoading: inventoryValueLoading } = useTotalInventoryValue();
-  const [showStripeSetup, setShowStripeSetup] = useState(false);
+  const navigate = useNavigate();
+  const { data: isAdmin, isLoading: adminLoading } = useIsCallerAdmin();
+  const { data: products = [] } = useGetProducts();
+  const { data: productCount = BigInt(0) } = useGetProductCount();
+  const { data: isStripeConfigured = false } = useIsStripeConfigured();
+  const { data: totalInventoryValue = BigInt(0) } = useGetTotalInventoryValue();
+  const [activeTab, setActiveTab] = useState('products');
 
-  useEffect(() => {
-    if (!stripeLoading && isStripeConfigured === false) {
-      setShowStripeSetup(true);
-    }
-  }, [isStripeConfigured, stripeLoading]);
-
-  if (!identity) {
+  if (adminLoading) {
     return (
       <div className="container py-16 text-center">
-        <h1 className="font-serif text-3xl font-bold mb-4">Access Denied</h1>
-        <p className="text-muted-foreground">Please log in to access the dashboard.</p>
-      </div>
-    );
-  }
-
-  if (isAdminLoading) {
-    return (
-      <div className="container py-16">
-        <Skeleton className="h-12 w-64 mb-8" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Skeleton className="h-32" />
-          <Skeleton className="h-32" />
-          <Skeleton className="h-32" />
-        </div>
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     );
   }
@@ -54,41 +33,33 @@ export default function Dashboard() {
     return (
       <div className="container py-16 text-center">
         <h1 className="font-serif text-3xl font-bold mb-4">Access Denied</h1>
-        <p className="text-muted-foreground">You do not have permission to access this page.</p>
+        <p className="text-muted-foreground mb-6">You don't have permission to access this page.</p>
+        <button
+          onClick={() => navigate({ to: '/' })}
+          className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          Go Home
+        </button>
       </div>
     );
   }
 
-  if (showStripeSetup && !isStripeConfigured) {
-    return (
-      <div className="container py-16 max-w-2xl">
-        <h1 className="font-serif text-3xl font-bold mb-2">Welcome to Your Dashboard</h1>
-        <p className="text-muted-foreground mb-8">
-          Before you can start selling, please configure your Stripe payment settings.
-        </p>
-        <StripeSetup onComplete={() => setShowStripeSetup(false)} />
-      </div>
-    );
-  }
-
-  const totalInventory = products.reduce((sum, product) => {
-    return sum + Number(product.inventoryCount);
+  const totalRevenue = products.reduce((sum, product) => {
+    return sum + Number(product.price) * Number(product.viewCount);
   }, 0);
 
-  const formatCurrency = (value: bigint) => {
+  const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat('en-AU', {
       style: 'currency',
       currency: 'AUD',
-    }).format(Number(value) / 100);
+    }).format(cents / 100);
   };
 
   return (
     <div className="container py-8">
-      <div className="flex justify-between items-center mb-8">
-        <div>
-          <h1 className="font-serif text-4xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Manage your products, settings, and store configuration</p>
-        </div>
+      <div className="mb-8">
+        <h1 className="font-serif text-4xl font-bold mb-2">Admin Dashboard</h1>
+        <p className="text-muted-foreground">Manage your products, settings, and store configuration</p>
       </div>
 
       {/* Statistics Cards */}
@@ -99,125 +70,91 @@ export default function Dashboard() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {countLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{productCount.toString()}</div>
-            )}
+            <div className="text-2xl font-bold">{productCount.toString()}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Inventory</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            {productsLoading ? (
-              <Skeleton className="h-8 w-16" />
-            ) : (
-              <div className="text-2xl font-bold">{totalInventory}</div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Inventory Value</CardTitle>
+            <CardTitle className="text-sm font-medium">Inventory Value</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {inventoryValueLoading ? (
-              <Skeleton className="h-8 w-24" />
-            ) : (
-              <div className="text-2xl font-bold">{formatCurrency(totalInventoryValue)}</div>
-            )}
-            <p className="text-xs text-muted-foreground mt-1">
-              Price × inventory for all items
-            </p>
+            <div className="text-2xl font-bold">{formatCurrency(Number(totalInventoryValue))}</div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Average Item Value</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Views</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            {productsLoading || inventoryValueLoading ? (
-              <Skeleton className="h-8 w-24" />
-            ) : (
-              <div className="text-2xl font-bold">
-                {totalInventory > 0
-                  ? formatCurrency(totalInventoryValue / BigInt(totalInventory))
-                  : formatCurrency(BigInt(0))}
-              </div>
-            )}
-            <p className="text-xs text-muted-foreground mt-1">
-              Per unit in stock
+            <div className="text-2xl font-bold">
+              {products.reduce((sum, p) => sum + Number(p.viewCount), 0)}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Stripe Status</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{isStripeConfigured ? '✓' : '✗'}</div>
+            <p className="text-xs text-muted-foreground">
+              {isStripeConfigured ? 'Configured' : 'Not configured'}
             </p>
           </CardContent>
         </Card>
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="products" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-7 lg:w-auto">
-          <TabsTrigger value="products" className="flex items-center gap-2">
-            <Edit className="h-4 w-4" />
-            <span className="hidden sm:inline">Products</span>
-          </TabsTrigger>
-          <TabsTrigger value="bulk-upload" className="flex items-center gap-2">
-            <Upload className="h-4 w-4" />
-            <span className="hidden sm:inline">Bulk Upload</span>
-          </TabsTrigger>
-          <TabsTrigger value="templates" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            <span className="hidden sm:inline">Templates</span>
-          </TabsTrigger>
-          <TabsTrigger value="stripe" className="flex items-center gap-2">
-            <Settings className="h-4 w-4" />
-            <span className="hidden sm:inline">Stripe</span>
-          </TabsTrigger>
-          <TabsTrigger value="branding" className="flex items-center gap-2">
-            <Palette className="h-4 w-4" />
-            <span className="hidden sm:inline">Branding</span>
-          </TabsTrigger>
-          <TabsTrigger value="shop-details" className="flex items-center gap-2">
-            <Store className="h-4 w-4" />
-            <span className="hidden sm:inline">Shop Details</span>
-          </TabsTrigger>
-          <TabsTrigger value="homepage" className="flex items-center gap-2">
-            <Home className="h-4 w-4" />
-            <span className="hidden sm:inline">Homepage</span>
-          </TabsTrigger>
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-7">
+          <TabsTrigger value="products">Products</TabsTrigger>
+          <TabsTrigger value="bulk-upload">Bulk Upload</TabsTrigger>
+          <TabsTrigger value="templates">Templates</TabsTrigger>
+          <TabsTrigger value="stripe">Stripe</TabsTrigger>
+          <TabsTrigger value="branding">Branding</TabsTrigger>
+          <TabsTrigger value="shop-details">Shop Details</TabsTrigger>
+          <TabsTrigger value="homepage">Homepage</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="products">
-          <ProductManagementTable />
+        <TabsContent value="products" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Product Management</CardTitle>
+              <CardDescription>View and manage all your products</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ProductManagementTable />
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        <TabsContent value="bulk-upload">
-          <BulkProductUpload />
+        <TabsContent value="bulk-upload" className="mt-6">
+          <BulkProductUpload onComplete={() => setActiveTab('products')} />
         </TabsContent>
 
-        <TabsContent value="templates">
+        <TabsContent value="templates" className="mt-6">
           <DescriptionTemplatesManager />
         </TabsContent>
 
-        <TabsContent value="stripe">
+        <TabsContent value="stripe" className="mt-6">
           <StripeSetup />
         </TabsContent>
 
-        <TabsContent value="branding">
+        <TabsContent value="branding" className="mt-6">
           <BrandingSettings />
         </TabsContent>
 
-        <TabsContent value="shop-details">
+        <TabsContent value="shop-details" className="mt-6">
           <ShopDetailsSettings />
         </TabsContent>
 
-        <TabsContent value="homepage">
+        <TabsContent value="homepage" className="mt-6">
           <HomepageSettings />
         </TabsContent>
       </Tabs>

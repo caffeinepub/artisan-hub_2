@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useGetCart, useCreateCheckoutSession, useGetProduct } from '../hooks/useQueries';
+import { useActor } from '../hooks/useActor';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loader2, ShoppingCart } from 'lucide-react';
@@ -9,6 +10,7 @@ import type { ShoppingItem } from '../backend';
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const { actor } = useActor();
   const { data: cart = [] } = useGetCart();
   const createCheckoutSession = useCreateCheckoutSession();
   const [buyNowProduct, setBuyNowProduct] = useState<bigint | null>(null);
@@ -47,6 +49,11 @@ export default function Checkout() {
   const handleCheckout = async () => {
     if (items.length === 0) {
       toast.error('No items to checkout');
+      return;
+    }
+
+    if (!actor) {
+      toast.error('Unable to connect to the service. Please try again.');
       return;
     }
 
@@ -136,7 +143,7 @@ export default function Checkout() {
         </Button>
         <Button
           onClick={handleCheckout}
-          disabled={isProcessing}
+          disabled={isProcessing || !actor}
           className="flex-1"
         >
           {isProcessing ? (

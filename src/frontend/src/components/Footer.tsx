@@ -1,71 +1,72 @@
-import { useNavigate } from '@tanstack/react-router';
-import { Heart, Mail } from 'lucide-react';
-import { useShopDetails } from '../hooks/useQueries';
+import { Heart } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import { useGetShopDetails } from '../hooks/useQueries';
 
 export default function Footer() {
-  const navigate = useNavigate();
-  const { data: shopDetails } = useShopDetails();
-  const currentYear = new Date().getFullYear();
-  const appIdentifier = encodeURIComponent(window.location.hostname || 'original-creations-hub');
+  const { data: shopDetails } = useGetShopDetails();
 
-  const contactEmail = shopDetails?.contactDetails?.email;
+  const appIdentifier = typeof window !== 'undefined' 
+    ? encodeURIComponent(window.location.hostname)
+    : 'unknown-app';
 
   return (
-    <footer className="border-t border-border/40 bg-muted/30 mt-auto">
+    <footer className="border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container py-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* About Section */}
           <div>
             <h3 className="font-serif text-lg font-semibold mb-3">Original Creations Hub</h3>
             <p className="text-sm text-muted-foreground">
-              Discover unique original designs crafted with passion and creativity.
+              Discover unique, custom-made creations crafted with passion and attention to detail.
             </p>
           </div>
+
+          {/* Quick Links */}
           <div>
-            <h4 className="font-medium mb-3">Legal</h4>
-            <nav className="flex flex-col gap-2">
-              <button
-                onClick={() => navigate({ to: '/terms' })}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
-              >
-                Terms & Conditions
-              </button>
-              <button
-                onClick={() => navigate({ to: '/privacy-policy' })}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors text-left"
-              >
-                Privacy Policy
-              </button>
-            </nav>
+            <h3 className="font-serif text-lg font-semibold mb-3">Legal</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to="/privacy-policy" className="text-muted-foreground hover:text-foreground transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+            </ul>
           </div>
+
+          {/* Contact */}
           <div>
-            <h4 className="font-medium mb-3">Connect</h4>
-            {contactEmail ? (
-              <a
-                href={`mailto:${contactEmail}`}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
-              >
-                <Mail className="h-4 w-4" />
-                {contactEmail}
-              </a>
-            ) : (
+            <h3 className="font-serif text-lg font-semibold mb-3">Contact</h3>
+            {shopDetails?.contactDetails?.email && (
               <p className="text-sm text-muted-foreground">
-                Questions? We'd love to hear from you.
+                Email: <a href={`mailto:${shopDetails.contactDetails.email}`} className="hover:text-foreground transition-colors">
+                  {shopDetails.contactDetails.email}
+                </a>
               </p>
             )}
           </div>
         </div>
-        <div className="mt-8 pt-6 border-t border-border/40 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
-            © {currentYear} Original Creations Hub. All rights reserved.
+
+        {/* Bottom Bar */}
+        <div className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground">
+          <p>
+            © {new Date().getFullYear()} Original Creations Hub. All rights reserved.
           </p>
-          <a
-            href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${appIdentifier}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
-          >
-            Built with <Heart className="h-3 w-3 text-red-500 fill-red-500" /> using caffeine.ai
-          </a>
+          <p className="mt-2 flex items-center justify-center gap-1">
+            Built with <Heart className="h-4 w-4 text-red-500 fill-red-500" /> using{' '}
+            <a
+              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${appIdentifier}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors font-medium"
+            >
+              caffeine.ai
+            </a>
+          </p>
         </div>
       </div>
     </footer>

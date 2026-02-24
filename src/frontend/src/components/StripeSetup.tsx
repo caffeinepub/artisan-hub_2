@@ -3,9 +3,20 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useSetStripeConfiguration, useIsStripeConfigured } from '../hooks/useQueries';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { useSetStripeConfiguration, useIsStripeConfigured, useDeleteStripeConfig } from '../hooks/useQueries';
 import { toast } from 'sonner';
-import { CreditCard, Check } from 'lucide-react';
+import { CreditCard, Check, Trash2 } from 'lucide-react';
 
 interface StripeSetupProps {
   onComplete?: () => void;
@@ -15,6 +26,7 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
   const [secretKey, setSecretKey] = useState('');
   const [countries, setCountries] = useState('US,CA,GB');
   const setConfig = useSetStripeConfiguration();
+  const deleteConfig = useDeleteStripeConfig();
   const { data: isConfigured, isLoading: isCheckingConfig } = useIsStripeConfigured();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -44,6 +56,14 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
       onComplete?.();
     } catch (error) {
       toast.error('Failed to configure Stripe');
+      console.error(error);
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteConfig.mutateAsync();
+    } catch (error) {
       console.error(error);
     }
   };
@@ -105,9 +125,44 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
               </p>
             </div>
 
-            <Button type="submit" className="w-full" disabled={setConfig.isPending}>
-              {setConfig.isPending ? 'Configuring...' : isConfigured ? 'Update Stripe Configuration' : 'Configure Stripe'}
-            </Button>
+            <div className="flex gap-3">
+              <Button type="submit" className="flex-1" disabled={setConfig.isPending}>
+                {setConfig.isPending ? 'Configuring...' : isConfigured ? 'Update Stripe Configuration' : 'Configure Stripe'}
+              </Button>
+
+              {!isCheckingConfig && isConfigured && (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      disabled={deleteConfig.isPending}
+                      className="gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Stripe Configuration?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will remove your Stripe API key and disable payment processing. You will need to reconfigure Stripe to accept payments again. This action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDelete}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Delete Configuration
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+            </div>
           </form>
         </CardContent>
       </Card>

@@ -162,6 +162,7 @@ export interface _SERVICE {
     string
   >,
   'deleteDescriptionTemplate' : ActorMethod<[bigint], undefined>,
+  'deleteStripeConfig' : ActorMethod<[], undefined>,
   'emptyCart' : ActorMethod<[], undefined>,
   'getBestSellingProducts' : ActorMethod<[], Array<Product>>,
   'getBrandingConfig' : ActorMethod<[], BrandingConfig>,
@@ -181,6 +182,7 @@ export interface _SERVICE {
   'getStripeSessionStatus' : ActorMethod<[string], StripeSessionStatus>,
   'getTotalInventoryValue' : ActorMethod<[], bigint>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'isAdmin' : ActorMethod<[], boolean>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'isStripeConfigured' : ActorMethod<[], boolean>,
   'removeAllCartItems' : ActorMethod<[], undefined>,

@@ -237,6 +237,7 @@ export interface backendInterface {
     createDescriptionTemplate(name: string, content: string): Promise<bigint>;
     createNoShippingCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     deleteDescriptionTemplate(id: bigint): Promise<void>;
+    deleteStripeConfig(): Promise<void>;
     emptyCart(): Promise<void>;
     getBestSellingProducts(): Promise<Array<Product>>;
     getBrandingConfig(): Promise<BrandingConfig>;
@@ -256,6 +257,7 @@ export interface backendInterface {
     getStripeSessionStatus(sessionId: string): Promise<StripeSessionStatus>;
     getTotalInventoryValue(): Promise<bigint>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
+    isAdmin(): Promise<boolean>;
     isCallerAdmin(): Promise<boolean>;
     isStripeConfigured(): Promise<boolean>;
     removeAllCartItems(): Promise<void>;
@@ -511,6 +513,20 @@ export class Backend implements backendInterface {
             }
         } else {
             const result = await this.actor.deleteDescriptionTemplate(arg0);
+            return result;
+        }
+    }
+    async deleteStripeConfig(): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteStripeConfig();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteStripeConfig();
             return result;
         }
     }
@@ -778,6 +794,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getUserProfile(arg0);
             return from_candid_opt_n21(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async isAdmin(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.isAdmin();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.isAdmin();
+            return result;
         }
     }
     async isCallerAdmin(): Promise<boolean> {

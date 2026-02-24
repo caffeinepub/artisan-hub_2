@@ -1,55 +1,98 @@
 {
   "kind": "build_request",
-  "title": "Add Stripe configuration status indicator with green checkmark",
+  "title": "Add delete button to remove Stripe configuration",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-97",
-      "text": "Update the StripeSetup component (frontend/src/components/StripeSetup.tsx) to display a visual status indicator showing whether Stripe has been configured. Display a green checkmark icon with 'Stripe Configured' text when a valid Stripe secret key is stored in the backend.",
+      "id": "REQ-105",
+      "text": "Add a 'Delete Stripe Configuration' button to the StripeSetup component (frontend/src/components/StripeSetup.tsx) that allows the admin to remove the stored Stripe API key and reset the Stripe configuration",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "Show stripe has been configured and stored Key with a green tick that shows stripe status in configuration"
+          "Make a delete settings button for stripe"
         ]
       },
       "acceptanceCriteria": [
-        "A green checkmark icon appears in the StripeSetup component when Stripe is configured",
-        "Status indicator text reads 'Stripe Configured' or similar when active",
-        "The status indicator fetches current Stripe configuration from the backend using the useStripeConfig query hook",
-        "Status updates immediately when Stripe configuration is saved"
+        "Delete button is visible in the StripeSetup component when Stripe is already configured",
+        "Button is labeled 'Delete Stripe Configuration' or similar clear text",
+        "Clicking the button shows a confirmation dialog before deletion",
+        "Confirmation dialog warns that deleting will disable payment processing",
+        "After confirmation, the button calls the backend to remove the Stripe configuration"
       ]
     },
     {
-      "id": "REQ-98",
-      "text": "Add a backend method hasStripeConfiguration() or extend the existing getStripeConfig() method in backend/main.mo to return a boolean flag or status indicating whether a Stripe secret key has been stored, without exposing the actual key value.",
-      "target": "backend",
+      "id": "REQ-106",
+      "text": "Create a React Query mutation hook useDeleteStripeConfig in frontend/src/hooks/useQueries.ts that calls the backend deleteStripeConfig method and invalidates the Stripe configuration cache after successful deletion",
+      "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "Show stripe has been configured and stored Key"
+          "Make a delete settings button for stripe"
         ]
       },
       "acceptanceCriteria": [
-        "Backend method returns true/false or status field indicating if Stripe is configured",
-        "Method does not expose the actual Stripe secret key value",
-        "Method requires admin authentication to check configuration status",
-        "Frontend can reliably determine configuration status from backend response"
+        "Hook is named useDeleteStripeConfig and follows the existing React Query mutation pattern",
+        "Hook requires admin authentication via the actor",
+        "After successful deletion, the hook invalidates the 'stripeConfig' query cache",
+        "Hook includes proper error handling and shows toast notifications on success/failure"
+      ]
+    },
+    {
+      "id": "REQ-107",
+      "text": "Create a backend method deleteStripeConfig() in backend/main.mo with admin authentication that removes the stored Stripe secret key and allowed countries configuration from the StripeConfig storage",
+      "target": "backend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "Make a delete settings button for stripe"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Method is named deleteStripeConfig and returns a success/error result",
+        "Method requires admin authentication using requireAdmin() or equivalent",
+        "Method clears the Stripe secret key from storage",
+        "Method resets or clears the allowed countries list",
+        "After deletion, getStripeConfig should return null or empty configuration",
+        "Method includes appropriate error handling for edge cases"
+      ]
+    },
+    {
+      "id": "REQ-108",
+      "text": "Update the StripeSetup component to refresh the configuration status after deletion and show the configuration form again when Stripe settings are removed",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-last"
+        ],
+        "quotes": [
+          "Make a delete settings button for stripe"
+        ]
+      },
+      "acceptanceCriteria": [
+        "After successful deletion, the green checkmark status indicator is hidden",
+        "The Stripe configuration form becomes visible and editable again",
+        "A success toast notification confirms the deletion",
+        "The form is ready for the admin to enter new Stripe credentials if needed"
       ]
     }
   ],
   "constraints": [
-    "Do not expose the actual Stripe secret key in any frontend response",
-    "Maintain admin-only access control for Stripe configuration endpoints"
+    "Deletion must require admin authentication",
+    "Show confirmation dialog before deleting to prevent accidental removal",
+    "Backend must properly clear all Stripe-related stored data"
   ],
   "nonGoals": [
-    "Validating the Stripe API key with Stripe servers",
-    "Testing Stripe connection status",
-    "Displaying partial key values or hints about the stored key"
+    "Archiving or backing up deleted Stripe configurations",
+    "Deleting historical transaction data or payment records",
+    "Notifying customers about Stripe configuration changes",
+    "Automatically disabling checkout functionality when Stripe is deleted"
   ],
   "imageRequirements": {
     "required": [],

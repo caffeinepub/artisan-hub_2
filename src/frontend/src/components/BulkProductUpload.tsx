@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAddProduct, useDescriptionTemplates } from '../hooks/useQueries';
+import { useAddProduct, useGetDescriptionTemplates } from '../hooks/useQueries';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload } from 'lucide-react';
+import { Upload, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExternalBlob } from '../backend';
 
@@ -29,7 +29,7 @@ interface ProductPreview {
 
 export default function BulkProductUpload({ onComplete }: BulkProductUploadProps) {
   const addProduct = useAddProduct();
-  const { data: templates = [], isLoading: templatesLoading } = useDescriptionTemplates();
+  const { data: templates = [], isLoading: templatesLoading } = useGetDescriptionTemplates();
   const [products, setProducts] = useState<ProductPreview[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -239,7 +239,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Select a template to pre-populate descriptions for all products
+                Select a template to pre-populate product descriptions
               </p>
             </div>
           </CardContent>
@@ -252,28 +252,16 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
             {products.map((product, index) => (
               <Card key={index}>
                 <CardContent className="pt-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-4">
-                      <div className="aspect-square overflow-hidden rounded-lg bg-muted">
+                      <div>
                         <img
                           src={URL.createObjectURL(product.file)}
                           alt={`Preview ${index + 1}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-48 object-cover rounded-lg"
                         />
                       </div>
-                      {product.uploadProgress > 0 && product.uploadProgress < 100 && (
-                        <div className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span>Uploading...</span>
-                            <span>{Math.round(product.uploadProgress)}%</span>
-                          </div>
-                          <Progress value={product.uploadProgress} />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="space-y-2">
+                      <div>
                         <Label htmlFor={`name-${index}`}>Product Name *</Label>
                         <Input
                           id={`name-${index}`}
@@ -282,42 +270,28 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                           placeholder="Enter product name"
                         />
                       </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
                           <Label htmlFor={`shape-${index}`}>Shape *</Label>
                           <Input
                             id={`shape-${index}`}
                             value={product.shape}
                             onChange={(e) => updateProduct(index, 'shape', e.target.value)}
-                            placeholder="e.g., Round, Square"
+                            placeholder="e.g., Round"
                           />
                         </div>
-
-                        <div className="space-y-2">
+                        <div>
                           <Label htmlFor={`category-${index}`}>Category *</Label>
                           <Input
                             id={`category-${index}`}
                             value={product.category}
                             onChange={(e) => updateProduct(index, 'category', e.target.value)}
-                            placeholder="e.g., Chocolate, Praline"
+                            placeholder="e.g., Pendant"
                           />
                         </div>
                       </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor={`description-${index}`}>Description *</Label>
-                        <Textarea
-                          id={`description-${index}`}
-                          value={product.description}
-                          onChange={(e) => updateProduct(index, 'description', e.target.value)}
-                          placeholder="Enter product description"
-                          rows={4}
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
                           <Label htmlFor={`price-${index}`}>Price (AUD) *</Label>
                           <Input
                             id={`price-${index}`}
@@ -329,9 +303,8 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                             placeholder="0.00"
                           />
                         </div>
-
-                        <div className="space-y-2">
-                          <Label htmlFor={`inventory-${index}`}>Inventory Count</Label>
+                        <div>
+                          <Label htmlFor={`inventory-${index}`}>Inventory</Label>
                           <Input
                             id={`inventory-${index}`}
                             type="number"
@@ -343,42 +316,51 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                         </div>
                       </div>
                     </div>
+                    <div>
+                      <Label htmlFor={`description-${index}`}>Description *</Label>
+                      <Textarea
+                        id={`description-${index}`}
+                        value={product.description}
+                        onChange={(e) => updateProduct(index, 'description', e.target.value)}
+                        placeholder="Enter product description"
+                        className="h-[calc(100%-2rem)]"
+                      />
+                    </div>
                   </div>
+                  {product.uploadProgress > 0 && product.uploadProgress < 100 && (
+                    <div className="mt-4">
+                      <Progress value={product.uploadProgress} />
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Uploading: {product.uploadProgress}%
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             ))}
           </div>
 
-          <div className="flex justify-end gap-4">
-            <Button variant="outline" onClick={() => setProducts([])} disabled={uploading}>
-              Clear All
-            </Button>
-            <Button onClick={handleUpload} disabled={uploading || products.length === 0}>
-              {uploading ? `Uploading... ${Math.round(progress)}%` : `Upload ${products.length} Product(s)`}
-            </Button>
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-muted-foreground">
+              {products.length} product{products.length !== 1 ? 's' : ''} ready to upload
+            </p>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setProducts([])} disabled={uploading}>
+                Clear All
+              </Button>
+              <Button onClick={handleUpload} disabled={uploading}>
+                {uploading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading... {Math.round(progress)}%
+                  </>
+                ) : (
+                  `Upload ${products.length} Product${products.length !== 1 ? 's' : ''}`
+                )}
+              </Button>
+            </div>
           </div>
-
-          {uploading && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Overall Progress</span>
-                <span>{Math.round(progress)}%</span>
-              </div>
-              <Progress value={progress} />
-            </div>
-          )}
         </>
-      )}
-
-      {products.length === 0 && (
-        <Card>
-          <CardContent className="py-12">
-            <div className="text-center text-muted-foreground">
-              <Upload className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No images selected. Click "Select Images" to get started.</p>
-            </div>
-          </CardContent>
-        </Card>
       )}
     </div>
   );

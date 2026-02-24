@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useBrandingConfig, useUpdateBrandingConfig } from '../hooks/useQueries';
+import { useGetBrandingConfig, useUpdateBrandingConfig } from '../hooks/useQueries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { ExternalBlob } from '../backend';
 
 export default function BrandingSettings() {
-  const { data: brandingConfig, isLoading } = useBrandingConfig();
+  const { data: brandingConfig, isLoading } = useGetBrandingConfig();
   const updateBranding = useUpdateBrandingConfig();
 
   const [siteName, setSiteName] = useState('');

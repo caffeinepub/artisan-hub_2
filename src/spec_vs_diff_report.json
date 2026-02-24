@@ -1,15 +1,16 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-23T15:31:38.630Z",
-  "summary": "The implementation successfully addresses both requirements. REQ-97 is implemented with a green checkmark status indicator in StripeSetup.tsx that fetches configuration status using useIsStripeConfigured hook. REQ-98 is implemented via the backend with useIsStripeConfigured hook in useQueries.ts (referenced in StripeSetup.tsx), though the backend main.mo implementation details are truncated in the diff.",
+  "generatedAt": "2026-02-24T01:13:56.705Z",
+  "summary": "All four requirements (REQ-105, REQ-106, REQ-107, REQ-108) have been implemented in the diff. The implementation includes a delete button with AlertDialog confirmation in StripeSetup.tsx, a useDeleteStripeConfig mutation hook in useQueries.ts, a backend deleteStripeConfig() method in main.mo, and proper UI state refresh after deletion.",
   "missing_requirements": [],
   "hallucinated_features": [],
-  "confidence": 0.85,
+  "confidence": 0.95,
   "changed_files": [
     "backend/main.mo",
     "frontend-file-summaries.txt",
     "frontend/src/components/StripeSetup.tsx",
+    "frontend/src/hooks/useQueries.ts",
     "project_state.json"
   ]
 }

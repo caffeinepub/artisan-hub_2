@@ -1,23 +1,23 @@
 import { useState, useEffect } from 'react';
-import { useHomepageConfig, useUpdateHomepageConfig } from '../hooks/useQueries';
+import { useGetHomepageConfig, useUpdateHomepageConfig } from '../hooks/useQueries';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Loader2, Upload, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { ExternalBlob } from '../backend';
 
 export default function HomepageSettings() {
-  const { data: homepageConfig, isLoading } = useHomepageConfig();
-  const updateHomepage = useUpdateHomepageConfig();
+  const { data: homepageConfig, isLoading } = useGetHomepageConfig();
+  const updateConfig = useUpdateHomepageConfig();
 
   const [heroMotto, setHeroMotto] = useState('');
   const [promotionalText, setPromotionalText] = useState('');
   const [heroImageFile, setHeroImageFile] = useState<File | null>(null);
   const [heroImagePreview, setHeroImagePreview] = useState<string | null>(null);
-  const [heroImageUploadProgress, setHeroImageUploadProgress] = useState(0);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Initialize form with current config
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function HomepageSettings() {
     }
   }, [homepageConfig]);
 
-  const handleHeroImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
@@ -46,7 +46,7 @@ export default function HomepageSettings() {
     }
   };
 
-  const clearHeroImage = () => {
+  const clearImage = () => {
     setHeroImageFile(null);
     setHeroImagePreview(null);
   };
@@ -59,11 +59,6 @@ export default function HomepageSettings() {
       return;
     }
 
-    if (!promotionalText.trim()) {
-      toast.error('Promotional text is required');
-      return;
-    }
-
     try {
       let heroImageBlob: ExternalBlob | undefined = homepageConfig?.heroImage || undefined;
 
@@ -71,14 +66,14 @@ export default function HomepageSettings() {
       if (heroImageFile) {
         const imageBytes = new Uint8Array(await heroImageFile.arrayBuffer());
         heroImageBlob = ExternalBlob.fromBytes(imageBytes).withUploadProgress((percentage) => {
-          setHeroImageUploadProgress(percentage);
+          setUploadProgress(percentage);
         });
       } else if (heroImagePreview === null && homepageConfig?.heroImage) {
         // Image was cleared
         heroImageBlob = undefined;
       }
 
-      await updateHomepage.mutateAsync({
+      await updateConfig.mutateAsync({
         heroMotto: heroMotto.trim(),
         promotionalText: promotionalText.trim(),
         heroImage: heroImageBlob,
@@ -86,9 +81,9 @@ export default function HomepageSettings() {
 
       toast.success('Homepage settings updated successfully');
       setHeroImageFile(null);
-      setHeroImageUploadProgress(0);
+      setUploadProgress(0);
     } catch (error) {
-      console.error('Error updating homepage:', error);
+      console.error('Error updating homepage config:', error);
       toast.error('Failed to update homepage settings');
     }
   };
@@ -123,6 +118,9 @@ export default function HomepageSettings() {
               placeholder="Enter your hero motto"
               required
             />
+            <p className="text-xs text-muted-foreground">
+              Main headline displayed on the homepage
+            </p>
           </div>
 
           {/* Promotional Text */}
@@ -134,81 +132,85 @@ export default function HomepageSettings() {
               onChange={(e) => setPromotionalText(e.target.value)}
               placeholder="Enter promotional text"
               rows={3}
-              required
             />
+            <p className="text-xs text-muted-foreground">
+              Supporting text displayed below the hero motto
+            </p>
           </div>
 
-          {/* Hero Background Image Upload */}
+          {/* Hero Background Image */}
           <div className="space-y-2">
             <Label htmlFor="heroImage">Hero Background Image</Label>
-            <div className="flex items-start gap-4">
+            <div className="space-y-4">
               {heroImagePreview ? (
                 <div className="relative">
                   <img
                     src={heroImagePreview}
                     alt="Hero background preview"
-                    className="h-32 w-auto max-w-md object-cover border rounded-lg"
+                    className="w-full h-48 object-cover rounded-lg border"
                   />
                   <Button
                     type="button"
                     variant="destructive"
                     size="icon"
-                    className="absolute -top-2 -right-2 h-6 w-6"
-                    onClick={clearHeroImage}
+                    className="absolute top-2 right-2"
+                    onClick={clearImage}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
               ) : (
-                <div className="h-32 w-48 border-2 border-dashed rounded-lg flex items-center justify-center text-muted-foreground">
-                  <Upload className="h-8 w-8" />
+                <div className="w-full h-48 border-2 border-dashed rounded-lg flex items-center justify-center text-muted-foreground">
+                  <div className="text-center">
+                    <Upload className="h-12 w-12 mx-auto mb-2" />
+                    <p className="text-sm">No image selected</p>
+                  </div>
                 </div>
               )}
-              <div className="flex-1">
-                <Input
-                  id="heroImage"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleHeroImageChange}
-                  className="cursor-pointer"
-                />
-                <p className="text-sm text-muted-foreground mt-1">
-                  Recommended: 1920x800px, JPG or PNG
-                </p>
-                {heroImageUploadProgress > 0 && heroImageUploadProgress < 100 && (
-                  <p className="text-sm text-primary mt-1">Uploading: {heroImageUploadProgress}%</p>
-                )}
-              </div>
+              <Input
+                id="heroImage"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="cursor-pointer"
+              />
+              <p className="text-xs text-muted-foreground">
+                Recommended: 1920x600px or larger, JPG or PNG
+              </p>
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <p className="text-sm text-primary">Uploading: {uploadProgress}%</p>
+              )}
             </div>
           </div>
 
-          {/* Live Preview Section */}
+          {/* Live Preview */}
           <div className="space-y-2">
-            <Label>Live Preview</Label>
-            <div
-              className="relative h-48 rounded-lg overflow-hidden border"
+            <Label>Preview</Label>
+            <div 
+              className="relative h-64 rounded-lg overflow-hidden border"
               style={{
-                backgroundImage: `url(${heroImagePreview || '/assets/generated/hero-ocarinas.dim_1920x800.png'})`,
+                backgroundImage: heroImagePreview ? `url(${heroImagePreview})` : 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%)',
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-background/60" />
-              <div className="relative z-10 p-6 flex flex-col justify-center h-full">
-                <h2 className="font-serif text-2xl font-bold mb-2 text-foreground">
-                  {heroMotto || 'Your Hero Motto'}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  {promotionalText || 'Your promotional text'}
-                </p>
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                <div className="text-center text-white px-4">
+                  <h1 className="font-serif text-4xl font-bold mb-4">
+                    {heroMotto || 'Your Hero Motto'}
+                  </h1>
+                  <p className="text-lg max-w-2xl mx-auto">
+                    {promotionalText || 'Your promotional text will appear here'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Submit Button */}
           <div className="flex justify-end">
-            <Button type="submit" disabled={updateHomepage.isPending}>
-              {updateHomepage.isPending ? (
+            <Button type="submit" disabled={updateConfig.isPending}>
+              {updateConfig.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Saving...

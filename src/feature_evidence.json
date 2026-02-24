@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-stripesetup-component-frontend-src-components-stripesetup-tsx-to-display-a-visual-status-indicator-showing-whether-stripe-has-been-configured-display-a-green-checkmark-icon-with-stripe-configured-text-when-a-valid-stripe-secret-key-is-stored-in-the-backend",
-      "featureTitle": "Update the StripeSetup component (frontend/src/components/StripeSetup.tsx) to display a visual status indicator showing whether Stripe has been configured. Display a green checkmark icon with 'Stripe Configured' text when a valid Stripe secret key is stored in the backend.",
+      "featureId": "feature-add-a-delete-stripe-configuration-button-to-the-stripesetup-component-frontend-src-components-stripesetup-tsx-that-allows-the-admin-to-remove-the-stored-stripe-api-key-and-reset-the-stripe-configuration",
+      "featureTitle": "Add a 'Delete Stripe Configuration' button to the StripeSetup component (frontend/src/components/StripeSetup.tsx) that allows the admin to remove the stored Stripe API key and reset the Stripe configuration",
       "files": [
         "frontend/src/components/StripeSetup.tsx"
       ],
@@ -19,7 +19,51 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-97"
+        "REQ-105"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-react-query-mutation-hook-usedeletestripeconfig-in-frontend-src-hooks-usequeries-ts-that-calls-the-backend-deletestripeconfig-method-and-invalidates-the-stripe-configuration-cache-after-successful-deletion",
+      "featureTitle": "Create a React Query mutation hook useDeleteStripeConfig in frontend/src/hooks/useQueries.ts that calls the backend deleteStripeConfig method and invalidates the Stripe configuration cache after successful deletion",
+      "files": [
+        "frontend/src/hooks/useQueries.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-106"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-stripesetup-component-to-refresh-the-configuration-status-after-deletion-and-show-the-configuration-form-again-when-stripe-settings-are-removed",
+      "featureTitle": "Update the StripeSetup component to refresh the configuration status after deletion and show the configuration form again when Stripe settings are removed",
+      "files": [
+        "frontend/src/components/StripeSetup.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "blob-storage@4.0.0",
+        "stripe@3.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "http-outcalls@3.0.0"
+      ],
+      "testIds": [
+        "REQ-108"
       ],
       "confidence": "high"
     }

@@ -4,15 +4,15 @@ import Stripe "stripe/stripe";
 import Storage "blob-storage/Storage";
 import MixinStorage "blob-storage/Mixin";
 import Map "mo:core/Map";
-import Principal "mo:core/Principal";
 import Array "mo:core/Array";
+import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
 import OutCall "http-outcalls/outcall";
 import Nat "mo:core/Nat";
 import Time "mo:core/Time";
-import Order "mo:core/Order";
 import Int "mo:core/Int";
 import Iter "mo:core/Iter";
+import Order "mo:core/Order";
 
 actor {
   include MixinStorage();
@@ -194,6 +194,13 @@ actor {
       Runtime.trap("Unauthorized: Only admins can configure Stripe");
     };
     configuration := ?config;
+  };
+
+  public shared ({ caller }) func deleteStripeConfig() : async () {
+    if (not AccessControl.isAdmin(accessControlState, caller)) {
+      Runtime.trap("Unauthorized: Only admins can delete Stripe config");
+    };
+    configuration := null;
   };
 
   func getStripeConfiguration() : Stripe.StripeConfiguration {
@@ -446,10 +453,6 @@ actor {
   };
 
   public shared ({ caller }) func createNoShippingCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
-    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
-      Runtime.trap("Unauthorized: Only users can create checkout sessions");
-    };
-
     let audItems = items.map(
       func(item) {
         { item with currency = "aud" };
@@ -689,5 +692,9 @@ actor {
         descriptionTemplates.remove(id);
       };
     };
+  };
+
+  public query ({ caller }) func isAdmin() : async Bool {
+    AccessControl.isAdmin(accessControlState, caller);
   };
 };

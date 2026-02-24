@@ -1,11 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Add a visual status indicator to show when Stripe has been configured with a green checkmark.
+**Goal:** Allow admins to delete Stripe payment configuration from the admin panel.
 
 **Planned changes:**
-- Update StripeSetup component to display a green checkmark icon with "Stripe Configured" text when a valid Stripe secret key is stored
-- Add backend method to return a boolean flag indicating whether Stripe is configured without exposing the actual key
-- Status indicator fetches configuration status from backend and updates immediately when Stripe is saved
+- Add a "Delete Stripe Configuration" button to the StripeSetup component that is visible when Stripe is configured
+- Implement a confirmation dialog that warns about disabling payment processing before deletion
+- Create a useDeleteStripeConfig React Query mutation hook that calls the backend and invalidates the cache
+- Add a backend deleteStripeConfig() method with admin authentication that clears the stored Stripe secret key and allowed countries
+- Update the StripeSetup component to refresh and show the configuration form again after successful deletion
 
-**User-visible outcome:** Admins can see at a glance whether Stripe has been configured through a green checkmark status indicator in the admin panel.
+**User-visible outcome:** Admins can remove Stripe payment settings with a delete button that shows a confirmation dialog, and after deletion the configuration form becomes available again for entering new credentials.
