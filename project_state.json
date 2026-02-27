@@ -1,0 +1,1442 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 53,
+  "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
+  "architectural_notes": [
+    "Direct Stripe integration without commission handling",
+    "Each uploaded image becomes a separate product listing",
+    "Focus on product management, no customer management features",
+    "Inline editing in dashboard list view for product management",
+    "Shopping basket uses temporary cart/session storage for multi-item purchases",
+    "Stripe integration supports both single-item and multi-item checkout flows",
+    "Bulk upload uses manual description input by default, with AI generation as optional feature",
+    "Bulk upload auto-copy feature copies title, price, inventory count, and category from first item to subsequent items, triggered by user control (button/checkbox)",
+    "Stripe checkout handles all shipping and billing information collection, platform does not collect shipping details",
+    "Home page dynamically fetches and displays product statistics (featured, most viewed, most sold, newest) from backend"
+  ],
+  "known_issues": [
+    "Images fail to persist when creating products through bulk upload interface",
+    "Product images fail to load properly on marketplace page",
+    "Marketplace filter UI changed to dropdown icon instead of static button tabs",
+    "Add to Cart functionality is failing with error message when attempting to add items to shopping cart"
+  ],
+  "isFixRequest": false,
+  "existing_features": [
+    {
+      "id": "feature-create-bulk-image-upload-interface-that-allows-uploading-multiple-images-at-once-assigns-all-images-to-a-single-selected-category-and-automatically-creates-one-product-per-uploaded-image",
+      "title": "Create bulk image upload interface that allows uploading multiple images at once, assigns all images to a single selected category, and automatically creates one product per uploaded image",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-product-management-dashboard-showing-all-product-listings-with-ability-to-edit-delete-and-view-product-details-including-images-descriptions-pricing-and-inventory-status",
+      "title": "Build product management dashboard showing all product listings with ability to edit, delete, and view product details including images, descriptions, pricing, and inventory status",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-sales-and-earnings-tracking-dashboard-displaying-total-sales-revenue-and-transaction-history-without-customer-management-features",
+      "title": "Create sales and earnings tracking dashboard displaying total sales, revenue, and transaction history without customer management features",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-immediate-checkout-flow-for-customers-that-allows-selecting-a-product-entering-shipping-information-and-completing-payment-via-stripe-without-requiring-account-creation",
+      "title": "Build immediate checkout flow for customers that allows selecting a product, entering shipping information, and completing payment via Stripe without requiring account creation",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-public-marketplace-storefront-displaying-all-available-products-with-images-titles-categories-prices-and-the-ability-for-customers-to-browse-and-select-products-for-purchase",
+      "title": "Create public marketplace storefront displaying all available products with images, titles, categories, prices, and the ability for customers to browse and select products for purchase",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-terms-and-conditions-page-and-privacy-policy-page-with-footer-component-that-links-to-both-pages-from-all-site-pages",
+      "title": "Create Terms and Conditions page and Privacy Policy page with footer component that links to both pages from all site pages",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-design-a-creative-visual-theme-with-distinctive-colors-typography-and-layout-style-that-reflects-an-artisan-handmade-marketplace-aesthetic-and-apply-it-consistently-across-all-pages",
+      "title": "Design a creative visual theme with distinctive colors, typography, and layout style that reflects an artisan handmade marketplace aesthetic and apply it consistently across all pages",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-bulk-upload-image-persistence-bug-where-product-images-fail-to-save-when-creating-new-products-through-the-bulk-upload-interface-ensure-images-are-properly-stored-in-the-backend-blob-storage-and-associated-with-newly-created-products",
+      "title": "Fix the bulk upload image persistence bug where product images fail to save when creating new products through the bulk upload interface. Ensure images are properly stored in the backend blob storage and associated with newly created products.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-editing-capability-in-the-product-management-dashboard-list-view-to-edit-product-title-directly-in-the-table-row-with-save-cancel-controls",
+      "title": "Add inline editing capability in the product management dashboard list view to edit product title directly in the table row with save/cancel controls.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-editing-capability-in-the-product-management-dashboard-list-view-to-edit-product-description-directly-with-save-cancel-controls",
+      "title": "Add inline editing capability in the product management dashboard list view to edit product description directly with save/cancel controls.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-editing-capability-in-the-product-management-dashboard-list-view-to-edit-product-price-with-validation-and-save-cancel-controls",
+      "title": "Add inline editing capability in the product management dashboard list view to edit product price with validation and save/cancel controls.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-editing-capability-in-the-product-management-dashboard-list-view-to-edit-product-inventory-count-with-validation-and-save-cancel-controls",
+      "title": "Add inline editing capability in the product management dashboard list view to edit product inventory count with validation and save/cancel controls.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-editing-capability-in-the-product-management-dashboard-list-view-to-change-the-product-category-via-dropdown-selector-with-save-cancel-controls",
+      "title": "Add inline editing capability in the product management dashboard list view to change the product category via dropdown selector with save/cancel controls.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-inline-capability-in-the-product-management-dashboard-list-view-to-replace-or-add-additional-images-to-existing-products-with-image-upload-controls",
+      "title": "Add inline capability in the product management dashboard list view to replace or add additional images to existing products with image upload controls.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-buy-now-button-in-productdetailview-component-to-properly-store-the-selected-product-in-sessionstorage-and-redirect-to-the-checkout-page-without-showing-no-products-selected-error",
+      "title": "Fix the Buy Now button in ProductDetailView component to properly store the selected product in sessionStorage and redirect to the checkout page without showing 'no products selected' error",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-add-to-basket-button-to-productcard-and-productdetailview-components-that-calls-the-backend-addtocart-method-and-shows-a-success-toast-notification",
+      "title": "Add 'Add to Basket' button to ProductCard and ProductDetailView components that calls the backend addToCart method and shows a success toast notification",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-shopping-basket-page-or-modal-that-displays-all-cart-items-with-product-images-names-prices-quantities-allows-editing-quantities-removing-items-shows-the-total-price-and-includes-a-checkout-button",
+      "title": "Create a shopping basket page or modal that displays all cart items with product images, names, prices, quantities, allows editing quantities, removing items, shows the total price, and includes a Checkout button",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-basket-icon-with-item-count-badge-to-the-header-navigation-that-opens-the-shopping-basket-when-clicked",
+      "title": "Add a basket icon with item count badge to the header navigation that opens the shopping basket when clicked",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-checkout-page-to-handle-both-single-product-purchases-from-buy-now-and-multi-item-purchases-from-shopping-basket-passing-all-items-to-the-stripe-checkout-session",
+      "title": "Update the Checkout page to handle both single-product purchases (from Buy Now) and multi-item purchases (from shopping basket), passing all items to the Stripe checkout session",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-clear-the-shopping-cart-after-successful-payment-completion-on-the-paymentsuccess-page",
+      "title": "Clear the shopping cart after successful payment completion on the PaymentSuccess page",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-bulk-upload-interface-bulkproductupload-tsx-to-replace-automatic-ai-description-generation-with-manual-text-input-fields-for-each-uploaded-image-allowing-the-trader-to-type-or-edit-product-descriptions-directly",
+      "title": "Update the bulk upload interface (BulkProductUpload.tsx) to replace automatic AI description generation with manual text input fields for each uploaded image, allowing the trader to type or edit product descriptions directly",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-optional-generate-ai-description-button-for-each-product-in-the-bulk-upload-flow-that-when-clicked-generates-an-ai-description-and-populates-the-manual-description-field-with-the-generated-text",
+      "title": "Add an optional 'Generate AI Description' button for each product in the bulk upload flow that, when clicked, generates an AI description and populates the manual description field with the generated text",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-pre-populate-description-fields-in-the-bulk-upload-flow-with-the-default-template-handcrafted-3d-printed-dolphin-ocarina-uniquely-designed-and-precision-crafted-for-beautiful-sound-and-artisan-appeal-this-one-of-a-kind-piece-combines-intricate-detail-with-functional-artistry-perfect-for-collectors-and-music-enthusiasts-alike",
+      "title": "Pre-populate description fields in the bulk upload flow with the default template: 'Handcrafted 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike'",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-total-product-count-display-to-the-admin-dashboard-showing-the-number-of-products-currently-in-the-system",
+      "title": "Add a total product count display to the admin dashboard showing the number of products currently in the system",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-branding-tab-to-the-admin-dashboard-page-with-a-settings-form-for-configuring-site-name-uploading-logo-image-and-uploading-favicon-icon-image",
+      "title": "Add a new 'Branding' tab to the admin Dashboard page with a settings form for configuring site name, uploading logo image, and uploading favicon/icon image",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-in-usequeries-ts-for-fetching-current-branding-configuration-and-mutating-branding-settings-with-admin-authentication",
+      "title": "Create React Query hooks in useQueries.ts for fetching current branding configuration and mutating branding settings with admin authentication",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-layout-component-header-to-display-the-configured-site-logo-and-use-the-configured-site-name-instead-of-hardcoded-artisan-hub-text",
+      "title": "Update the Layout component header to display the configured site logo and use the configured site name instead of hardcoded 'Artisan Hub' text",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-frontend-index-html-to-dynamically-set-the-favicon-and-page-title-based-on-branding-configuration",
+      "title": "Update frontend/index.html to dynamically set the favicon and page title based on branding configuration",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-checkbox-or-toggle-button-in-the-bulkproductupload-component-to-enable-disable-auto-copy-behavior-that-copies-all-fields-title-price-inventory-count-category-from-the-first-uploaded-item-to-all-subsequent-items-excluding-the-image-field",
+      "title": "Add a checkbox or toggle button in the BulkProductUpload component to enable/disable auto-copy behavior that copies all fields (title, price, inventory count, category) from the first uploaded item to all subsequent items, excluding the image field",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-auto-copy-logic-in-bulkproductupload-that-when-enabled-automatically-populates-title-price-inventory-count-and-category-fields-for-items-2-n-with-the-values-from-the-first-item-leaving-image-fields-independent",
+      "title": "Implement the auto-copy logic in BulkProductUpload that, when enabled, automatically populates title, price, inventory count, and category fields for items 2-N with the values from the first item, leaving image fields independent",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-existing-generate-ai-description-button-functionality-in-bulkproductupload-to-generate-smart-ai-descriptions-based-on-the-user-provided-title-category-and-other-product-details-when-manually-triggered",
+      "title": "Update the existing 'Generate AI Description' button functionality in BulkProductUpload to generate smart AI descriptions based on the user-provided title, category, and other product details when manually triggered",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-increment-button-next-to-the-inventory-count-in-the-productmanagementtable-component-that-increases-the-stock-quantity-by-1-for-each-click",
+      "title": "Add a '+' increment button next to the inventory count in the ProductManagementTable component that increases the stock quantity by 1 for each click",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-all-shipping-information-input-fields-from-the-checkout-page-component-and-update-the-checkout-flow-to-redirect-directly-to-stripe-checkout-session-creation-without-collecting-shipping-data",
+      "title": "Remove all shipping information input fields from the Checkout page component and update the checkout flow to redirect directly to Stripe checkout session creation without collecting shipping data",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-or-disable-the-profilesetupmodal-component-that-prompts-users-to-create-a-profile-after-internet-identity-login",
+      "title": "Remove or disable the ProfileSetupModal component that prompts users to create a profile after Internet Identity login",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-layout-component-to-remove-the-profilesetupmodal-integration-and-allow-authenticated-users-to-use-the-platform-without-mandatory-profile-setup",
+      "title": "Update the Layout component to remove the ProfileSetupModal integration and allow authenticated users to use the platform without mandatory profile setup",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-redesign-the-marketplace-home-page-frontend-src-pages-marketplace-tsx-to-display-dynamic-product-sections-including-featured-products-most-viewed-products-most-sold-products-and-newest-designs-the-page-should-automatically-reflect-newly-uploaded-products-when-customers-visit-without-requiring-manual-refresh",
+      "title": "Redesign the Marketplace home page (frontend/src/pages/Marketplace.tsx) to display dynamic product sections including: featured products, most viewed products, most sold products, and newest designs. The page should automatically reflect newly uploaded products when customers visit without requiring manual refresh.",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-marketplace-home-page-hero-section-with-a-new-background-and-motto-text-about-selling-original-handcrafted-products-designed-produced-and-sold-by-the-trader-include-promotional-elements-to-attract-buyers",
+      "title": "Update the Marketplace home page hero section with a new background and motto text about selling original handcrafted products designed, produced, and sold by the trader. Include promotional elements to attract buyers.",
+      "reqIds": [
+        "REQ-46"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-new-shop-details-section-in-the-admin-dashboard-page-frontend-src-pages-dashboard-tsx-as-a-separate-tab-where-the-trader-can-configure-contact-email-address",
+      "title": "Create a new 'Shop Details' section in the admin Dashboard page (frontend/src/pages/Dashboard.tsx) as a separate tab where the trader can configure contact email address.",
+      "reqIds": [
+        "REQ-47"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-in-frontend-src-hooks-usequeries-ts-for-fetching-shop-details-useshopdetails-and-updating-shop-details-useupdateshopdetails-with-admin-authentication",
+      "title": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching shop details (useShopDetails) and updating shop details (useUpdateShopDetails) with admin authentication.",
+      "reqIds": [
+        "REQ-49"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-footer-component-frontend-src-components-footer-tsx-to-display-the-configured-contact-email-from-shop-details-as-a-mailto-link-in-the-connect-section-show-contact-email-example-com-or-similar-label",
+      "title": "Update the Footer component (frontend/src/components/Footer.tsx) to display the configured contact email from Shop Details as a mailto link in the 'Connect' section. Show 'Contact: email@example.com' or similar label.",
+      "reqIds": [
+        "REQ-50"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-bulkproductupload-component-to-replace-the-default-pre-populated-description-template-from-handcrafted-3d-printed-dolphin-ocarina-to-original-3d-printed-dolphin-ocarina-uniquely-designed-and-precision-crafted-for-beautiful-sound-and-artisan-appeal-this-one-of-a-kind-piece-combines-intricate-detail-with-functional-artistry-perfect-for-collectors-and-music-enthusiasts-alike",
+      "title": "Update the BulkProductUpload component to replace the default pre-populated description template from 'Handcrafted 3D printed dolphin ocarina...' to 'Original 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike'",
+      "reqIds": [
+        "REQ-51"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-marketplace-home-page-hero-section-motto-text-to-replace-handcrafted-references-with-original-creations-or-similar-terminology-emphasizing-uniqueness-and-originality",
+      "title": "Update the Marketplace home page hero section motto text to replace 'handcrafted' references with 'original creations' or similar terminology emphasizing uniqueness and originality",
+      "reqIds": [
+        "REQ-52"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-review-and-update-any-other-ui-text-across-all-frontend-components-and-pages-that-currently-uses-handcrafted-handmade-or-artisan-terminology-to-instead-emphasize-original-creations-unique-designs-or-custom-made-messaging",
+      "title": "Review and update any other UI text across all frontend components and pages that currently uses 'handcrafted', 'handmade', or 'artisan' terminology to instead emphasize 'original creations', 'unique designs', or 'custom-made' messaging",
+      "reqIds": [
+        "REQ-53"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-homepage-or-main-page-tab-to-the-admin-dashboard-page-frontend-src-pages-dashboard-tsx-with-a-configuration-form-for-editing-the-hero-section-including-motto-text-background-image-upload-selection-and-promotional-text-fields",
+      "title": "Add a new 'Homepage' or 'Main Page' tab to the admin Dashboard page (frontend/src/pages/Dashboard.tsx) with a configuration form for editing the hero section including motto text, background image upload/selection, and promotional text fields",
+      "reqIds": [
+        "REQ-54"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-in-frontend-src-hooks-usequeries-ts-for-fetching-homepage-configuration-usehomepageconfig-and-mutating-homepage-settings-useupdatehomepageconfig-with-admin-authentication",
+      "title": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching homepage configuration (useHomepageConfig) and mutating homepage settings (useUpdateHomepageConfig) with admin authentication",
+      "reqIds": [
+        "REQ-57"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-marketplace-home-page-component-frontend-src-pages-marketplace-tsx-to-dynamically-render-the-hero-section-using-configured-motto-text-and-background-image-from-homepage-configuration-instead-of-hardcoded-values",
+      "title": "Update the Marketplace home page component (frontend/src/pages/Marketplace.tsx) to dynamically render the hero section using configured motto text and background image from homepage configuration instead of hardcoded values",
+      "reqIds": [
+        "REQ-58"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-quick-stock-adjustment-controls-to-the-productmanagementtable-component-including-increment-and-decrement-buttons-next-to-the-inventory-count-field-that-modify-stock-by-1-per-click-without-entering-edit-mode",
+      "title": "Add quick stock adjustment controls to the ProductManagementTable component including increment (+) and decrement (-) buttons next to the inventory count field that modify stock by 1 per click without entering edit mode",
+      "reqIds": [
+        "REQ-59"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-total-inventory-value-calculator-section-to-the-dashboard-page-that-displays-the-sum-of-price-inventory-count-for-all-listed-products-showing-the-potential-value-of-all-stock",
+      "title": "Add a total inventory value calculator section to the Dashboard page that displays the sum of (price × inventory count) for all listed products, showing the potential value of all stock",
+      "reqIds": [
+        "REQ-60"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hook-usetotalinventoryvalue-in-usequeries-ts-that-fetches-the-total-inventory-value-from-the-backend-with-automatic-refetching-when-product-data-changes",
+      "title": "Create React Query hook useTotalInventoryValue in useQueries.ts that fetches the total inventory value from the backend with automatic refetching when product data changes",
+      "reqIds": [
+        "REQ-62"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-auto-copy-functionality-in-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-include-the-description-field-when-copying-from-the-first-item-to-subsequent-items-when-auto-copy-is-enabled-the-description-from-the-first-product-should-be-copied-to-all-other-products-along-with-title-price-inventory-count-and-category",
+      "title": "Update the auto-copy functionality in the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include the description field when copying from the first item to subsequent items. When auto-copy is enabled, the description from the first product should be copied to all other products along with title, price, inventory count, and category.",
+      "reqIds": [
+        "REQ-63"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-the-platform-currency-from-the-current-default-to-australian-dollars-aud-across-all-components-displaying-prices-including-productcard-productdetailview-productmanagementtable-checkout-shoppingbasket-and-dashboard-components-update-price-formatting-to-use-aud-currency-symbol-with-aud-label-where-appropriate",
+      "title": "Change the platform currency from the current default to Australian dollars (AUD) across all components displaying prices, including ProductCard, ProductDetailView, ProductManagementTable, Checkout, ShoppingBasket, and Dashboard components. Update price formatting to use AUD currency symbol ($) with 'AUD' label where appropriate.",
+      "reqIds": [
+        "REQ-64"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-filter-tabs-to-the-marketplace-home-page-header-frontend-src-pages-marketplace-tsx-that-display-all-available-shapes-and-categories-as-clickable-tabs-allowing-customers-to-filter-the-displayed-products-by-selecting-one-or-multiple-shape-category-filters",
+      "title": "Add filter tabs to the Marketplace home page header (frontend/src/pages/Marketplace.tsx) that display all available shapes and categories as clickable tabs, allowing customers to filter the displayed products by selecting one or multiple shape/category filters",
+      "reqIds": [
+        "REQ-66"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-state-management-in-marketplace-tsx-to-track-selected-shape-and-category-filters-and-implement-filtering-logic-that-filters-the-product-arrays-featured-most-viewed-best-selling-newest-based-on-the-active-filter-selections",
+      "title": "Create React state management in Marketplace.tsx to track selected shape and category filters, and implement filtering logic that filters the product arrays (featured, most viewed, best selling, newest) based on the active filter selections",
+      "reqIds": [
+        "REQ-67"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-description-templates-tab-to-the-admin-dashboard-page-frontend-src-pages-dashboard-tsx-with-a-management-interface-that-displays-all-existing-description-templates-in-a-list-or-table-format-with-options-to-create-new-templates-edit-existing-templates-and-delete-templates",
+      "title": "Add a new 'Description Templates' tab to the admin Dashboard page (frontend/src/pages/Dashboard.tsx) with a management interface that displays all existing description templates in a list or table format with options to create new templates, edit existing templates, and delete templates",
+      "reqIds": [
+        "REQ-68"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-in-frontend-src-hooks-usequeries-ts-for-fetching-all-description-templates-usedescriptiontemplates-and-mutating-description-templates-usecreatedescriptiontemplate-useupdatedescriptiontemplate-usedeletedescriptiontemplate-with-admin-authentication",
+      "title": "Create React Query hooks in frontend/src/hooks/useQueries.ts for fetching all description templates (useDescriptionTemplates) and mutating description templates (useCreateDescriptionTemplate, useUpdateDescriptionTemplate, useDeleteDescriptionTemplate) with admin authentication",
+      "reqIds": [
+        "REQ-70"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-replace-the-single-default-description-template-with-a-dropdown-selector-that-displays-all-available-description-templates-from-the-template-management-system-allowing-the-trader-to-select-which-template-to-use-as-the-default-pre-populated-description-for-bulk-uploaded-products",
+      "title": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to replace the single default description template with a dropdown selector that displays all available description templates from the template management system, allowing the trader to select which template to use as the default pre-populated description for bulk uploaded products",
+      "reqIds": [
+        "REQ-71"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-include-a-separate-category-input-field-for-each-uploaded-product-alongside-the-existing-shape-field",
+      "title": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to include a separate category input field for each uploaded product alongside the existing shape field",
+      "reqIds": [
+        "REQ-78"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-productmanagementtable-component-frontend-src-components-productmanagementtable-tsx-to-display-the-category-field-as-a-separate-column-and-support-inline-editing-of-category-independently-from-shape",
+      "title": "Update the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) to display the category field as a separate column and support inline editing of category independently from shape",
+      "reqIds": [
+        "REQ-79"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-separate-category-filter-section-in-the-marketplace-page-frontend-src-pages-marketplace-tsx-header-alongside-the-existing-shape-filter-section-displaying-all-unique-category-values-as-clickable-filter-tabs",
+      "title": "Add a separate 'Category' filter section in the Marketplace page (frontend/src/pages/Marketplace.tsx) header alongside the existing 'Shape' filter section, displaying all unique category values as clickable filter tabs",
+      "reqIds": [
+        "REQ-80"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-filter-logic-in-marketplace-tsx-to-support-filtering-products-by-both-shape-and-category-independently-where-products-must-match-selected-shape-filters-and-selected-category-filters",
+      "title": "Update the filter logic in Marketplace.tsx to support filtering products by both shape and category independently, where products must match selected shape filters AND selected category filters",
+      "reqIds": [
+        "REQ-81"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-productcard-component-frontend-src-components-productcard-tsx-to-display-both-shape-and-category-information-on-each-product-card",
+      "title": "Update the ProductCard component (frontend/src/components/ProductCard.tsx) to display both shape and category information on each product card",
+      "reqIds": [
+        "REQ-82"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-productdetailview-component-frontend-src-components-productdetailview-tsx-to-display-both-shape-and-category-fields-in-the-product-detail-modal",
+      "title": "Update the ProductDetailView component (frontend/src/components/ProductDetailView.tsx) to display both shape and category fields in the product detail modal",
+      "reqIds": [
+        "REQ-83"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-all-react-query-hooks-in-frontend-src-hooks-usequeries-ts-to-handle-the-new-category-field-in-product-data-structures-for-fetching-and-mutating-products",
+      "title": "Update all React Query hooks in frontend/src/hooks/useQueries.ts to handle the new category field in product data structures for fetching and mutating products",
+      "reqIds": [
+        "REQ-84"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-generate-ai-description-button-from-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-entirely-eliminating-the-ai-description-generation-functionality-from-the-bulk-upload-flow",
+      "title": "Remove the 'Generate AI Description' button from the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) entirely, eliminating the AI description generation functionality from the bulk upload flow",
+      "reqIds": [
+        "REQ-85"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-bulkproductupload-component-to-automatically-populate-the-description-field-for-each-product-using-the-selected-description-template-from-the-dropdown-selector-without-requiring-any-additional-button-click-or-ai-generation-step",
+      "title": "Update the BulkProductUpload component to automatically populate the description field for each product using the selected description template from the dropdown selector, without requiring any additional button click or AI generation step",
+      "reqIds": [
+        "REQ-86"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-homepagesettings-component-frontend-src-components-homepagesettings-tsx-to-add-a-new-hero-background-image-upload-field-that-allows-the-trader-to-upload-a-custom-background-image-showcasing-3d-printed-ocarinas-for-the-marketplace-hero-section",
+      "title": "Update the HomepageSettings component (frontend/src/components/HomepageSettings.tsx) to add a new 'Hero Background Image' upload field that allows the trader to upload a custom background image showcasing 3D printed ocarinas for the marketplace hero section",
+      "reqIds": [
+        "REQ-90"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-marketplace-page-hero-section-frontend-src-pages-marketplace-tsx-to-render-the-configured-hero-background-image-from-homepage-configuration-using-the-dynamically-loaded-background-image-url-instead-of-any-hardcoded-background",
+      "title": "Update the Marketplace page hero section (frontend/src/pages/Marketplace.tsx) to render the configured hero background image from homepage configuration using the dynamically loaded background image URL instead of any hardcoded background",
+      "reqIds": [
+        "REQ-91"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-the-product-image-loading-issue-in-the-marketplace-page-frontend-src-pages-marketplace-tsx-where-product-images-fail-to-display-properly-by-verifying-the-image-url-construction-blob-storage-retrieval-and-productcard-image-rendering-logic",
+      "title": "Investigate and fix the product image loading issue in the Marketplace page (frontend/src/pages/Marketplace.tsx) where product images fail to display properly by verifying the image URL construction, blob storage retrieval, and ProductCard image rendering logic",
+      "reqIds": [
+        "REQ-92"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-and-fix-the-productcard-component-frontend-src-components-productcard-tsx-image-rendering-to-ensure-it-correctly-handles-image-urls-from-the-backend-includes-proper-error-handling-for-failed-image-loads-and-displays-a-fallback-placeholder-if-image-loading-fails",
+      "title": "Verify and fix the ProductCard component (frontend/src/components/ProductCard.tsx) image rendering to ensure it correctly handles image URLs from the backend, includes proper error handling for failed image loads, and displays a fallback placeholder if image loading fails",
+      "reqIds": [
+        "REQ-93"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-stripesetup-component-frontend-src-components-stripesetup-tsx-to-display-a-visual-status-indicator-showing-whether-stripe-has-been-configured-display-a-green-checkmark-icon-with-stripe-configured-text-when-a-valid-stripe-secret-key-is-stored-in-the-backend",
+      "title": "Update the StripeSetup component (frontend/src/components/StripeSetup.tsx) to display a visual status indicator showing whether Stripe has been configured. Display a green checkmark icon with 'Stripe Configured' text when a valid Stripe secret key is stored in the backend.",
+      "reqIds": [
+        "REQ-97"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-frontend-checkout-page-component-frontend-src-pages-checkout-tsx-to-handle-stripe-checkout-session-creation-for-guest-users-without-requiring-authentication-state-or-internet-identity-login",
+      "title": "Update the frontend Checkout page component (frontend/src/pages/Checkout.tsx) to handle Stripe checkout session creation for guest users without requiring authentication state or Internet Identity login",
+      "reqIds": [
+        "REQ-100"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-dashboard-navigation-link-to-the-header-navigation-bar-in-the-layout-component-frontend-src-components-layout-tsx-that-is-visible-only-when-the-authenticated-user-s-internet-identity-principal-matches-the-canister-deployer-s-principal-admin-detection",
+      "title": "Add a Dashboard navigation link to the header navigation bar in the Layout component (frontend/src/components/Layout.tsx) that is visible only when the authenticated user's Internet Identity principal matches the canister deployer's principal (admin detection)",
+      "reqIds": [
+        "REQ-101"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-react-query-hook-useisadmin-in-frontend-src-hooks-usequeries-ts-that-calls-the-backend-isadmin-method-and-returns-the-admin-status-for-the-currently-authenticated-user",
+      "title": "Create a React Query hook useIsAdmin in frontend/src/hooks/useQueries.ts that calls the backend isAdmin method and returns the admin status for the currently authenticated user",
+      "reqIds": [
+        "REQ-103"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-restore-the-previous-static-clickable-button-tabs-ui-for-shape-and-category-filters-in-the-marketplace-page-frontend-src-pages-marketplace-tsx-removing-any-dropdown-icon-implementation-and-displaying-filter-options-as-a-horizontal-row-of-selectable-button-tabs",
+      "title": "Restore the previous static clickable button tabs UI for Shape and Category filters in the Marketplace page (frontend/src/pages/Marketplace.tsx), removing any dropdown icon implementation and displaying filter options as a horizontal row of selectable button tabs",
+      "reqIds": [
+        "REQ-104"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-delete-stripe-configuration-button-to-the-stripesetup-component-frontend-src-components-stripesetup-tsx-that-allows-the-admin-to-remove-the-stored-stripe-api-key-and-reset-the-stripe-configuration",
+      "title": "Add a 'Delete Stripe Configuration' button to the StripeSetup component (frontend/src/components/StripeSetup.tsx) that allows the admin to remove the stored Stripe API key and reset the Stripe configuration",
+      "reqIds": [
+        "REQ-105"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-react-query-mutation-hook-usedeletestripeconfig-in-frontend-src-hooks-usequeries-ts-that-calls-the-backend-deletestripeconfig-method-and-invalidates-the-stripe-configuration-cache-after-successful-deletion",
+      "title": "Create a React Query mutation hook useDeleteStripeConfig in frontend/src/hooks/useQueries.ts that calls the backend deleteStripeConfig method and invalidates the Stripe configuration cache after successful deletion",
+      "reqIds": [
+        "REQ-106"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-stripesetup-component-to-refresh-the-configuration-status-after-deletion-and-show-the-configuration-form-again-when-stripe-settings-are-removed",
+      "title": "Update the StripeSetup component to refresh the configuration status after deletion and show the configuration form again when Stripe settings are removed",
+      "reqIds": [
+        "REQ-108"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-shape-filter-buttons-above-the-productmanagementtable-component-frontend-src-components-productmanagementtable-tsx-that-display-all-unique-shape-values-from-the-product-list-as-clickable-button-tabs-similar-to-the-marketplace-filter-ui-implementation-include-an-all-button-to-show-all-products-without-shape-filtering",
+      "title": "Add shape filter buttons above the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) that display all unique shape values from the product list as clickable button tabs, similar to the marketplace filter UI implementation. Include an 'All' button to show all products without shape filtering.",
+      "reqIds": [
+        "REQ-109"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-state-management-in-productmanagementtable-component-to-track-the-selected-shape-filter-and-implement-filtering-logic-that-filters-the-displayed-product-rows-based-on-the-active-shape-selection-working-in-conjunction-with-the-existing-checkbox-selection-system",
+      "title": "Create React state management in ProductManagementTable component to track the selected shape filter and implement filtering logic that filters the displayed product rows based on the active shape selection, working in conjunction with the existing checkbox selection system.",
+      "reqIds": [
+        "REQ-110"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-bulk-inline-editing-functionality-to-productmanagementtable-component-where-modifying-any-field-title-description-shape-category-price-inventory-count-on-one-product-while-that-product-and-other-products-are-selected-via-checkboxes-will-apply-those-same-changes-to-all-selected-products-simultaneously-display-a-visual-indicator-showing-which-products-are-selected-for-bulk-editing",
+      "title": "Add bulk inline editing functionality to ProductManagementTable component where modifying any field (title, description, shape, category, price, inventory count) on one product while that product and other products are selected via checkboxes will apply those same changes to all selected products simultaneously. Display a visual indicator showing which products are selected for bulk editing.",
+      "reqIds": [
+        "REQ-111"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-react-query-mutation-hook-usebulkupdateproducts-in-frontend-src-hooks-usequeries-ts-that-accepts-an-array-of-product-ids-and-a-set-of-field-updates-calls-the-backend-updateproduct-method-for-each-selected-product-with-the-same-field-values-handles-errors-for-individual-updates-and-invalidates-the-product-list-cache-after-successful-completion",
+      "title": "Create a React Query mutation hook useBulkUpdateProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and a set of field updates, calls the backend updateProduct method for each selected product with the same field values, handles errors for individual updates, and invalidates the product list cache after successful completion.",
+      "reqIds": [
+        "REQ-112"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-the-add-to-cart-functionality-error-in-productcard-component-frontend-src-components-productcard-tsx-where-clicking-the-add-to-basket-button-fails-with-an-error-message-verify-the-useaddtocart-mutation-hook-implementation-in-usequeries-ts-calls-the-correct-backend-addtocart-method-with-proper-parameters-handles-authentication-state-correctly-for-both-authenticated-and-guest-users-and-displays-appropriate-success-error-toast-notifications",
+      "title": "Investigate and fix the Add to Cart functionality error in ProductCard component (frontend/src/components/ProductCard.tsx) where clicking the 'Add to Basket' button fails with an error message. Verify the useAddToCart mutation hook implementation in useQueries.ts calls the correct backend addToCart method with proper parameters, handles authentication state correctly for both authenticated and guest users, and displays appropriate success/error toast notifications.",
+      "reqIds": [
+        "REQ-113"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-react-query-mutation-hook-useupdateproductdisplayorder-in-frontend-src-hooks-usequeries-ts-that-calls-the-backend-updateproductdisplayorder-method-with-an-ordered-array-of-product-ids-includes-admin-authentication-and-invalidates-the-product-list-cache-after-successful-reordering",
+      "title": "Create a React Query mutation hook useUpdateProductDisplayOrder in frontend/src/hooks/useQueries.ts that calls the backend updateProductDisplayOrder method with an ordered array of product IDs, includes admin authentication, and invalidates the product list cache after successful reordering.",
+      "reqIds": [
+        "REQ-117"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-drag-and-drop-functionality-to-the-productmanagementtable-component-frontend-src-components-productmanagementtable-tsx-allowing-admin-users-to-reorder-products-by-dragging-and-dropping-table-rows-enable-drag-and-drop-only-when-the-all-shape-filter-is-active-no-shape-filters-applied-when-products-are-reordered-call-the-useupdateproductdisplayorder-mutation-hook-to-persist-the-new-order-to-the-backend",
+      "title": "Add drag-and-drop functionality to the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) allowing admin users to reorder products by dragging and dropping table rows. Enable drag-and-drop only when the 'All' shape filter is active (no shape filters applied). When products are reordered, call the useUpdateProductDisplayOrder mutation hook to persist the new order to the backend.",
+      "reqIds": [
+        "REQ-119"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-visual-indicators-to-the-productmanagementtable-component-showing-when-drag-and-drop-reordering-is-available-versus-when-it-is-disabled-due-to-active-shape-filters-display-a-message-or-tooltip-explaining-that-drag-and-drop-reordering-is-only-available-when-viewing-all-products-without-filters",
+      "title": "Add visual indicators to the ProductManagementTable component showing when drag-and-drop reordering is available versus when it is disabled due to active shape filters. Display a message or tooltip explaining that drag-and-drop reordering is only available when viewing all products without filters.",
+      "reqIds": [
+        "REQ-120"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-ocarina-music-studio-navigation-link-to-the-main-header-navigation-bar-in-the-layout-component-frontend-src-components-layout-tsx-that-is-visible-to-all-visitors-both-authenticated-and-unauthenticated-linking-to-the-new-ocarina-studio-route",
+      "title": "Add an 'Ocarina Music Studio' navigation link to the main header navigation bar in the Layout component (frontend/src/components/Layout.tsx) that is visible to all visitors (both authenticated and unauthenticated), linking to the new /ocarina-studio route.",
+      "reqIds": [
+        "REQ-121"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-register-a-new-ocarina-studio-route-in-frontend-src-app-tsx-pointing-to-the-new-ocarinastudio-page-component",
+      "title": "Register a new /ocarina-studio route in frontend/src/App.tsx pointing to the new OcarinaStudio page component.",
+      "reqIds": [
+        "REQ-122"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-new-ocarinastudio-page-component-frontend-src-pages-ocarinastudio-tsx-that-fetches-all-products-from-the-backend-using-the-existing-useproducts-react-query-hook-and-displays-each-product-as-a-studio-card-with-the-product-image-title-description-and-assigned-pitch-scale-bass-low-c3-c4-bass-c4-c5-alto-c5-c6-soprano-c6-c7-each-card-must-include-a-play-demo-button-a-play-ocarina-button-and-a-buy-now-link-that-navigates-to-the-marketplace-product-detail-for-that-item",
+      "title": "Create a new OcarinaStudio page component (frontend/src/pages/OcarinaStudio.tsx) that fetches all products from the backend using the existing useProducts React Query hook and displays each product as a studio card with the product image, title, description, and assigned pitch scale (Bass Low C3–C4, Bass C4–C5, Alto C5–C6, Soprano C6–C7). Each card must include a 'Play Demo' button, a 'Play Ocarina' button, and a 'Buy Now' link that navigates to the marketplace product detail for that item.",
+      "reqIds": [
+        "REQ-123"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-web-audio-api-ocarina-sound-synthesis-utility-frontend-src-utils-ocarinasynth-ts-that-generates-ocarina-like-tones-using-the-browser-s-built-in-audiocontext-the-utility-must-support-four-pitch-scales-bass-low-c3-c4-bass-c4-c5-alto-c5-c6-and-soprano-c6-c7-and-expose-1-a-function-to-play-a-short-auto-generated-demo-tone-sequence-spanning-the-assigned-pitch-range-and-2-a-function-to-play-a-single-note-by-frequency-use-sine-and-triangle-wave-oscillators-blended-with-a-gain-envelope-attack-decay-sustain-release-to-approximate-an-ocarina-timbre-no-audio-file-uploads-are-required",
+      "title": "Implement a Web Audio API ocarina sound synthesis utility (frontend/src/utils/ocarinaSynth.ts) that generates ocarina-like tones using the browser's built-in AudioContext. The utility must support four pitch scales — Bass Low (C3–C4), Bass (C4–C5), Alto (C5–C6), and Soprano (C6–C7) — and expose: (1) a function to play a short auto-generated demo tone sequence spanning the assigned pitch range, and (2) a function to play a single note by frequency. Use sine and triangle wave oscillators blended with a gain envelope (attack/decay/sustain/release) to approximate an ocarina timbre. No audio file uploads are required.",
+      "reqIds": [
+        "REQ-124"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-play-demo-button-behaviour-on-each-ocarinastudio-product-card-when-clicked-use-the-ocarinasynth-utility-to-play-a-short-auto-generated-demo-tone-sequence-ascending-and-descending-scale-tuned-to-the-pitch-range-assigned-to-that-ocarina-show-a-visual-playing-indicator-while-the-demo-is-playing-and-revert-to-the-default-state-when-the-sequence-ends",
+      "title": "Implement the 'Play Demo' button behaviour on each OcarinaStudio product card: when clicked, use the ocarinaSynth utility to play a short auto-generated demo tone sequence (ascending and descending scale) tuned to the pitch range assigned to that ocarina. Show a visual 'playing…' indicator while the demo is playing and revert to the default state when the sequence ends.",
+      "reqIds": [
+        "REQ-125"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-play-ocarina-button-behaviour-on-each-ocarinastudio-product-card-when-clicked-open-an-interactive-on-screen-ocarina-panel-inline-or-modal-displaying-the-playable-notes-available-within-the-assigned-pitch-scale-render-each-note-as-a-labelled-button-e-g-c4-d4-e4-up-to-the-top-of-the-range-when-a-note-button-is-pressed-use-the-ocarinasynth-utility-to-play-that-note-s-tone-via-web-audio-api-the-panel-must-include-a-close-dismiss-control-to-return-to-the-product-card-view",
+      "title": "Implement the 'Play Ocarina' button behaviour on each OcarinaStudio product card: when clicked, open an interactive on-screen ocarina panel (inline or modal) displaying the playable notes available within the assigned pitch scale. Render each note as a labelled button (e.g., C4, D4, E4… up to the top of the range). When a note button is pressed, use the ocarinaSynth utility to play that note's tone via Web Audio API. The panel must include a close/dismiss control to return to the product card view.",
+      "reqIds": [
+        "REQ-126"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-react-query-hooks-in-frontend-src-hooks-usequeries-ts-for-the-new-payment-settings-data-usediscountcodes-fetches-all-codes-admin-authenticated-usecreatediscountcode-useupdatediscountcode-usedeletediscountcode-mutations-all-admin-authenticated-with-cache-invalidation-usevalidatediscountcode-mutation-public-no-auth-required-usepaymentsettings-fetches-bonus-item-config-and-pro-app-url-and-useupdatepaymentsettings-mutation-admin-authenticated",
+      "title": "Create React Query hooks in `frontend/src/hooks/useQueries.ts` for the new payment settings data: `useDiscountCodes()` (fetches all codes, admin-authenticated), `useCreateDiscountCode()`, `useUpdateDiscountCode()`, `useDeleteDiscountCode()` mutations (all admin-authenticated with cache invalidation), `useValidateDiscountCode()` mutation (public, no auth required), `usePaymentSettings()` (fetches bonus item config and pro app URL), and `useUpdatePaymentSettings()` mutation (admin-authenticated).",
+      "reqIds": [
+        "REQ-129"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-payment-settings-tab-to-the-admin-dashboard-page-frontend-src-pages-dashboard-tsx-this-tab-must-contain-three-sections-1-discount-codes-a-table-listing-all-existing-promo-codes-code-type-value-active-status-with-edit-and-delete-buttons-per-row-plus-a-create-new-code-form-with-fields-for-code-string-type-selector-percentage-off-fixed-amount-value-input-and-active-toggle-2-bonus-item-a-form-with-fields-for-bonus-item-title-description-url-and-an-enabled-toggle-3-pro-ocarina-learning-app-a-single-url-input-field-labelled-pro-ocarina-learning-app-url-all-sections-use-the-corresponding-react-query-hooks-from-req-129",
+      "title": "Add a 'Payment Settings' tab to the admin Dashboard page (`frontend/src/pages/Dashboard.tsx`). This tab must contain three sections: (1) **Discount Codes** — a table listing all existing promo codes (code, type, value, active status) with Edit and Delete buttons per row, plus a 'Create New Code' form with fields for code string, type selector (Percentage Off / Fixed Amount), value input, and active toggle; (2) **Bonus Item** — a form with fields for bonus item title, description, URL, and an enabled toggle; (3) **Pro Ocarina Learning App** — a single URL input field labelled 'Pro Ocarina Learning App URL'. All sections use the corresponding React Query hooks from REQ-129.",
+      "reqIds": [
+        "REQ-130"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-discount-code-entry-field-to-the-checkout-page-frontend-src-pages-checkout-tsx-display-an-input-labelled-promo-code-with-an-apply-button-when-applied-call-usevalidatediscountcode-to-validate-the-code-if-valid-display-the-discount-amount-and-update-the-displayed-order-total-accordingly-if-invalid-or-inactive-show-an-inline-error-message-pass-the-validated-discount-code-value-to-the-stripe-checkout-session-creation-call-so-the-discount-is-reflected-in-the-stripe-session-line-items-or-coupon",
+      "title": "Add a discount code entry field to the Checkout page (`frontend/src/pages/Checkout.tsx`). Display an input labelled 'Promo Code' with an 'Apply' button. When applied, call `useValidateDiscountCode()` to validate the code: if valid, display the discount amount and update the displayed order total accordingly; if invalid or inactive, show an inline error message. Pass the validated discount code value to the Stripe checkout session creation call so the discount is reflected in the Stripe session line items or coupon.",
+      "reqIds": [
+        "REQ-131"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-payment-success-page-frontend-src-pages-paymentsuccess-tsx-to-display-the-configured-bonus-item-and-pro-ocarina-learning-app-url-after-a-successful-purchase-fetch-payment-settings-using-usepaymentsettings-if-the-bonus-item-is-enabled-display-its-title-description-and-a-clearly-labelled-link-button-to-access-the-bonus-item-url-always-display-a-dedicated-section-for-the-pro-ocarina-learning-app-with-a-labelled-link-to-the-configured-url-e-g-access-your-free-pro-ocarina-learning-app-if-the-pro-ocarina-app-url-is-not-yet-configured-do-not-display-that-section",
+      "title": "Update the Payment Success page (`frontend/src/pages/PaymentSuccess.tsx`) to display the configured bonus item and Pro Ocarina Learning App URL after a successful purchase. Fetch payment settings using `usePaymentSettings()`. If the bonus item is enabled, display its title, description, and a clearly labelled link/button to access the bonus item URL. Always display a dedicated section for the Pro Ocarina Learning App with a labelled link to the configured URL (e.g. 'Access your free Pro Ocarina Learning App'). If the Pro Ocarina App URL is not yet configured, do not display that section.",
+      "reqIds": [
+        "REQ-132"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-static-free-postage-and-no-returns-policy-notices-to-three-locations-in-the-frontend-1-product-detail-view-frontend-src-components-productdetailview-tsx-add-a-notice-below-the-price-reading-free-postage-on-every-order-and-no-returns-accepted-2-checkout-page-frontend-src-pages-checkout-tsx-add-a-policy-summary-box-in-the-order-summary-section-stating-free-postage-included-and-no-returns-policy-applies-to-all-purchases-3-payment-success-page-frontend-src-pages-paymentsuccess-tsx-add-a-brief-reminder-your-order-includes-free-postage-please-note-no-returns-are-accepted-these-notices-are-static-text-and-do-not-require-backend-configuration",
+      "title": "Add static free postage and no returns policy notices to three locations in the frontend: (1) **Product Detail View** (`frontend/src/components/ProductDetailView.tsx`) — add a notice below the price reading '✓ Free postage on every order' and '✗ No returns accepted'; (2) **Checkout page** (`frontend/src/pages/Checkout.tsx`) — add a policy summary box in the order summary section stating 'Free postage included' and 'No returns policy applies to all purchases'; (3) **Payment Success page** (`frontend/src/pages/PaymentSuccess.tsx`) — add a brief reminder 'Your order includes free postage. Please note: no returns are accepted.' These notices are static text and do not require backend configuration.",
+      "reqIds": [
+        "REQ-133"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-terms-conditions-page-frontend-src-pages-terms-tsx-to-add-or-update-the-following-policy-sections-1-shipping-state-that-free-postage-is-included-on-every-order-with-no-minimum-purchase-required-2-returns-replace-any-existing-returns-text-with-a-clear-no-returns-policy-statement-explaining-all-sales-are-final-and-no-returns-or-refunds-are-accepted-3-digital-inclusions-add-a-new-section-stating-that-every-purchase-includes-complimentary-access-to-the-pro-ocarina-learning-app-a-digital-tool-for-learning-ocarina-tablature-and-composing-music",
+      "title": "Update the Terms & Conditions page (`frontend/src/pages/Terms.tsx`) to add or update the following policy sections: (1) **Shipping** — state that free postage is included on every order with no minimum purchase required; (2) **Returns** — replace any existing returns text with a clear no-returns policy statement explaining all sales are final and no returns or refunds are accepted; (3) **Digital Inclusions** — add a new section stating that every purchase includes complimentary access to the Pro Ocarina Learning App, a digital tool for learning ocarina tablature and composing music.",
+      "reqIds": [
+        "REQ-134"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-privacy-policy-page-frontend-src-pages-privacypolicy-tsx-to-add-or-update-the-following-sections-1-order-fulfillment-note-that-free-postage-is-provided-on-all-orders-and-no-personal-shipping-cost-data-is-collected-for-postage-calculations-2-digital-products-app-access-add-a-section-explaining-that-purchase-records-may-be-used-to-grant-access-to-the-pro-ocarina-learning-app-a-digital-learning-tool-included-with-every-order-3-returns-refunds-add-a-statement-that-no-returns-or-refunds-are-processed-so-no-return-related-personal-data-is-collected",
+      "title": "Update the Privacy Policy page (`frontend/src/pages/PrivacyPolicy.tsx`) to add or update the following sections: (1) **Order Fulfillment** — note that free postage is provided on all orders and no personal shipping cost data is collected for postage calculations; (2) **Digital Products & App Access** — add a section explaining that purchase records may be used to grant access to the Pro Ocarina Learning App, a digital learning tool included with every order; (3) **Returns & Refunds** — add a statement that no returns or refunds are processed, so no return-related personal data is collected.",
+      "reqIds": [
+        "REQ-135"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Bulk image upload with category assignment and auto-product creation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "AI-generated product descriptions based on title, category, and shape",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Product management dashboard with listings, sales tracking, and earnings",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Direct Stripe payment integration to trader's account",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Immediate checkout flow for customers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Terms and Privacy Policy pages with footer links",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Implement predefined product categories (e.g., Crafts, Art, Jewelry) with the ability to add new custom categories",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Generate AI-powered product descriptions using title, category, and shape inputs provided by the trader for each product",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Integrate Stripe payment processing with direct payments to the trader's Stripe account without any commission deduction or handling",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Fix image persistence bug in bulk upload interface where images fail to save when creating new products",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Add inline editing capabilities in product management dashboard to edit title, description, price, inventory, replace/add images, and change categories",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-22",
+      "summary": "Create or update the backend updateProduct function to handle partial updates for product title, description, price, inventory, category, and image references.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-23",
+      "summary": "Fix Buy Now button to properly redirect to Stripe checkout for single-item purchases",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-24",
+      "summary": "Implement shopping basket feature with Add to Basket button, basket review/edit functionality, and multi-item Stripe checkout",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-26",
+      "summary": "Create backend shopping cart functionality with methods to add items, remove items, update quantities, retrieve cart contents, and clear the cart, storing cart data per user principal",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-27",
+      "summary": "Update bulk upload flow to use manual text input for product descriptions with optional AI generation button",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-28",
+      "summary": "Add total product count display to admin dashboard",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-29",
+      "summary": "Create admin settings page for site branding configuration including logo, icon, and other site-wide branding options",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-30",
+      "summary": "Create a backend data structure to store site branding configuration including site name, logo image reference, favicon/icon image reference, and any other branding metadata",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-31",
+      "summary": "Add auto-copy functionality in bulk upload that copies all fields (title, price, inventory, category) except image from the first item to all other items, controlled by a button or checkbox",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-32",
+      "summary": "Add increment button to product management dashboard to quickly increase stock quantities by 1 for administrative inventory management",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-34",
+      "summary": "Ensure the backend updateProduct function supports updating only the inventory count field without requiring other product fields",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-35",
+      "summary": "Remove shipping info collection from platform, redirect directly to Stripe checkout for all payment flows",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-36",
+      "summary": "Remove signup prompts/popups that appear after Internet Identity login",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-38",
+      "summary": "Update the backend createStripeCheckoutSession function to accept checkout requests without shipping information and configure Stripe sessions accordingly",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-39",
+      "summary": "Redesign home page hero section with new background and motto about selling original handcrafted products designed, produced, and sold by the trader",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-40",
+      "summary": "Add dynamic product displays to home page showing featured products, most viewed products, most sold products, newest designs, and promotional elements to attract buyers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-41",
+      "summary": "Ensure home page automatically displays newly uploaded products without requiring manual refresh by customers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-42",
+      "summary": "Create a new 'Shop Details' section in admin settings to configure contact email",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-43",
+      "summary": "Update footer 'Connect' section to display contact email as a mailto link that is configured in Shop Details settings",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-45",
+      "summary": "Add backend methods to support home page product displays: getMostViewedProducts(), getBestSellingProducts(), and getNewestProducts(). Implement view tracking for products and sales tracking to support these queries.",
+      "reqIds": [
+        "REQ-45"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-48",
+      "summary": "Add backend data structure and methods to store and retrieve shop contact details including contact email. Create getShopDetails() and updateShopDetails() methods with admin authentication.",
+      "reqIds": [
+        "REQ-48"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-49",
+      "summary": "Add editable home page branding configuration in admin control panel for customizing hero section background, motto text, and promotional elements",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-51",
+      "summary": "Create backend data structure in backend/main.mo to store homepage configuration including hero motto text, hero background image blob reference, and promotional text content with default values matching current implementation",
+      "reqIds": [
+        "REQ-55"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-52",
+      "summary": "Add backend methods getHomepageConfig() and updateHomepageConfig() in backend/main.mo with admin authentication to retrieve and modify homepage configuration including hero section settings",
+      "reqIds": [
+        "REQ-56"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-53",
+      "summary": "Enhance product management table with easier inline stock editing controls",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-54",
+      "summary": "Add total inventory value calculator to product management page showing the sum of (price × inventory count) for all listed products",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-57",
+      "summary": "Create backend helper method getTotalInventoryValue() that calculates and returns the sum of (price × inventory count) across all products in the system",
+      "reqIds": [
+        "REQ-61"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-58",
+      "summary": "Update auto-copy feature in bulk upload to include product description field along with title, price, inventory, and category",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-59",
+      "summary": "Change platform currency from default to Australian dollars (AUD) for product pricing and Stripe checkout",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-62",
+      "summary": "Update the backend createStripeCheckoutSession method in backend/main.mo to configure Stripe checkout sessions with Australian dollars (AUD) as the currency instead of the current default currency.",
+      "reqIds": [
+        "REQ-65"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-63",
+      "summary": "Add filter tabs in Marketplace home page header to filter products by shape and/or category",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-64",
+      "summary": "Ensure product model includes shape as a searchable/filterable field that is captured during bulk upload and stored with each product",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-65",
+      "summary": "Create description template management interface in admin settings where trader can create, edit, and manage multiple product description templates",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-69",
+      "summary": "Create a DescriptionTemplateManager component (frontend/src/components/DescriptionTemplateManager.tsx) that provides a form interface for creating and editing description templates with fields for template name and template content text, with save and cancel controls",
+      "reqIds": [
+        "REQ-69"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-72",
+      "summary": "Create backend data structure in backend/main.mo to store description templates with fields for template ID, template name, template content text, and creation timestamp",
+      "reqIds": [
+        "REQ-72"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-73",
+      "summary": "Create backend methods in backend/main.mo for managing description templates: getDescriptionTemplates() to retrieve all templates, createDescriptionTemplate(name, content) to add new templates, updateDescriptionTemplate(id, name, content) to modify existing templates, and deleteDescriptionTemplate(id) to remove templates, all with admin authentication",
+      "reqIds": [
+        "REQ-73"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-74",
+      "summary": "Create a default description template in the backend initialization with the current template text: 'Original 3D printed dolphin ocarina, uniquely designed and precision-crafted for beautiful sound and artisan appeal. This one-of-a-kind piece combines intricate detail with functional artistry, perfect for collectors and music enthusiasts alike'",
+      "reqIds": [
+        "REQ-74"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-75",
+      "summary": "Add separate Category filter section alongside the existing Shape filter section on the Marketplace home page",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-76",
+      "summary": "Add a 'category' field to the Product type in backend/main.mo as a separate field distinct from the shape field, storing category as Text type",
+      "reqIds": [
+        "REQ-75"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-77",
+      "summary": "Update the createProduct backend method in backend/main.mo to accept and store the category field when creating new products",
+      "reqIds": [
+        "REQ-76"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-78",
+      "summary": "Update the updateProduct backend method in backend/main.mo to support updating the category field independently from other product fields",
+      "reqIds": [
+        "REQ-77"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-79",
+      "summary": "Remove AI generation button from bulk upload and use template dropdown for descriptions instead",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-80",
+      "summary": "Add bulk delete capability to product management dashboard with checkboxes to select multiple products and delete them at once",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-83",
+      "summary": "Add checkbox selection controls to each row in the ProductManagementTable component (frontend/src/components/ProductManagementTable.tsx) allowing the admin to select multiple products for bulk operations",
+      "reqIds": [
+        "REQ-87"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-84",
+      "summary": "Add a 'Delete Selected' button above or below the ProductManagementTable that becomes enabled when one or more products are selected via checkboxes, and displays a confirmation dialog before deleting multiple products",
+      "reqIds": [
+        "REQ-88"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-85",
+      "summary": "Create a React Query mutation hook useBulkDeleteProducts in frontend/src/hooks/useQueries.ts that accepts an array of product IDs and calls the backend deleteProduct method sequentially or in parallel for each ID, with proper error handling and cache invalidation",
+      "reqIds": [
+        "REQ-89"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-86",
+      "summary": "Create custom background for marketplace/main page hero section showcasing 3D printed ocarinas with simple visual representation",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-87",
+      "summary": "Fix product image loading issue on marketplace page where images fail to display properly",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-92",
+      "summary": "Verify that the backend getProducts, getFeaturedProducts, getMostViewedProducts, getBestSellingProducts, and getNewestProducts methods in backend/main.mo correctly return product image blob references and ensure images are properly stored and retrievable from blob storage",
+      "reqIds": [
+        "REQ-94"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-93",
+      "summary": "Create backend migration to update all existing products to have \"3D print\" as their category",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-94",
+      "summary": "Create a backend migration function in backend/migration.mo that retrieves all existing products from the product storage and updates each product's category field to '3D print' without modifying any other product fields",
+      "reqIds": [
+        "REQ-95"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-95",
+      "summary": "Update the backend main.mo to include the migration logic that sets category to '3D print' for all products during the post-upgrade hook, ensuring the migration runs once and completes successfully",
+      "reqIds": [
+        "REQ-96"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-96",
+      "summary": "Add Stripe configuration status indicator in admin dashboard showing green checkmark when Stripe API key is configured and stored",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-98",
+      "summary": "Add a backend method hasStripeConfiguration() or extend the existing getStripeConfig() method in backend/main.mo to return a boolean flag or status indicating whether a Stripe secret key has been stored, without exposing the actual key value.",
+      "reqIds": [
+        "REQ-98"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-99",
+      "summary": "Update createStripeCheckoutSession backend method to allow guest users (unauthenticated) to complete purchases without requiring login",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-100",
+      "summary": "Update the backend createStripeCheckoutSession method in backend/main.mo to remove authentication requirements and allow unauthenticated (guest) users to create Stripe checkout sessions without requiring Internet Identity login",
+      "reqIds": [
+        "REQ-99"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-101",
+      "summary": "Add admin Dashboard link to header navigation visible only to authenticated admin users (deployer principal)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-102",
+      "summary": "Restore previous filter UI with static clickable button tabs for Shape and Category filters on Marketplace page (remove dropdown icon)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-104",
+      "summary": "Create a backend method in backend/main.mo called isAdmin() or similar that returns true if the calling principal matches the canister deployer's principal, providing admin authentication check for frontend components",
+      "reqIds": [
+        "REQ-102"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-105",
+      "summary": "Add a delete button to Stripe settings allowing admin to remove stored Stripe API key configuration",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-108",
+      "summary": "Create a backend method deleteStripeConfig() in backend/main.mo with admin authentication that removes the stored Stripe secret key and allowed countries configuration from the StripeConfig storage",
+      "reqIds": [
+        "REQ-107"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-109",
+      "summary": "Add shape filter buttons above product management table similar to marketplace filters",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-110",
+      "summary": "Add inline bulk editing capability where modifying one product's fields applies changes to all selected products",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-111",
+      "summary": "Integrate shape filter with existing checkbox selection system to enable filtering by shape before selecting products for bulk operations",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-112",
+      "summary": "Add drag-and-drop functionality to ProductManagementTable allowing products to be reordered when viewing all products (no filters active), persisting the display order to backend and affecting marketplace storefront display order",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-113",
+      "summary": "Add a displayOrder or sortPosition numeric field to the Product type in backend to store the custom ordering position defined by drag-and-drop reordering",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-114",
+      "summary": "Update backend getProducts and marketplace product retrieval methods to sort products by displayOrder field by default when no other sorting is applied",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-116",
+      "summary": "Add a displayOrder numeric field to the Product type in backend/main.mo to store custom ordering position for products. Initialize displayOrder for all existing products with sequential values based on their current order, and ensure all new products receive a displayOrder value when created.",
+      "reqIds": [
+        "REQ-114"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-117",
+      "summary": "Update backend getProducts, getFeaturedProducts, getMostViewedProducts, getBestSellingProducts, and getNewestProducts methods in backend/main.mo to sort products by displayOrder field in ascending order as the default sort behavior when no other sorting criteria is specified, ensuring the marketplace storefront displays products in the order defined by drag-and-drop reordering.",
+      "reqIds": [
+        "REQ-115"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-118",
+      "summary": "Create a backend method updateProductDisplayOrder(productIds: [Text]) in backend/main.mo with admin authentication that accepts an array of product IDs in the desired display order and updates the displayOrder field for each product to match the new sequence. Implement efficient batch updating to handle reordering operations.",
+      "reqIds": [
+        "REQ-116"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-120",
+      "summary": "Install and configure a drag-and-drop library (such as @dnd-kit/core and @dnd-kit/sortable) in the frontend to enable drag-and-drop functionality for product rows in the ProductManagementTable component.",
+      "reqIds": [
+        "REQ-118"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-121",
+      "summary": "Add 'Ocarina Music Studio' link to main header navigation visible to all visitors",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-122",
+      "summary": "Create Ocarina Music Studio page that pulls products from the store and displays them with pitch scale, Play Demo button (Web Audio API tone sequence), Play Ocarina button (interactive note buttons), and Buy Now link back to purchase",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-123",
+      "summary": "Implement Web Audio API ocarina sound synthesis with pitch scales: Bass Low C3-C4, Bass C4-C5, Alto C5-C6, Soprano C6-C7 for both demo playback and interactive play modes",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-124",
+      "summary": "Admin interface in Dashboard > Payment Settings to create and manage promo/discount codes (percentage off or fixed amount) that customers can enter at checkout",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-125",
+      "summary": "Configurable digital bonus item (app access link/download) in Dashboard > Payment Settings that automatically appears on every order confirmation/receipt",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-126",
+      "summary": "Configurable Pro Ocarina Learning App URL field in Dashboard > Payment Settings, displayed on every order confirmation page",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-127",
+      "summary": "Add static free postage and no returns policy notices to product pages, checkout, and order confirmation pages",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-128",
+      "summary": "Update Terms & Conditions and Privacy Policy pages to include: free postage on all orders, Pro Ocarina Learning App access included with every purchase, and no returns policy",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-129",
+      "summary": "Add a `DiscountCode` type and stable storage to the backend actor in `backend/main.mo` with fields: `id: Text`, `code: Text`, `discountType: { #percentage; #fixedAmount }`, `value: Float`, `active: Bool`, `createdAt: Int`. Implement admin-authenticated methods: `createDiscountCode(code, discountType, value)`, `updateDiscountCode(id, code, discountType, value, active)`, `deleteDiscountCode(id)`, `getDiscountCodes()` (admin), and a public `validateDiscountCode(code): ?DiscountCode` that returns the matching active code or null.",
+      "reqIds": [
+        "REQ-127"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-130",
+      "summary": "Add a `BonusItemConfig` type and stable storage to the backend actor in `backend/main.mo` with fields: `title: Text`, `description: Text`, `url: Text`, `enabled: Bool`. Implement admin-authenticated methods `getBonusItemConfig()` and `updateBonusItemConfig(title, description, url, enabled)`. Also add a `proOcarinaAppUrl: Text` field to the same or a related `PaymentSettings` config record, with admin-authenticated getter `getPaymentSettings()` and setter `updatePaymentSettings(proOcarinaAppUrl, bonusItemConfig)`.",
+      "reqIds": [
+        "REQ-128"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Artisan Hub",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}
