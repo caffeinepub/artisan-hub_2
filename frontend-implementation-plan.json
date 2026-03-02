@@ -1,28 +1,26 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Update default description template with shape-specific story variations",
+  "title": "Auto-select shape-specific description template in BulkProductUpload",
   "requirements": [
     {
-      "id": "REQ-138",
-      "summary": "Update BulkProductUpload component to use Default template on load and support shape-specific template selection with dynamic description updates",
+      "id": "REQ-139",
+      "summary": "Implement automatic shape-based description template selection in BulkProductUpload component, matching product shape values (Turtle, Dolphin, Frog, Whale) to corresponding named templates, falling back to Default template for other shapes, while preserving user-edited descriptions",
       "acceptanceCriteria": [
-        "On load, the template dropdown defaults to the 'Default' template and all description fields are pre-populated with the base text",
-        "The dropdown lists at minimum: Default, Turtle, Dolphin, Frog, Whale templates",
-        "Selecting 'Dolphin' from the dropdown populates all unedited description fields with the Dolphin-specific template text",
-        "Manually edited description fields are not overwritten when the template selection changes",
-        "When auto-copy is enabled and the first item's description is the selected template text, changing the template updates all subsequent items' descriptions accordingly"
+        "When a product's shape field is set to 'Dolphin', the description field is automatically populated with the Dolphin template content.",
+        "When a product's shape field is set to 'Turtle', the description field is automatically populated with the Turtle template content.",
+        "When a product's shape field is set to 'Frog', the description field is automatically populated with the Frog template content.",
+        "When a product's shape field is set to 'Whale', the description field is automatically populated with the Whale template content.",
+        "When a product's shape field is set to any value other than Turtle, Dolphin, Frog, or Whale (including blank/empty), the description field falls back to the Default template content.",
+        "The auto-selection triggers each time the shape field value changes for a product.",
+        "If the user has manually edited the description field for a product, changing the shape does not overwrite their manual edits.",
+        "The template dropdown selector continues to function independently, allowing the user to manually override the auto-selected template."
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/BulkProductUpload.tsx",
           "operation": "modify",
-          "description": "Fetch description templates via useGetDescriptionTemplates hook and populate the template dropdown with all available templates (Default, Turtle, Dolphin, Frog, Whale). On component mount, set the selected template to 'Default' and pre-populate all product description fields with the Default template content. When the user selects a different template from the dropdown, update all description fields that have not been manually edited with the newly selected template's content. Track manual edits per product to prevent overwriting user changes. When auto-copy is enabled and the template changes, apply the new template text to all subsequent items that were previously using the old template text."
-        },
-        {
-          "path": "frontend/src/hooks/useQueries.ts",
-          "operation": "modify",
-          "description": "Add useGetDescriptionTemplates hook if not already present to fetch the list of description templates from the backend via actor.getDescriptionTemplates(). Return the query result with proper loading and error states."
+          "description": "Add shape-based automatic template selection logic. Track whether each product's description has been manually edited using a new state field (e.g., manuallyEditedDescriptions: Set<number>). When a product's shape field changes, check if the description was manually edited; if not, find the matching template by name (Turtle, Dolphin, Frog, Whale, or Default as fallback) and auto-populate the description field with that template's content. Ensure the existing template dropdown remains functional for manual overrides. Clear the manuallyEdited flag when the user explicitly selects a template from the dropdown. Update the handleFieldChange function to mark descriptions as manually edited when the user types in the description textarea. Implement a useEffect or inline handler to trigger auto-selection whenever the shape value changes for any product row."
         }
       ]
     }

@@ -1,13 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Add a default description template and four shape-specific description templates (Turtle, Dolphin, Frog, Whale) to the backend, and update the BulkProductUpload component to use these templates via a dropdown.
+**Goal:** Auto-select a shape-specific description template in the BulkProductUpload component based on each product's shape field value.
 
 **Planned changes:**
-- Update (or create) the "Default" description template in backend stable storage with the specified base text about clear sound, Pro Learning App, and free postage
-- Seed four shape-specific templates ("Turtle", "Dolphin", "Frog", "Whale") in backend stable storage during initialisation, each with a short shape-to-melody story followed by the base text; seeding is idempotent
-- Update the BulkProductUpload frontend component to default to the "Default" template on load, pre-populating all description fields with its content
-- Add all five templates (Default, Turtle, Dolphin, Frog, Whale) as selectable options in the template dropdown
-- When the user changes the selected template, update all unedited description fields with the newly selected template's content; manually edited fields are not overwritten
+- When a product's shape field changes to 'Turtle', 'Dolphin', 'Frog', or 'Whale', automatically apply the matching named template to that product's description field.
+- When a product's shape field is set to any other value or is blank, fall back to the 'Default' template.
+- Skip auto-population if the user has manually edited the description field for that product.
+- Allow the template dropdown to continue functioning independently for manual overrides.
 
-**User-visible outcome:** In the Bulk Product Upload screen, traders see description fields pre-filled with the default ocarina description. They can switch to a shape-specific template (Turtle, Dolphin, Frog, or Whale) from the dropdown to apply the corresponding story-driven description to all unedited items. All five templates are also visible in Dashboard > Description Templates.
+**User-visible outcome:** Users uploading bulk products will have description fields automatically populated with the appropriate shape-specific template content as soon as they set a product's shape, reducing manual template selection while still allowing manual overrides.

@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-set-the-default-selected-template-in-the-template-dropdown-to-the-default-template-from-req-136-when-the-component-first-loads-replacing-the-previously-hardcoded-description-string-when-the-user-changes-the-selected-template-from-the-dropdown-all-product-description-fields-that-have-not-been-manually-edited-should-update-to-display-the-newly-selected-template-s-content-the-four-shape-specific-templates-turtle-dolphin-frog-whale-must-appear-as-selectable-options-in-the-same-dropdown-alongside-the-default-template",
-      "featureTitle": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to set the default selected template in the template dropdown to the 'Default' template (from REQ-136) when the component first loads, replacing the previously hardcoded description string. When the user changes the selected template from the dropdown, all product description fields that have not been manually edited should update to display the newly selected template's content. The four shape-specific templates (Turtle, Dolphin, Frog, Whale) must appear as selectable options in the same dropdown alongside the Default template.",
+      "featureId": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-automatically-select-the-matching-shape-specific-description-template-for-each-product-based-on-its-shape-field-value-when-a-product-s-shape-is-set-to-turtle-dolphin-frog-or-whale-automatically-apply-the-corresponding-named-template-turtle-dolphin-frog-or-whale-to-that-product-s-description-field-when-the-shape-is-set-to-any-other-value-or-is-blank-fall-back-to-the-default-template-this-auto-selection-should-trigger-whenever-the-shape-field-changes-for-a-product-and-should-update-the-description-field-with-the-matched-template-s-content-unless-the-user-has-manually-edited-that-description-field",
+      "featureTitle": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to automatically select the matching shape-specific description template for each product based on its shape field value. When a product's shape is set to 'Turtle', 'Dolphin', 'Frog', or 'Whale', automatically apply the corresponding named template (Turtle, Dolphin, Frog, or Whale) to that product's description field. When the shape is set to any other value or is blank, fall back to the 'Default' template. This auto-selection should trigger whenever the shape field changes for a product, and should update the description field with the matched template's content unless the user has manually edited that description field.",
       "files": [
         "frontend/src/components/BulkProductUpload.tsx"
       ],
@@ -19,7 +19,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-138"
+        "REQ-139"
       ],
       "confidence": "high"
     }

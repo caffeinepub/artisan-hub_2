@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 55,
+  "projectStateVersion": 57,
   "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -813,6 +813,14 @@
         "REQ-138"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-automatically-select-the-matching-shape-specific-description-template-for-each-product-based-on-its-shape-field-value-when-a-product-s-shape-is-set-to-turtle-dolphin-frog-or-whale-automatically-apply-the-corresponding-named-template-turtle-dolphin-frog-or-whale-to-that-product-s-description-field-when-the-shape-is-set-to-any-other-value-or-is-blank-fall-back-to-the-default-template-this-auto-selection-should-trigger-whenever-the-shape-field-changes-for-a-product-and-should-update-the-description-field-with-the-matched-template-s-content-unless-the-user-has-manually-edited-that-description-field",
+      "title": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to automatically select the matching shape-specific description template for each product based on its shape field value. When a product's shape is set to 'Turtle', 'Dolphin', 'Frog', or 'Whale', automatically apply the corresponding named template (Turtle, Dolphin, Frog, or Whale) to that product's description field. When the shape is set to any other value or is blank, fall back to the 'Default' template. This auto-selection should trigger whenever the shape field changes for a product, and should update the description field with the matched template's content unless the user has manually edited that description field.",
+      "reqIds": [
+        "REQ-139"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -1468,6 +1476,12 @@
       "reqIds": [
         "REQ-137"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-135",
+      "summary": "In BulkProductUpload, automatically select the matching shape-specific template (Turtle, Dolphin, Frog, Whale) based on each product's shape field, falling back to the Default template for unrecognized or blank shapes",
+      "reqIds": [],
       "status": "pending"
     }
   ],

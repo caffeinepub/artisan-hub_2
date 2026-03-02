@@ -28,6 +28,8 @@ interface ProductPreview {
   descriptionManuallyEdited: boolean;
 }
 
+const SHAPE_TEMPLATE_NAMES = ['Turtle', 'Dolphin', 'Frog', 'Whale'];
+
 export default function BulkProductUpload({ onComplete }: BulkProductUploadProps) {
   const addProduct = useAddProduct();
   const { data: templates = [], isLoading: templatesLoading } = useGetDescriptionTemplates();
@@ -51,6 +53,30 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
   // Get the selected template content
   const selectedTemplate = templates.find(t => t.id.toString() === selectedTemplateId);
   const templateContent = selectedTemplate?.content || '';
+
+  /**
+   * Given a shape string, find the best matching template content.
+   * If the shape matches one of the known shape template names (case-insensitive),
+   * use that template. Otherwise fall back to the "Default" template.
+   */
+  const getTemplateContentForShape = (shape: string): string => {
+    const trimmedShape = shape.trim();
+    const matchedShapeTemplate = SHAPE_TEMPLATE_NAMES.find(
+      name => name.toLowerCase() === trimmedShape.toLowerCase()
+    );
+
+    if (matchedShapeTemplate) {
+      const shapeTemplate = templates.find(t => t.name === matchedShapeTemplate);
+      if (shapeTemplate) return shapeTemplate.content;
+    }
+
+    // Fall back to Default template
+    const defaultTemplate = templates.find(t => t.name === 'Default');
+    if (defaultTemplate) return defaultTemplate.content;
+
+    // Last resort: use currently selected template content
+    return templateContent;
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -79,6 +105,8 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
         prevProducts.map(product => ({
           ...product,
           description: product.descriptionManuallyEdited ? product.description : template.content,
+          // Clear manual edit flag when user explicitly picks a template
+          descriptionManuallyEdited: false,
         }))
       );
     }
@@ -124,12 +152,27 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
         newProducts[index] = { ...newProducts[index], descriptionManuallyEdited: true };
       }
 
+      // When shape changes, auto-select the matching template description (if not manually edited)
+      if (field === 'shape' && typeof value === 'string') {
+        if (!newProducts[index].descriptionManuallyEdited) {
+          const autoDescription = getTemplateContentForShape(value);
+          newProducts[index] = { ...newProducts[index], description: autoDescription };
+        }
+      }
+
       // If auto-copy is enabled and we're updating the first product, update all others
       if (autoCopyEnabled && index === 0 && (field === 'description' || field === 'shape' || field === 'category' || field === 'price' || field === 'inventoryCount')) {
         for (let i = 1; i < newProducts.length; i++) {
           newProducts[i] = { ...newProducts[i], [field]: value };
           if (field === 'description') {
             newProducts[i] = { ...newProducts[i], descriptionManuallyEdited: true };
+          }
+          // Also apply shape-based template auto-selection to copied products
+          if (field === 'shape' && typeof value === 'string') {
+            if (!newProducts[i].descriptionManuallyEdited) {
+              const autoDescription = getTemplateContentForShape(value);
+              newProducts[i] = { ...newProducts[i], description: autoDescription };
+            }
           }
         }
       }
@@ -261,7 +304,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Select a template to pre-populate product descriptions. Manually edited descriptions will not be overwritten.
+                Descriptions auto-fill based on product shape (Turtle, Dolphin, Frog, Whale → matching template; others → Default). Manually edited descriptions are preserved.
               </p>
             </div>
           </CardContent>
