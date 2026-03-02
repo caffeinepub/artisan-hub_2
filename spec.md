@@ -1,17 +1,13 @@
 # Specification
 
 ## Summary
-**Goal:** Add discount code support, configurable bonus items and app access URL, free postage/no returns notices, and updated T&C and Privacy Policy pages to the Original Creations Hub store.
+**Goal:** Add a default description template and four shape-specific description templates (Turtle, Dolphin, Frog, Whale) to the backend, and update the BulkProductUpload component to use these templates via a dropdown.
 
 **Planned changes:**
-- Add `DiscountCode` type and stable storage to the backend with admin CRUD methods (`createDiscountCode`, `updateDiscountCode`, `deleteDiscountCode`, `getDiscountCodes`) and a public `validateDiscountCode` method
-- Add `BonusItemConfig` type and `proOcarinaAppUrl` field to backend payment settings with admin getter/setter methods, all persisted in stable storage
-- Add React Query hooks for discount codes (`useDiscountCodes`, `useCreateDiscountCode`, `useUpdateDiscountCode`, `useDeleteDiscountCode`, `useValidateDiscountCode`) and payment settings (`usePaymentSettings`, `useUpdatePaymentSettings`)
-- Add a "Payment Settings" tab to the admin Dashboard with three sections: Discount Codes (table with create/edit/delete), Bonus Item (title, description, URL, enabled toggle), and Pro Ocarina Learning App (URL input)
-- Add a "Promo Code" input with Apply button to the Checkout page; validate against the backend and show discount/error, passing the discount to the Stripe session
-- Update the Payment Success page to display the configured bonus item (when enabled) and Pro Ocarina Learning App link (when URL is set)
-- Add static free postage and no returns notices to ProductDetailView, Checkout page, and Payment Success page
-- Update the Terms & Conditions page with Shipping (free postage), Returns (no returns/all sales final), and Digital Inclusions (Pro Ocarina Learning App) sections
-- Update the Privacy Policy page with Order Fulfillment (free postage), Digital Products & App Access, and Returns & Refunds (no returns data collected) sections
+- Update (or create) the "Default" description template in backend stable storage with the specified base text about clear sound, Pro Learning App, and free postage
+- Seed four shape-specific templates ("Turtle", "Dolphin", "Frog", "Whale") in backend stable storage during initialisation, each with a short shape-to-melody story followed by the base text; seeding is idempotent
+- Update the BulkProductUpload frontend component to default to the "Default" template on load, pre-populating all description fields with its content
+- Add all five templates (Default, Turtle, Dolphin, Frog, Whale) as selectable options in the template dropdown
+- When the user changes the selected template, update all unedited description fields with the newly selected template's content; manually edited fields are not overwritten
 
-**User-visible outcome:** Admins can create and manage promo codes and configure a bonus item and app URL from the Dashboard. Customers can apply promo codes at checkout for a discount. Every order confirmation shows the bonus item and Pro Ocarina app link when configured. Free postage and no returns notices appear on product pages, checkout, and the confirmation page, and the T&C and Privacy Policy pages reflect these policies.
+**User-visible outcome:** In the Bulk Product Upload screen, traders see description fields pre-filled with the default ocarina description. They can switch to a shape-specific template (Turtle, Dolphin, Frog, or Whale) from the dropdown to apply the corresponding story-driven description to all unedited items. All five templates are also visible in Dashboard > Description Templates.

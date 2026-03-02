@@ -14,8 +14,8 @@ import Time "mo:core/Time";
 import Int "mo:core/Int";
 import Float "mo:core/Float";
 import Order "mo:core/Order";
-import Migration "migration";
 import Text "mo:core/Text";
+import Migration "migration";
 
 (with migration = Migration.run)
 actor {
@@ -135,7 +135,6 @@ actor {
 
   let shoppingCarts = Map.empty<Principal, [CartItem]>();
 
-  // Extended pointer to ShopDetails for migration compatibility
   type ShopDetails = {
     shopName : Text;
     address : {
@@ -491,7 +490,7 @@ actor {
   public shared ({ caller }) func createCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
     let audItems = items.map(
       func(item) {
-        { item with currency = "aud" };
+        { item with currency = "AUD" };
       }
     );
     await Stripe.createCheckoutSession(getStripeConfiguration(), caller, audItems, successUrl, cancelUrl, transform);
@@ -500,7 +499,7 @@ actor {
   public shared ({ caller }) func createNoShippingCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
     let audItems = items.map(
       func(item) {
-        { item with currency = "aud" };
+        { item with currency = "AUD" };
       }
     );
     await Stripe.createCheckoutSession(getStripeConfiguration(), caller, audItems, successUrl, cancelUrl, transform);
@@ -576,7 +575,7 @@ actor {
       func(cartItem) {
         {
           cartItem with
-          currency = "aud";
+          currency = "AUD";
           productName = cartItem.product.name;
           productDescription = cartItem.product.stripeProductDescription;
           priceInCents = cartItem.product.price;

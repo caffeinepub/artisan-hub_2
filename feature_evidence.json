@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-create-react-query-hooks-in-frontend-src-hooks-usequeries-ts-for-the-new-payment-settings-data-usediscountcodes-fetches-all-codes-admin-authenticated-usecreatediscountcode-useupdatediscountcode-usedeletediscountcode-mutations-all-admin-authenticated-with-cache-invalidation-usevalidatediscountcode-mutation-public-no-auth-required-usepaymentsettings-fetches-bonus-item-config-and-pro-app-url-and-useupdatepaymentsettings-mutation-admin-authenticated",
-      "featureTitle": "Create React Query hooks in `frontend/src/hooks/useQueries.ts` for the new payment settings data: `useDiscountCodes()` (fetches all codes, admin-authenticated), `useCreateDiscountCode()`, `useUpdateDiscountCode()`, `useDeleteDiscountCode()` mutations (all admin-authenticated with cache invalidation), `useValidateDiscountCode()` mutation (public, no auth required), `usePaymentSettings()` (fetches bonus item config and pro app URL), and `useUpdatePaymentSettings()` mutation (admin-authenticated).",
+      "featureId": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-set-the-default-selected-template-in-the-template-dropdown-to-the-default-template-from-req-136-when-the-component-first-loads-replacing-the-previously-hardcoded-description-string-when-the-user-changes-the-selected-template-from-the-dropdown-all-product-description-fields-that-have-not-been-manually-edited-should-update-to-display-the-newly-selected-template-s-content-the-four-shape-specific-templates-turtle-dolphin-frog-whale-must-appear-as-selectable-options-in-the-same-dropdown-alongside-the-default-template",
+      "featureTitle": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to set the default selected template in the template dropdown to the 'Default' template (from REQ-136) when the component first loads, replacing the previously hardcoded description string. When the user changes the selected template from the dropdown, all product description fields that have not been manually edited should update to display the newly selected template's content. The four shape-specific templates (Turtle, Dolphin, Frog, Whale) must appear as selectable options in the same dropdown alongside the Default template.",
       "files": [
-        "frontend/src/hooks/useQueries.ts"
+        "frontend/src/components/BulkProductUpload.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,141 +19,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-129"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-payment-settings-tab-to-the-admin-dashboard-page-frontend-src-pages-dashboard-tsx-this-tab-must-contain-three-sections-1-discount-codes-a-table-listing-all-existing-promo-codes-code-type-value-active-status-with-edit-and-delete-buttons-per-row-plus-a-create-new-code-form-with-fields-for-code-string-type-selector-percentage-off-fixed-amount-value-input-and-active-toggle-2-bonus-item-a-form-with-fields-for-bonus-item-title-description-url-and-an-enabled-toggle-3-pro-ocarina-learning-app-a-single-url-input-field-labelled-pro-ocarina-learning-app-url-all-sections-use-the-corresponding-react-query-hooks-from-req-129",
-      "featureTitle": "Add a 'Payment Settings' tab to the admin Dashboard page (`frontend/src/pages/Dashboard.tsx`). This tab must contain three sections: (1) **Discount Codes** — a table listing all existing promo codes (code, type, value, active status) with Edit and Delete buttons per row, plus a 'Create New Code' form with fields for code string, type selector (Percentage Off / Fixed Amount), value input, and active toggle; (2) **Bonus Item** — a form with fields for bonus item title, description, URL, and an enabled toggle; (3) **Pro Ocarina Learning App** — a single URL input field labelled 'Pro Ocarina Learning App URL'. All sections use the corresponding React Query hooks from REQ-129.",
-      "files": [
-        "frontend/src/pages/Dashboard.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-130"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-discount-code-entry-field-to-the-checkout-page-frontend-src-pages-checkout-tsx-display-an-input-labelled-promo-code-with-an-apply-button-when-applied-call-usevalidatediscountcode-to-validate-the-code-if-valid-display-the-discount-amount-and-update-the-displayed-order-total-accordingly-if-invalid-or-inactive-show-an-inline-error-message-pass-the-validated-discount-code-value-to-the-stripe-checkout-session-creation-call-so-the-discount-is-reflected-in-the-stripe-session-line-items-or-coupon",
-      "featureTitle": "Add a discount code entry field to the Checkout page (`frontend/src/pages/Checkout.tsx`). Display an input labelled 'Promo Code' with an 'Apply' button. When applied, call `useValidateDiscountCode()` to validate the code: if valid, display the discount amount and update the displayed order total accordingly; if invalid or inactive, show an inline error message. Pass the validated discount code value to the Stripe checkout session creation call so the discount is reflected in the Stripe session line items or coupon.",
-      "files": [
-        "frontend/src/pages/Checkout.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-131"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-payment-success-page-frontend-src-pages-paymentsuccess-tsx-to-display-the-configured-bonus-item-and-pro-ocarina-learning-app-url-after-a-successful-purchase-fetch-payment-settings-using-usepaymentsettings-if-the-bonus-item-is-enabled-display-its-title-description-and-a-clearly-labelled-link-button-to-access-the-bonus-item-url-always-display-a-dedicated-section-for-the-pro-ocarina-learning-app-with-a-labelled-link-to-the-configured-url-e-g-access-your-free-pro-ocarina-learning-app-if-the-pro-ocarina-app-url-is-not-yet-configured-do-not-display-that-section",
-      "featureTitle": "Update the Payment Success page (`frontend/src/pages/PaymentSuccess.tsx`) to display the configured bonus item and Pro Ocarina Learning App URL after a successful purchase. Fetch payment settings using `usePaymentSettings()`. If the bonus item is enabled, display its title, description, and a clearly labelled link/button to access the bonus item URL. Always display a dedicated section for the Pro Ocarina Learning App with a labelled link to the configured URL (e.g. 'Access your free Pro Ocarina Learning App'). If the Pro Ocarina App URL is not yet configured, do not display that section.",
-      "files": [
-        "frontend/src/pages/PaymentSuccess.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-132"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-static-free-postage-and-no-returns-policy-notices-to-three-locations-in-the-frontend-1-product-detail-view-frontend-src-components-productdetailview-tsx-add-a-notice-below-the-price-reading-free-postage-on-every-order-and-no-returns-accepted-2-checkout-page-frontend-src-pages-checkout-tsx-add-a-policy-summary-box-in-the-order-summary-section-stating-free-postage-included-and-no-returns-policy-applies-to-all-purchases-3-payment-success-page-frontend-src-pages-paymentsuccess-tsx-add-a-brief-reminder-your-order-includes-free-postage-please-note-no-returns-are-accepted-these-notices-are-static-text-and-do-not-require-backend-configuration",
-      "featureTitle": "Add static free postage and no returns policy notices to three locations in the frontend: (1) **Product Detail View** (`frontend/src/components/ProductDetailView.tsx`) — add a notice below the price reading '✓ Free postage on every order' and '✗ No returns accepted'; (2) **Checkout page** (`frontend/src/pages/Checkout.tsx`) — add a policy summary box in the order summary section stating 'Free postage included' and 'No returns policy applies to all purchases'; (3) **Payment Success page** (`frontend/src/pages/PaymentSuccess.tsx`) — add a brief reminder 'Your order includes free postage. Please note: no returns are accepted.' These notices are static text and do not require backend configuration.",
-      "files": [
-        "frontend/src/components/ProductDetailView.tsx",
-        "frontend/src/pages/Checkout.tsx",
-        "frontend/src/pages/PaymentSuccess.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-133"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-terms-conditions-page-frontend-src-pages-terms-tsx-to-add-or-update-the-following-policy-sections-1-shipping-state-that-free-postage-is-included-on-every-order-with-no-minimum-purchase-required-2-returns-replace-any-existing-returns-text-with-a-clear-no-returns-policy-statement-explaining-all-sales-are-final-and-no-returns-or-refunds-are-accepted-3-digital-inclusions-add-a-new-section-stating-that-every-purchase-includes-complimentary-access-to-the-pro-ocarina-learning-app-a-digital-tool-for-learning-ocarina-tablature-and-composing-music",
-      "featureTitle": "Update the Terms & Conditions page (`frontend/src/pages/Terms.tsx`) to add or update the following policy sections: (1) **Shipping** — state that free postage is included on every order with no minimum purchase required; (2) **Returns** — replace any existing returns text with a clear no-returns policy statement explaining all sales are final and no returns or refunds are accepted; (3) **Digital Inclusions** — add a new section stating that every purchase includes complimentary access to the Pro Ocarina Learning App, a digital tool for learning ocarina tablature and composing music.",
-      "files": [
-        "frontend/src/pages/Terms.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-134"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-privacy-policy-page-frontend-src-pages-privacypolicy-tsx-to-add-or-update-the-following-sections-1-order-fulfillment-note-that-free-postage-is-provided-on-all-orders-and-no-personal-shipping-cost-data-is-collected-for-postage-calculations-2-digital-products-app-access-add-a-section-explaining-that-purchase-records-may-be-used-to-grant-access-to-the-pro-ocarina-learning-app-a-digital-learning-tool-included-with-every-order-3-returns-refunds-add-a-statement-that-no-returns-or-refunds-are-processed-so-no-return-related-personal-data-is-collected",
-      "featureTitle": "Update the Privacy Policy page (`frontend/src/pages/PrivacyPolicy.tsx`) to add or update the following sections: (1) **Order Fulfillment** — note that free postage is provided on all orders and no personal shipping cost data is collected for postage calculations; (2) **Digital Products & App Access** — add a section explaining that purchase records may be used to grant access to the Pro Ocarina Learning App, a digital learning tool included with every order; (3) **Returns & Refunds** — add a statement that no returns or refunds are processed, so no return-related personal data is collected.",
-      "files": [
-        "frontend/src/pages/PrivacyPolicy.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "stripe@3.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "http-outcalls@3.0.0"
-      ],
-      "testIds": [
-        "REQ-135"
+        "REQ-138"
       ],
       "confidence": "high"
     }

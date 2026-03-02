@@ -1,139 +1,28 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Discount Codes, Bonus Items, App Access URL, Free Postage/No Returns Notices, and T&C/Privacy Policy Updates",
+  "title": "Update default description template with shape-specific story variations",
   "requirements": [
     {
-      "id": "REQ-129",
-      "summary": "Add React Query hooks for discount codes, payment settings, and bonus item configuration",
+      "id": "REQ-138",
+      "summary": "Update BulkProductUpload component to use Default template on load and support shape-specific template selection with dynamic description updates",
       "acceptanceCriteria": [
-        "useDiscountCodes() fetches and caches the list of all discount codes",
-        "useCreateDiscountCode/useUpdateDiscountCode/useDeleteDiscountCode mutations call the correct backend methods and invalidate the discount codes cache",
-        "useValidateDiscountCode mutation is callable without authentication",
-        "usePaymentSettings() fetches bonus item config and pro app URL",
-        "useUpdatePaymentSettings mutation persists changes and invalidates the payment settings cache"
+        "On load, the template dropdown defaults to the 'Default' template and all description fields are pre-populated with the base text",
+        "The dropdown lists at minimum: Default, Turtle, Dolphin, Frog, Whale templates",
+        "Selecting 'Dolphin' from the dropdown populates all unedited description fields with the Dolphin-specific template text",
+        "Manually edited description fields are not overwritten when the template selection changes",
+        "When auto-copy is enabled and the first item's description is the selected template text, changing the template updates all subsequent items' descriptions accordingly"
       ],
       "file_operations": [
+        {
+          "path": "frontend/src/components/BulkProductUpload.tsx",
+          "operation": "modify",
+          "description": "Fetch description templates via useGetDescriptionTemplates hook and populate the template dropdown with all available templates (Default, Turtle, Dolphin, Frog, Whale). On component mount, set the selected template to 'Default' and pre-populate all product description fields with the Default template content. When the user selects a different template from the dropdown, update all description fields that have not been manually edited with the newly selected template's content. Track manual edits per product to prevent overwriting user changes. When auto-copy is enabled and the template changes, apply the new template text to all subsequent items that were previously using the old template text."
+        },
         {
           "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Add useDiscountCodes query hook (admin-authenticated) that fetches all discount codes from getDiscountCodes(). Add useCreateDiscountCode, useUpdateDiscountCode, and useDeleteDiscountCode mutation hooks (admin-authenticated) that call createDiscountCode, updateDiscountCode, deleteDiscountCode respectively and invalidate the 'discountCodes' query key on success. Add useValidateDiscountCode mutation hook (public, no auth) that calls validateDiscountCode(code) and returns the matching DiscountCode or null. Add usePaymentSettings query hook that fetches payment settings via getPaymentSettings(). Add useUpdatePaymentSettings mutation hook (admin-authenticated) that calls updatePaymentSettings and invalidates the 'paymentSettings' query key on success."
-        }
-      ]
-    },
-    {
-      "id": "REQ-130",
-      "summary": "Add Payment Settings tab to admin Dashboard with discount codes, bonus item, and Pro Ocarina App URL management",
-      "acceptanceCriteria": [
-        "A 'Payment Settings' tab is visible in the Dashboard page tab list",
-        "The Discount Codes section lists all codes with their type, value, and active status",
-        "Admin can create, edit (code string, type, value, active), and delete discount codes from the UI",
-        "The Bonus Item section allows the admin to configure and save a title, description, URL, and enabled toggle",
-        "The Pro Ocarina App section shows a URL input that saves to the backend payment settings",
-        "Save confirmations or error toasts are shown after each mutation"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Dashboard.tsx",
-          "operation": "modify",
-          "description": "Add a 'Payment Settings' tab to the existing tab list. Inside the tab content, render three sections: (1) Discount Codes section with a table displaying code, type (Percentage Off/Fixed Amount), value, active status, and Edit/Delete action buttons per row, plus a 'Create New Code' form with fields for code string, type selector dropdown, value number input, and active checkbox toggle; (2) Bonus Item section with a form containing fields for title (text input), description (textarea), URL (text input), and enabled (checkbox toggle); (3) Pro Ocarina Learning App section with a single URL text input field labelled 'Pro Ocarina Learning App URL' and a save button. Use the hooks from REQ-129: useDiscountCodes, useCreateDiscountCode, useUpdateDiscountCode, useDeleteDiscountCode, usePaymentSettings, and useUpdatePaymentSettings. Display success toasts on successful mutations and error toasts on failures. Include form validation and confirmation dialogs for delete actions."
-        }
-      ]
-    },
-    {
-      "id": "REQ-131",
-      "summary": "Add discount code entry field and validation to Checkout page",
-      "acceptanceCriteria": [
-        "A 'Promo Code' input and 'Apply' button are visible on the Checkout page",
-        "Entering a valid active code shows the discount amount and reduced total",
-        "Entering an invalid or inactive code shows a clear error message",
-        "The discount is passed through to the Stripe checkout session (as a coupon or adjusted line item amount)",
-        "Removing or changing the code clears the applied discount"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Checkout.tsx",
-          "operation": "modify",
-          "description": "Add a promo code section above or within the order summary displaying an input field labelled 'Promo Code' and an 'Apply' button. Use useValidateDiscountCode mutation hook from REQ-129. When the Apply button is clicked, call validateDiscountCode with the entered code string. If the returned DiscountCode is non-null and active, calculate and display the discount amount based on discountType (percentage or fixedAmount) and value, then update the displayed order total. If null or inactive, show an inline error message below the input (e.g., 'Invalid or inactive promo code'). Store the validated discount code in component state. When creating the Stripe checkout session via checkoutCartItems or createNoShippingCheckoutSession, adjust the line item amounts or pass the discount as a parameter so the Stripe session reflects the reduced total. Include a 'Clear' or 'Remove' button to reset the applied discount."
-        }
-      ]
-    },
-    {
-      "id": "REQ-132",
-      "summary": "Display bonus item and Pro Ocarina Learning App URL on Payment Success page",
-      "acceptanceCriteria": [
-        "Payment success page fetches and displays the bonus item section when enabled, showing title, description, and clickable URL",
-        "Payment success page displays the Pro Ocarina Learning App link when the URL is configured",
-        "If bonus item is disabled, its section is not shown",
-        "If Pro Ocarina App URL is empty/unconfigured, that section is not shown",
-        "Both sections are clearly labelled and visually distinct from the standard confirmation message"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/PaymentSuccess.tsx",
-          "operation": "modify",
-          "description": "Use the usePaymentSettings query hook from REQ-129 to fetch payment settings on mount. Below the existing confirmation message, conditionally render two new sections: (1) If bonusItemConfig.enabled is true, display a 'Bonus Item' section with a heading, the configured title, description text, and a prominent button or link labelled 'Access Bonus Item' that opens bonusItemConfig.url in a new tab; (2) If proOcarinaAppUrl is non-empty, display a 'Pro Ocarina Learning App' section with a heading and a button or link labelled 'Access your free Pro Ocarina Learning App' that opens proOcarinaAppUrl in a new tab. Use Card or similar UI components to visually separate these sections. If either config value is missing or disabled, do not render that section."
-        }
-      ]
-    },
-    {
-      "id": "REQ-133",
-      "summary": "Add static free postage and no returns policy notices to Product Detail View, Checkout, and Payment Success pages",
-      "acceptanceCriteria": [
-        "ProductDetailView displays a free postage notice and a no returns notice below the price",
-        "Checkout page displays free postage and no returns notices in the order summary",
-        "PaymentSuccess page displays a brief free postage and no returns reminder",
-        "All notices are clearly readable and consistently styled with the existing theme"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/ProductDetailView.tsx",
-          "operation": "modify",
-          "description": "Below the product price display, add two static text notices: '✓ Free postage on every order' and '✗ No returns accepted'. Style them clearly with appropriate icons (checkmark for free postage, cross for no returns) and use muted or secondary text colors to distinguish them from the primary product information. Ensure spacing and alignment match the existing design system."
-        },
-        {
-          "path": "frontend/src/pages/Checkout.tsx",
-          "operation": "modify",
-          "description": "In the order summary section (typically on the right side or below the item list), add a policy summary box or alert stating 'Free postage included' and 'No returns policy applies to all purchases'. Use a bordered or background-colored container (e.g., Alert or Card component) to make it visually distinct. Position it above or below the order total display."
-        },
-        {
-          "path": "frontend/src/pages/PaymentSuccess.tsx",
-          "operation": "modify",
-          "description": "Below the main confirmation message and above or below the bonus item/app access sections, add a brief reminder in smaller or muted text: 'Your order includes free postage. Please note: no returns are accepted.' Use a consistent styling approach (e.g., info alert or plain paragraph with icon) to ensure it is readable but does not dominate the success message."
-        }
-      ]
-    },
-    {
-      "id": "REQ-134",
-      "summary": "Update Terms & Conditions page with shipping, returns, and digital inclusions policy sections",
-      "acceptanceCriteria": [
-        "Terms & Conditions page includes a Shipping section stating free postage on all orders",
-        "Terms & Conditions page includes a Returns section with a clear no-returns/all-sales-final policy",
-        "Terms & Conditions page includes a Digital Inclusions section describing Pro Ocarina Learning App access included with every purchase",
-        "Existing sections that contradict the new policies (e.g. old returns language) are updated or removed"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/Terms.tsx",
-          "operation": "modify",
-          "description": "Add or update three policy sections in the Terms & Conditions page: (1) Shipping section stating 'Free postage is included on every order with no minimum purchase required.'; (2) Returns section replacing any existing returns text with a clear no-returns policy, e.g., 'All sales are final. We do not accept returns or offer refunds for any purchases.'; (3) Digital Inclusions section explaining 'Every purchase includes complimentary access to the Pro Ocarina Learning App, a digital tool for learning ocarina tablature and composing music.' Remove or update any contradictory language regarding returns, refunds, or shipping costs. Use consistent heading styles and paragraph formatting matching the existing page structure."
-        }
-      ]
-    },
-    {
-      "id": "REQ-135",
-      "summary": "Update Privacy Policy page with order fulfillment, digital products/app access, and returns/refunds sections",
-      "acceptanceCriteria": [
-        "Privacy Policy page references free postage on all orders in the order fulfillment context",
-        "Privacy Policy page includes a section on digital product/app access and how purchase data relates to app access",
-        "Privacy Policy page includes a no-returns/no-refunds data statement",
-        "No existing required privacy sections (data collection, payment processing, user rights) are removed"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/PrivacyPolicy.tsx",
-          "operation": "modify",
-          "description": "Add or update three sections in the Privacy Policy page: (1) Order Fulfillment section noting 'Free postage is provided on all orders. We do not collect personal shipping cost data for postage calculations.'; (2) Digital Products & App Access section explaining 'Purchase records may be used to grant access to the Pro Ocarina Learning App, a digital learning tool included with every order.'; (3) Returns & Refunds section stating 'We do not process returns or refunds. No return-related personal data is collected.' Ensure these additions do not remove existing required privacy sections such as data collection, payment processing, security, or user rights. Use consistent heading and paragraph styles matching the existing page structure."
+          "description": "Add useGetDescriptionTemplates hook if not already present to fetch the list of description templates from the backend via actor.getDescriptionTemplates(). Return the query result with proper loading and error states."
         }
       ]
     }

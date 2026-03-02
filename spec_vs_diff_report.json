@@ -1,23 +1,15 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-27T08:34:27.688Z",
-  "summary": "The diff implements the majority of requirements (REQ-127 through REQ-135). Backend discount code and payment settings storage are added, frontend hooks are created, Dashboard has a Payment Settings tab, Checkout has promo code support, PaymentSuccess shows bonus items and app URL, ProductDetailView has shipping/returns notices, Terms and Privacy Policy pages are updated. One notable gap is that the discount passed to the Stripe checkout session creation is described as applied proportionally to line items in the file summary. Backend stable storage for discount codes and payment settings is mentioned but the truncated diff limits full verification.",
+  "generatedAt": "2026-03-02T01:39:22.518Z",
+  "summary": "The diff implements REQ-136 and REQ-137 via backend/migration.mo and backend/main.mo, and REQ-138 via frontend/src/components/BulkProductUpload.tsx. All required template content is present, the seeding logic exists, and the frontend component auto-selects the Default template and tracks manual edits. One partial concern exists: REQ-136 and REQ-137 require logic in backend/main.mo, but the implementation delegates to a separate migration.mo module, potentially violating the constraint that all Motoko logic must remain in the single backend/main.mo actor.",
   "missing_requirements": [
     {
-      "id": "REQ-127",
-      "requirement": "Discount code stable storage must survive canister upgrades",
-      "reason": "The backend/main.mo diff is truncated and does not show stable variable declarations for discount codes or pre/post-upgrade hooks. The migration.mo file added does not reference discount codes. Cannot confirm stable storage is implemented.",
+      "id": "REQ-136",
+      "requirement": "All Motoko logic must remain in the single backend/main.mo actor — the Default template update/creation logic must be inside main.mo itself, not a separate module.",
+      "reason": "The build constraint states all Motoko logic must remain in the single backend/main.mo actor. The diff introduces backend/migration.mo as a separate module containing the template seeding and update logic. While main.mo imports and uses it, the logic itself resides outside the actor file.",
       "evidence": [
-        "backend/main.mo",
-        "backend/migration.mo"
-      ]
-    },
-    {
-      "id": "REQ-128",
-      "requirement": "BonusItemConfig and proOcarinaAppUrl stable storage must survive canister upgrades",
-      "reason": "The backend/main.mo diff is truncated and does not show stable variable declarations for BonusItemConfig or PaymentSettings including proOcarinaAppUrl. Cannot confirm stable storage is implemented.",
-      "evidence": [
+        "backend/migration.mo",
         "backend/main.mo"
       ]
     }
@@ -28,14 +20,7 @@
     "backend/main.mo",
     "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/src/components/PaymentSettingsTab.tsx",
-    "frontend/src/components/ProductDetailView.tsx",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/Checkout.tsx",
-    "frontend/src/pages/Dashboard.tsx",
-    "frontend/src/pages/PaymentSuccess.tsx",
-    "frontend/src/pages/PrivacyPolicy.tsx",
-    "frontend/src/pages/Terms.tsx",
+    "frontend/src/components/BulkProductUpload.tsx",
     "project_state.json"
   ]
 }

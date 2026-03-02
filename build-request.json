@@ -1,205 +1,80 @@
 {
   "kind": "build_request",
-  "title": "Discount Codes, Bonus Items, App Access URL, Free Postage/No Returns Notices, and T&C/Privacy Policy Updates",
+  "title": "Update default description template with shape-specific story variations",
   "projectName": "Original Creations Hub",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-127",
-      "text": "Add a `DiscountCode` type and stable storage to the backend actor in `backend/main.mo` with fields: `id: Text`, `code: Text`, `discountType: { #percentage; #fixedAmount }`, `value: Float`, `active: Bool`, `createdAt: Int`. Implement admin-authenticated methods: `createDiscountCode(code, discountType, value)`, `updateDiscountCode(id, code, discountType, value, active)`, `deleteDiscountCode(id)`, `getDiscountCodes()` (admin), and a public `validateDiscountCode(code): ?DiscountCode` that returns the matching active code or null.",
+      "id": "REQ-136",
+      "text": "In the backend (backend/main.mo), update the default description template stored in the DescriptionTemplates stable storage to use the following base text: 'Experience clear, rich sound and precise tuning with this unique, original ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'. If a default template already exists (e.g. created during initialisation), update its content to this new text. If none exists, create it with the name 'Default'.",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "Admin interface in Dashboard > Payment Settings to create promo codes (percentage off or fixed amount) that customers can enter at checkout"
+          "Experience clear, rich sound and precise tuning with this unique, original ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊",
+          "make this the preset description for all items , save in templates"
         ]
       },
       "acceptanceCriteria": [
-        "Admin can create a discount code with a percentage type (e.g. 10%) or fixed amount type (e.g. $5.00 AUD)",
-        "Admin can update or delete existing discount codes",
-        "getDiscountCodes() returns all codes and is admin-only",
-        "validateDiscountCode() is publicly callable and returns the active code matching the provided string, or null if not found/inactive",
-        "Discount code data persists across canister upgrades via stable storage"
+        "The description template with name 'Default' exists in backend storage with the exact text: 'Experience clear, rich sound and precise tuning with this unique, original ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'",
+        "Calling getDescriptionTemplates() returns at least one template containing this text",
+        "The template is visible in Dashboard > Description Templates"
       ]
     },
     {
-      "id": "REQ-128",
-      "text": "Add a `BonusItemConfig` type and stable storage to the backend actor in `backend/main.mo` with fields: `title: Text`, `description: Text`, `url: Text`, `enabled: Bool`. Implement admin-authenticated methods `getBonusItemConfig()` and `updateBonusItemConfig(title, description, url, enabled)`. Also add a `proOcarinaAppUrl: Text` field to the same or a related `PaymentSettings` config record, with admin-authenticated getter `getPaymentSettings()` and setter `updatePaymentSettings(proOcarinaAppUrl, bonusItemConfig)`.",
+      "id": "REQ-137",
+      "text": "In the backend (backend/main.mo), create four additional shape-specific description templates in the DescriptionTemplates stable storage during initialisation (or via a one-time seeding check), one for each of the four preset shapes: Turtle, Dolphin, Frog, and Whale. Each template must weave a short story connecting the shape to melody and the ocarina experience, built on top of the base text from REQ-136. Use the following content:\n\n- Name: 'Turtle' — Content: 'Like the turtle's steady journey through calm waters, this ocarina sings a melody that is patient, rich, and full of depth. Experience clear, rich sound and precise tuning with this unique, original Turtle ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'\n- Name: 'Dolphin' — Content: 'Inspired by the dolphin's playful leaps and joyful calls, this ocarina carries a bright, flowing melody that dances through the air. Experience clear, rich sound and precise tuning with this unique, original Dolphin ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'\n- Name: 'Frog' — Content: 'Like the frog's cheerful evening chorus rising from the pond, this ocarina rings out with a warm, lively melody that fills any space with charm. Experience clear, rich sound and precise tuning with this unique, original Frog ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'\n- Name: 'Whale' — Content: 'Echoing the whale's deep, haunting song across open oceans, this ocarina delivers a resonant, soulful melody that moves the heart. Experience clear, rich sound and precise tuning with this unique, original Whale ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'",
       "target": "backend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "Configurable digital bonus item (app access link/download) in Dashboard > Payment Settings",
-          "A configurable URL field in Dashboard > Payment Settings so you can set the app link"
+          "make description from current preset shape (turtle, dolphin, frog, whale)",
+          "added"
         ]
       },
       "acceptanceCriteria": [
-        "getBonusItemConfig() returns the stored bonus item configuration",
-        "updateBonusItemConfig() is admin-only and persists changes",
-        "proOcarinaAppUrl is stored and retrievable from payment settings",
-        "All payment settings persist across canister upgrades via stable storage"
+        "Four templates named 'Turtle', 'Dolphin', 'Frog', and 'Whale' are visible in Dashboard > Description Templates",
+        "Each template contains a short shape-to-melody story paragraph followed by the base description text",
+        "Calling getDescriptionTemplates() returns all four shape templates plus the default template",
+        "Templates do not duplicate if the backend is redeployed (seeding check prevents re-creation)"
       ]
     },
     {
-      "id": "REQ-129",
-      "text": "Create React Query hooks in `frontend/src/hooks/useQueries.ts` for the new payment settings data: `useDiscountCodes()` (fetches all codes, admin-authenticated), `useCreateDiscountCode()`, `useUpdateDiscountCode()`, `useDeleteDiscountCode()` mutations (all admin-authenticated with cache invalidation), `useValidateDiscountCode()` mutation (public, no auth required), `usePaymentSettings()` (fetches bonus item config and pro app URL), and `useUpdatePaymentSettings()` mutation (admin-authenticated).",
+      "id": "REQ-138",
+      "text": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to set the default selected template in the template dropdown to the 'Default' template (from REQ-136) when the component first loads, replacing the previously hardcoded description string. When the user changes the selected template from the dropdown, all product description fields that have not been manually edited should update to display the newly selected template's content. The four shape-specific templates (Turtle, Dolphin, Frog, Whale) must appear as selectable options in the same dropdown alongside the Default template.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-latest"
+          "msg-last"
         ],
         "quotes": [
-          "Admin interface in Dashboard > Payment Settings",
-          "Configurable digital bonus item",
-          "A configurable URL field in Dashboard > Payment Settings"
+          "make this the preset description for all items",
+          "make description from current preset shape (turtle, dolphin, frog, whale)"
         ]
       },
       "acceptanceCriteria": [
-        "useDiscountCodes() fetches and caches the list of all discount codes",
-        "useCreateDiscountCode/useUpdateDiscountCode/useDeleteDiscountCode mutations call the correct backend methods and invalidate the discount codes cache",
-        "useValidateDiscountCode mutation is callable without authentication",
-        "usePaymentSettings() fetches bonus item config and pro app URL",
-        "useUpdatePaymentSettings mutation persists changes and invalidates the payment settings cache"
-      ]
-    },
-    {
-      "id": "REQ-130",
-      "text": "Add a 'Payment Settings' tab to the admin Dashboard page (`frontend/src/pages/Dashboard.tsx`). This tab must contain three sections: (1) **Discount Codes** — a table listing all existing promo codes (code, type, value, active status) with Edit and Delete buttons per row, plus a 'Create New Code' form with fields for code string, type selector (Percentage Off / Fixed Amount), value input, and active toggle; (2) **Bonus Item** — a form with fields for bonus item title, description, URL, and an enabled toggle; (3) **Pro Ocarina Learning App** — a single URL input field labelled 'Pro Ocarina Learning App URL'. All sections use the corresponding React Query hooks from REQ-129.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Admin interface in Dashboard > Payment Settings to create promo codes",
-          "Configurable digital bonus item (app access link/download) in Dashboard > Payment Settings",
-          "A configurable URL field in Dashboard > Payment Settings"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A 'Payment Settings' tab is visible in the Dashboard page tab list",
-        "The Discount Codes section lists all codes with their type, value, and active status",
-        "Admin can create, edit (code string, type, value, active), and delete discount codes from the UI",
-        "The Bonus Item section allows the admin to configure and save a title, description, URL, and enabled toggle",
-        "The Pro Ocarina App section shows a URL input that saves to the backend payment settings",
-        "Save confirmations or error toasts are shown after each mutation"
-      ]
-    },
-    {
-      "id": "REQ-131",
-      "text": "Add a discount code entry field to the Checkout page (`frontend/src/pages/Checkout.tsx`). Display an input labelled 'Promo Code' with an 'Apply' button. When applied, call `useValidateDiscountCode()` to validate the code: if valid, display the discount amount and update the displayed order total accordingly; if invalid or inactive, show an inline error message. Pass the validated discount code value to the Stripe checkout session creation call so the discount is reflected in the Stripe session line items or coupon.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "customers can enter at checkout"
-        ]
-      },
-      "acceptanceCriteria": [
-        "A 'Promo Code' input and 'Apply' button are visible on the Checkout page",
-        "Entering a valid active code shows the discount amount and reduced total",
-        "Entering an invalid or inactive code shows a clear error message",
-        "The discount is passed through to the Stripe checkout session (as a coupon or adjusted line item amount)",
-        "Removing or changing the code clears the applied discount"
-      ]
-    },
-    {
-      "id": "REQ-132",
-      "text": "Update the Payment Success page (`frontend/src/pages/PaymentSuccess.tsx`) to display the configured bonus item and Pro Ocarina Learning App URL after a successful purchase. Fetch payment settings using `usePaymentSettings()`. If the bonus item is enabled, display its title, description, and a clearly labelled link/button to access the bonus item URL. Always display a dedicated section for the Pro Ocarina Learning App with a labelled link to the configured URL (e.g. 'Access your free Pro Ocarina Learning App'). If the Pro Ocarina App URL is not yet configured, do not display that section.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "automatically appears on every order confirmation/receipt",
-          "displayed on every order confirmation page"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Payment success page fetches and displays the bonus item section when enabled, showing title, description, and clickable URL",
-        "Payment success page displays the Pro Ocarina Learning App link when the URL is configured",
-        "If bonus item is disabled, its section is not shown",
-        "If Pro Ocarina App URL is empty/unconfigured, that section is not shown",
-        "Both sections are clearly labelled and visually distinct from the standard confirmation message"
-      ]
-    },
-    {
-      "id": "REQ-133",
-      "text": "Add static free postage and no returns policy notices to three locations in the frontend: (1) **Product Detail View** (`frontend/src/components/ProductDetailView.tsx`) — add a notice below the price reading '✓ Free postage on every order' and '✗ No returns accepted'; (2) **Checkout page** (`frontend/src/pages/Checkout.tsx`) — add a policy summary box in the order summary section stating 'Free postage included' and 'No returns policy applies to all purchases'; (3) **Payment Success page** (`frontend/src/pages/PaymentSuccess.tsx`) — add a brief reminder 'Your order includes free postage. Please note: no returns are accepted.' These notices are static text and do not require backend configuration.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Static policy notices added to product pages, checkout, and order confirmation indicating free postage on every order and no returns accepted"
-        ]
-      },
-      "acceptanceCriteria": [
-        "ProductDetailView displays a free postage notice and a no returns notice below the price",
-        "Checkout page displays free postage and no returns notices in the order summary",
-        "PaymentSuccess page displays a brief free postage and no returns reminder",
-        "All notices are clearly readable and consistently styled with the existing theme"
-      ]
-    },
-    {
-      "id": "REQ-134",
-      "text": "Update the Terms & Conditions page (`frontend/src/pages/Terms.tsx`) to add or update the following policy sections: (1) **Shipping** — state that free postage is included on every order with no minimum purchase required; (2) **Returns** — replace any existing returns text with a clear no-returns policy statement explaining all sales are final and no returns or refunds are accepted; (3) **Digital Inclusions** — add a new section stating that every purchase includes complimentary access to the Pro Ocarina Learning App, a digital tool for learning ocarina tablature and composing music.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Update existing T&C and Privacy Policy pages to include: free postage on all orders, access to the Pro Ocarina Learning App included with every purchase, and no returns policy"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Terms & Conditions page includes a Shipping section stating free postage on all orders",
-        "Terms & Conditions page includes a Returns section with a clear no-returns/all-sales-final policy",
-        "Terms & Conditions page includes a Digital Inclusions section describing Pro Ocarina Learning App access included with every purchase",
-        "Existing sections that contradict the new policies (e.g. old returns language) are updated or removed"
-      ]
-    },
-    {
-      "id": "REQ-135",
-      "text": "Update the Privacy Policy page (`frontend/src/pages/PrivacyPolicy.tsx`) to add or update the following sections: (1) **Order Fulfillment** — note that free postage is provided on all orders and no personal shipping cost data is collected for postage calculations; (2) **Digital Products & App Access** — add a section explaining that purchase records may be used to grant access to the Pro Ocarina Learning App, a digital learning tool included with every order; (3) **Returns & Refunds** — add a statement that no returns or refunds are processed, so no return-related personal data is collected.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-latest"
-        ],
-        "quotes": [
-          "Update existing T&C and Privacy Policy pages to include: free postage on all orders, access to the Pro Ocarina Learning App included with every purchase, and no returns policy"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Privacy Policy page references free postage on all orders in the order fulfillment context",
-        "Privacy Policy page includes a section on digital product/app access and how purchase data relates to app access",
-        "Privacy Policy page includes a no-returns/no-refunds data statement",
-        "No existing required privacy sections (data collection, payment processing, user rights) are removed"
+        "On load, the template dropdown defaults to the 'Default' template and all description fields are pre-populated with the base text",
+        "The dropdown lists at minimum: Default, Turtle, Dolphin, Frog, Whale templates",
+        "Selecting 'Dolphin' from the dropdown populates all unedited description fields with the Dolphin-specific template text",
+        "Manually edited description fields are not overwritten when the template selection changes",
+        "When auto-copy is enabled and the first item's description is the selected template text, changing the template updates all subsequent items' descriptions accordingly"
       ]
     }
   ],
   "constraints": [
-    "Do not modify any file under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui",
-    "Discount code validation (validateDiscountCode) must be publicly callable without admin authentication so guest customers can apply codes at checkout",
-    "Free postage and no returns notices in REQ-133 are static frontend text only — no backend configuration required",
-    "All new backend stable storage must survive canister upgrades"
+    "Do not modify immutable frontend hook files listed in frontend.immutablePaths",
+    "All Motoko logic must remain in the single backend/main.mo actor",
+    "Template seeding must be idempotent — do not create duplicate templates on repeated deployments"
   ],
   "nonGoals": [
-    "Automatic Stripe coupon/discount code sync — discount is applied client-side to the session amount, not via Stripe's coupon API unless straightforward",
-    "Customer-facing discount code management (customers cannot create or list codes, only apply them)",
-    "Physical returns workflow or return shipping label generation",
-    "Email delivery of bonus item or app access link (display on confirmation page only)",
-    "Bulk import or export of discount codes"
+    "Changing any other existing description templates already saved by the trader",
+    "Adding new shape types beyond the four specified (Turtle, Dolphin, Frog, Whale)",
+    "Automatically assigning a shape-specific template based on the product's shape field — the trader selects the template manually from the dropdown",
+    "Any AI generation of descriptions"
   ],
   "imageRequirements": {
     "required": [],

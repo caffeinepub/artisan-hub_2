@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAddProduct, useGetDescriptionTemplates } from '../hooks/useQueries';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,6 +25,7 @@ interface ProductPreview {
   price: string;
   inventoryCount: string;
   uploadProgress: number;
+  descriptionManuallyEdited: boolean;
 }
 
 export default function BulkProductUpload({ onComplete }: BulkProductUploadProps) {
@@ -35,13 +36,17 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
   const [progress, setProgress] = useState(0);
   const [autoCopyEnabled, setAutoCopyEnabled] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+  const defaultTemplateSetRef = useRef(false);
 
-  // Auto-select first template if only one exists
+  // Auto-select the "Default" template on load once templates are available
   useEffect(() => {
-    if (templates.length === 1 && !selectedTemplateId) {
-      setSelectedTemplateId(templates[0].id.toString());
+    if (!templatesLoading && templates.length > 0 && !defaultTemplateSetRef.current) {
+      defaultTemplateSetRef.current = true;
+      // Prefer a template named "Default", otherwise fall back to the first template
+      const defaultTemplate = templates.find(t => t.name === 'Default') ?? templates[0];
+      setSelectedTemplateId(defaultTemplate.id.toString());
     }
-  }, [templates, selectedTemplateId]);
+  }, [templates, templatesLoading]);
 
   // Get the selected template content
   const selectedTemplate = templates.find(t => t.id.toString() === selectedTemplateId);
@@ -59,21 +64,21 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
         price: '',
         inventoryCount: '0',
         uploadProgress: 0,
+        descriptionManuallyEdited: false,
       }));
       setProducts([...products, ...newProducts]);
     }
   };
 
-  // Handle template selection change
+  // Handle template selection change — only update descriptions that haven't been manually edited
   const handleTemplateChange = (templateId: string) => {
     setSelectedTemplateId(templateId);
     const template = templates.find(t => t.id.toString() === templateId);
     if (template) {
-      // Update all products with the new template content
       setProducts(prevProducts =>
         prevProducts.map(product => ({
           ...product,
-          description: template.content,
+          description: product.descriptionManuallyEdited ? product.description : template.content,
         }))
       );
     }
@@ -90,6 +95,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
             : {
                 ...product,
                 description: firstProduct.description,
+                descriptionManuallyEdited: product.descriptionManuallyEdited,
                 shape: firstProduct.shape,
                 category: firstProduct.category,
                 price: firstProduct.price,
@@ -98,17 +104,33 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
         )
       );
     }
-  }, [autoCopyEnabled, products.length > 0 ? products[0].description : '', products.length > 0 ? products[0].shape : '', products.length > 0 ? products[0].category : '', products.length > 0 ? products[0].price : '', products.length > 0 ? products[0].inventoryCount : '']);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    autoCopyEnabled,
+    products.length > 0 ? products[0]?.description : '',
+    products.length > 0 ? products[0]?.shape : '',
+    products.length > 0 ? products[0]?.category : '',
+    products.length > 0 ? products[0]?.price : '',
+    products.length > 0 ? products[0]?.inventoryCount : '',
+  ]);
 
-  const updateProduct = (index: number, field: keyof ProductPreview, value: string | number) => {
+  const updateProduct = (index: number, field: keyof ProductPreview, value: string | number | boolean) => {
     setProducts(prevProducts => {
       const newProducts = [...prevProducts];
       newProducts[index] = { ...newProducts[index], [field]: value };
+
+      // Mark description as manually edited when the user types in it
+      if (field === 'description') {
+        newProducts[index] = { ...newProducts[index], descriptionManuallyEdited: true };
+      }
 
       // If auto-copy is enabled and we're updating the first product, update all others
       if (autoCopyEnabled && index === 0 && (field === 'description' || field === 'shape' || field === 'category' || field === 'price' || field === 'inventoryCount')) {
         for (let i = 1; i < newProducts.length; i++) {
           newProducts[i] = { ...newProducts[i], [field]: value };
+          if (field === 'description') {
+            newProducts[i] = { ...newProducts[i], descriptionManuallyEdited: true };
+          }
         }
       }
 
@@ -239,7 +261,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Select a template to pre-populate product descriptions
+                Select a template to pre-populate product descriptions. Manually edited descriptions will not be overwritten.
               </p>
             </div>
           </CardContent>
@@ -277,7 +299,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                             id={`shape-${index}`}
                             value={product.shape}
                             onChange={(e) => updateProduct(index, 'shape', e.target.value)}
-                            placeholder="e.g., Round"
+                            placeholder="e.g., Turtle"
                           />
                         </div>
                         <div>
@@ -316,14 +338,19 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                         </div>
                       </div>
                     </div>
-                    <div>
-                      <Label htmlFor={`description-${index}`}>Description *</Label>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor={`description-${index}`}>Description *</Label>
+                        {product.descriptionManuallyEdited && (
+                          <span className="text-xs text-muted-foreground italic">Manually edited</span>
+                        )}
+                      </div>
                       <Textarea
                         id={`description-${index}`}
                         value={product.description}
                         onChange={(e) => updateProduct(index, 'description', e.target.value)}
                         placeholder="Enter product description"
-                        className="h-[calc(100%-2rem)]"
+                        className="flex-1 min-h-[200px]"
                       />
                     </div>
                   </div>

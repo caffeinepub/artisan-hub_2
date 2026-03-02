@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 53,
+  "projectStateVersion": 55,
   "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -805,6 +805,14 @@
         "REQ-135"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-set-the-default-selected-template-in-the-template-dropdown-to-the-default-template-from-req-136-when-the-component-first-loads-replacing-the-previously-hardcoded-description-string-when-the-user-changes-the-selected-template-from-the-dropdown-all-product-description-fields-that-have-not-been-manually-edited-should-update-to-display-the-newly-selected-template-s-content-the-four-shape-specific-templates-turtle-dolphin-frog-whale-must-appear-as-selectable-options-in-the-same-dropdown-alongside-the-default-template",
+      "title": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to set the default selected template in the template dropdown to the 'Default' template (from REQ-136) when the component first loads, replacing the previously hardcoded description string. When the user changes the selected template from the dropdown, all product description fields that have not been manually edited should update to display the newly selected template's content. The four shape-specific templates (Turtle, Dolphin, Frog, Whale) must appear as selectable options in the same dropdown alongside the Default template.",
+      "reqIds": [
+        "REQ-138"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -1431,6 +1439,34 @@
       "summary": "Add a `BonusItemConfig` type and stable storage to the backend actor in `backend/main.mo` with fields: `title: Text`, `description: Text`, `url: Text`, `enabled: Bool`. Implement admin-authenticated methods `getBonusItemConfig()` and `updateBonusItemConfig(title, description, url, enabled)`. Also add a `proOcarinaAppUrl: Text` field to the same or a related `PaymentSettings` config record, with admin-authenticated getter `getPaymentSettings()` and setter `updatePaymentSettings(proOcarinaAppUrl, bonusItemConfig)`.",
       "reqIds": [
         "REQ-128"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-131",
+      "summary": "Update default description template to: 'Experience clear, rich sound and precise tuning with this unique, original ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊' and save it in the Description Templates system",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-132",
+      "summary": "Add dynamic shape insertion in BulkProductUpload that weaves the product's shape (Turtle, Dolphin, Frog, Whale) into the description template with a short story connecting the shape to the melody/ocarina experience using a {shape} placeholder",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-133",
+      "summary": "In the backend (backend/main.mo), update the default description template stored in the DescriptionTemplates stable storage to use the following base text: 'Experience clear, rich sound and precise tuning with this unique, original ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'. If a default template already exists (e.g. created during initialisation), update its content to this new text. If none exists, create it with the name 'Default'.",
+      "reqIds": [
+        "REQ-136"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-134",
+      "summary": "In the backend (backend/main.mo), create four additional shape-specific description templates in the DescriptionTemplates stable storage during initialisation (or via a one-time seeding check), one for each of the four preset shapes: Turtle, Dolphin, Frog, and Whale. Each template must weave a short story connecting the shape to melody and the ocarina experience, built on top of the base text from REQ-136. Use the following content:\n\n- Name: 'Turtle' — Content: 'Like the turtle's steady journey through calm waters, this ocarina sings a melody that is patient, rich, and full of depth. Experience clear, rich sound and precise tuning with this unique, original Turtle ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'\n- Name: 'Dolphin' — Content: 'Inspired by the dolphin's playful leaps and joyful calls, this ocarina carries a bright, flowing melody that dances through the air. Experience clear, rich sound and precise tuning with this unique, original Dolphin ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'\n- Name: 'Frog' — Content: 'Like the frog's cheerful evening chorus rising from the pond, this ocarina rings out with a warm, lively melody that fills any space with charm. Experience clear, rich sound and precise tuning with this unique, original Frog ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'\n- Name: 'Whale' — Content: 'Echoing the whale's deep, haunting song across open oceans, this ocarina delivers a resonant, soulful melody that moves the heart. Experience clear, rich sound and precise tuning with this unique, original Whale ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'",
+      "reqIds": [
+        "REQ-137"
       ],
       "status": "pending"
     }

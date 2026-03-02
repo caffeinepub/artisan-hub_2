@@ -1,108 +1,39 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-27T08:34:27.699Z",
+  "generatedAt": "2026-03-02T01:39:22.523Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 9,
-    "implemented": 7,
+    "total": 3,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-127",
-        "summary": "Add a `DiscountCode` type and stable storage to the backend actor in `backend/main.mo` with fields: `id: Text`, `code: Text`, `discountType: { #percentage; #fixedAmount }`, `value: Float`, `active: Bool`, `createdAt: Int`. Implement admin-authenticated methods: `createDiscountCode(code, discountType, value)`, `updateDiscountCode(id, code, discountType, value, active)`, `deleteDiscountCode(id)`, `getDiscountCodes()` (admin), and a public `validateDiscountCode(code): ?DiscountCode` that returns the matching active code or null.",
+        "id": "REQ-136",
+        "summary": "In the backend (backend/main.mo), update the default description template stored in the DescriptionTemplates stable storage to use the following base text: 'Experience clear, rich sound and precise tuning with this unique, original ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'. If a default template already exists (e.g. created during initialisation), update its content to this new text. If none exists, create it with the name 'Default'.",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-128",
-        "summary": "Add a `BonusItemConfig` type and stable storage to the backend actor in `backend/main.mo` with fields: `title: Text`, `description: Text`, `url: Text`, `enabled: Bool`. Implement admin-authenticated methods `getBonusItemConfig()` and `updateBonusItemConfig(title, description, url, enabled)`. Also add a `proOcarinaAppUrl: Text` field to the same or a related `PaymentSettings` config record, with admin-authenticated getter `getPaymentSettings()` and setter `updatePaymentSettings(proOcarinaAppUrl, bonusItemConfig)`.",
+        "id": "REQ-137",
+        "summary": "In the backend (backend/main.mo), create four additional shape-specific description templates in the DescriptionTemplates stable storage during initialisation (or via a one-time seeding check), one for each of the four preset shapes: Turtle, Dolphin, Frog, and Whale. Each template must weave a short story connecting the shape to melody and the ocarina experience, built on top of the base text from REQ-136. Use the following content:\n\n- Name: 'Turtle' — Content: 'Like the turtle's steady journey through calm waters, this ocarina sings a melody that is patient, rich, and full of depth. Experience clear, rich sound and precise tuning with this unique, original Turtle ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'\n- Name: 'Dolphin' — Content: 'Inspired by the dolphin's playful leaps and joyful calls, this ocarina carries a bright, flowing melody that dances through the air. Experience clear, rich sound and precise tuning with this unique, original Dolphin ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'\n- Name: 'Frog' — Content: 'Like the frog's cheerful evening chorus rising from the pond, this ocarina rings out with a warm, lively melody that fills any space with charm. Experience clear, rich sound and precise tuning with this unique, original Frog ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'\n- Name: 'Whale' — Content: 'Echoing the whale's deep, haunting song across open oceans, this ocarina delivers a resonant, soulful melody that moves the heart. Experience clear, rich sound and precise tuning with this unique, original Whale ocarina. Get instant access to our Pro Learning App, a digital ocarina to jam with, and free postage – a perfect blend of tradition and tech 😊'",
         "status": "unknown",
         "plannedFiles": [],
         "matchedFiles": []
       },
       {
-        "id": "REQ-129",
-        "summary": "Create React Query hooks in `frontend/src/hooks/useQueries.ts` for the new payment settings data: `useDiscountCodes()` (fetches all codes, admin-authenticated), `useCreateDiscountCode()`, `useUpdateDiscountCode()`, `useDeleteDiscountCode()` mutations (all admin-authenticated with cache invalidation), `useValidateDiscountCode()` mutation (public, no auth required), `usePaymentSettings()` (fetches bonus item config and pro app URL), and `useUpdatePaymentSettings()` mutation (admin-authenticated).",
+        "id": "REQ-138",
+        "summary": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to set the default selected template in the template dropdown to the 'Default' template (from REQ-136) when the component first loads, replacing the previously hardcoded description string. When the user changes the selected template from the dropdown, all product description fields that have not been manually edited should update to display the newly selected template's content. The four shape-specific templates (Turtle, Dolphin, Frog, Whale) must appear as selectable options in the same dropdown alongside the Default template.",
         "status": "implemented",
         "plannedFiles": [
+          "frontend/src/components/BulkProductUpload.tsx",
           "frontend/src/hooks/useQueries.ts"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useQueries.ts"
-        ]
-      },
-      {
-        "id": "REQ-130",
-        "summary": "Add a 'Payment Settings' tab to the admin Dashboard page (`frontend/src/pages/Dashboard.tsx`). This tab must contain three sections: (1) **Discount Codes** — a table listing all existing promo codes (code, type, value, active status) with Edit and Delete buttons per row, plus a 'Create New Code' form with fields for code string, type selector (Percentage Off / Fixed Amount), value input, and active toggle; (2) **Bonus Item** — a form with fields for bonus item title, description, URL, and an enabled toggle; (3) **Pro Ocarina Learning App** — a single URL input field labelled 'Pro Ocarina Learning App URL'. All sections use the corresponding React Query hooks from REQ-129.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Dashboard.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Dashboard.tsx"
-        ]
-      },
-      {
-        "id": "REQ-131",
-        "summary": "Add a discount code entry field to the Checkout page (`frontend/src/pages/Checkout.tsx`). Display an input labelled 'Promo Code' with an 'Apply' button. When applied, call `useValidateDiscountCode()` to validate the code: if valid, display the discount amount and update the displayed order total accordingly; if invalid or inactive, show an inline error message. Pass the validated discount code value to the Stripe checkout session creation call so the discount is reflected in the Stripe session line items or coupon.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Checkout.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Checkout.tsx"
-        ]
-      },
-      {
-        "id": "REQ-132",
-        "summary": "Update the Payment Success page (`frontend/src/pages/PaymentSuccess.tsx`) to display the configured bonus item and Pro Ocarina Learning App URL after a successful purchase. Fetch payment settings using `usePaymentSettings()`. If the bonus item is enabled, display its title, description, and a clearly labelled link/button to access the bonus item URL. Always display a dedicated section for the Pro Ocarina Learning App with a labelled link to the configured URL (e.g. 'Access your free Pro Ocarina Learning App'). If the Pro Ocarina App URL is not yet configured, do not display that section.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/PaymentSuccess.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/PaymentSuccess.tsx"
-        ]
-      },
-      {
-        "id": "REQ-133",
-        "summary": "Add static free postage and no returns policy notices to three locations in the frontend: (1) **Product Detail View** (`frontend/src/components/ProductDetailView.tsx`) — add a notice below the price reading '✓ Free postage on every order' and '✗ No returns accepted'; (2) **Checkout page** (`frontend/src/pages/Checkout.tsx`) — add a policy summary box in the order summary section stating 'Free postage included' and 'No returns policy applies to all purchases'; (3) **Payment Success page** (`frontend/src/pages/PaymentSuccess.tsx`) — add a brief reminder 'Your order includes free postage. Please note: no returns are accepted.' These notices are static text and do not require backend configuration.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/ProductDetailView.tsx",
-          "frontend/src/pages/Checkout.tsx",
-          "frontend/src/pages/PaymentSuccess.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/ProductDetailView.tsx",
-          "frontend/src/pages/Checkout.tsx",
-          "frontend/src/pages/PaymentSuccess.tsx"
-        ]
-      },
-      {
-        "id": "REQ-134",
-        "summary": "Update the Terms & Conditions page (`frontend/src/pages/Terms.tsx`) to add or update the following policy sections: (1) **Shipping** — state that free postage is included on every order with no minimum purchase required; (2) **Returns** — replace any existing returns text with a clear no-returns policy statement explaining all sales are final and no returns or refunds are accepted; (3) **Digital Inclusions** — add a new section stating that every purchase includes complimentary access to the Pro Ocarina Learning App, a digital tool for learning ocarina tablature and composing music.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/Terms.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/Terms.tsx"
-        ]
-      },
-      {
-        "id": "REQ-135",
-        "summary": "Update the Privacy Policy page (`frontend/src/pages/PrivacyPolicy.tsx`) to add or update the following sections: (1) **Order Fulfillment** — note that free postage is provided on all orders and no personal shipping cost data is collected for postage calculations; (2) **Digital Products & App Access** — add a section explaining that purchase records may be used to grant access to the Pro Ocarina Learning App, a digital learning tool included with every order; (3) **Returns & Refunds** — add a statement that no returns or refunds are processed, so no return-related personal data is collected.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/pages/PrivacyPolicy.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/pages/PrivacyPolicy.tsx"
+          "frontend/src/components/BulkProductUpload.tsx"
         ]
       }
     ]
@@ -114,18 +45,7 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/backend.d.ts",
-    "frontend/src/backend.ts",
-    "frontend/src/components/PaymentSettingsTab.tsx",
-    "frontend/src/components/ProductDetailView.tsx",
-    "frontend/src/declarations/backend.did.d.ts",
-    "frontend/src/declarations/backend.did.js",
-    "frontend/src/hooks/useQueries.ts",
-    "frontend/src/pages/Checkout.tsx",
-    "frontend/src/pages/Dashboard.tsx",
-    "frontend/src/pages/PaymentSuccess.tsx",
-    "frontend/src/pages/PrivacyPolicy.tsx",
-    "frontend/src/pages/Terms.tsx",
+    "frontend/src/components/BulkProductUpload.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
