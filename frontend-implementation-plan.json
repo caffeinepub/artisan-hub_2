@@ -1,26 +1,34 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Auto-select shape-specific description template in BulkProductUpload",
+  "title": "Add Ocarina Studio carousel to Marketplace page, replacing the search bar",
   "requirements": [
     {
-      "id": "REQ-139",
-      "summary": "Implement automatic shape-based description template selection in BulkProductUpload component, matching product shape values (Turtle, Dolphin, Frog, Whale) to corresponding named templates, falling back to Default template for other shapes, while preserving user-edited descriptions",
+      "id": "REQ-140",
+      "summary": "Replace the Marketplace page search bar with a horizontally scrollable carousel displaying product cards using the OcarinaStudio layout, including Play Demo, Play Ocarina, and Buy Now interactive controls for each product",
       "acceptanceCriteria": [
-        "When a product's shape field is set to 'Dolphin', the description field is automatically populated with the Dolphin template content.",
-        "When a product's shape field is set to 'Turtle', the description field is automatically populated with the Turtle template content.",
-        "When a product's shape field is set to 'Frog', the description field is automatically populated with the Frog template content.",
-        "When a product's shape field is set to 'Whale', the description field is automatically populated with the Whale template content.",
-        "When a product's shape field is set to any value other than Turtle, Dolphin, Frog, or Whale (including blank/empty), the description field falls back to the Default template content.",
-        "The auto-selection triggers each time the shape field value changes for a product.",
-        "If the user has manually edited the description field for a product, changing the shape does not overwrite their manual edits.",
-        "The template dropdown selector continues to function independently, allowing the user to manually override the auto-selected template."
+        "The search bar is removed from the Marketplace page.",
+        "A horizontally scrollable carousel appears at the top of the Marketplace page, in the position previously occupied by the search bar.",
+        "The carousel renders product cards using the same visual layout as the OcarinaStudio page studio cards.",
+        "Each carousel card displays the product image, title, description, and assigned pitch scale.",
+        "Clicking 'Play Demo' on a carousel card plays the ocarinaSynth demo tone sequence for that card's assigned pitch scale, with a visual playing indicator while the demo runs.",
+        "Clicking 'Play Ocarina' on a carousel card opens the interactive OcarinaPanel modal/inline panel for that card's assigned pitch scale, allowing individual notes to be played.",
+        "The OcarinaPanel includes a close/dismiss control.",
+        "Clicking 'Buy Now' on a carousel card navigates to the product detail view for that product (same behaviour as on the OcarinaStudio page).",
+        "Products displayed in the carousel are fetched from the backend using the existing useProducts hook and update automatically when new products are added.",
+        "The carousel is responsive and does not break the page layout on desktop or mobile viewports.",
+        "All remaining Marketplace page content (hero section, filter tabs, product sections) remains intact and functional below the carousel."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/BulkProductUpload.tsx",
+          "path": "frontend/src/components/OcarinaCarousel.tsx",
+          "operation": "create",
+          "description": "Create a new horizontally scrollable carousel component that displays product cards with the OcarinaStudio layout. Each card shows product image, title, description, and assigned pitch scale. Include three interactive controls per card: 'Play Demo' button (triggers ocarinaSynth demo tone sequence with visual playing indicator), 'Play Ocarina' button (opens OcarinaPanel for interactive note playing), and 'Buy Now' button (triggers product detail modal). Fetch products using the existing useProducts hook from frontend/src/hooks/useQueries.ts. Apply the same pitch scale assignment logic from OcarinaStudio.tsx (shapes map to scales: Turtle→C Major, Dolphin→G Major, Frog→F Major, Whale→D Major, default→C Major). Use horizontal scroll with CSS overflow-x-auto and flexbox layout. Ensure responsive design for mobile and desktop viewports. Verify the OcarinaPanel component's usage instructions before implementing the 'Play Ocarina' integration."
+        },
+        {
+          "path": "frontend/src/pages/Marketplace.tsx",
           "operation": "modify",
-          "description": "Add shape-based automatic template selection logic. Track whether each product's description has been manually edited using a new state field (e.g., manuallyEditedDescriptions: Set<number>). When a product's shape field changes, check if the description was manually edited; if not, find the matching template by name (Turtle, Dolphin, Frog, Whale, or Default as fallback) and auto-populate the description field with that template's content. Ensure the existing template dropdown remains functional for manual overrides. Clear the manuallyEdited flag when the user explicitly selects a template from the dropdown. Update the handleFieldChange function to mark descriptions as manually edited when the user types in the description textarea. Implement a useEffect or inline handler to trigger auto-selection whenever the shape value changes for any product row."
+          "description": "Remove the search input element from the page layout. Import and render the new OcarinaCarousel component at the top of the page, immediately below the hero section and above the existing filter tabs (sort order, shape, category). Ensure all other page sections (hero, filters, featured/most-viewed/best-selling/newest product sections) remain unchanged and fully functional. Pass the product detail view modal state and handlers to OcarinaCarousel so 'Buy Now' clicks open the same ProductDetailView modal used elsewhere on the page. Maintain the existing useProducts hook and product state management without modification."
         }
       ]
     }

@@ -1,39 +1,47 @@
 {
   "kind": "build_request",
-  "title": "Auto-select shape-specific description template in BulkProductUpload",
+  "title": "Add Ocarina Studio carousel to Marketplace page, replacing the search bar",
+  "projectName": "Original Creations Hub",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-139",
-      "text": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to automatically select the matching shape-specific description template for each product based on its shape field value. When a product's shape is set to 'Turtle', 'Dolphin', 'Frog', or 'Whale', automatically apply the corresponding named template (Turtle, Dolphin, Frog, or Whale) to that product's description field. When the shape is set to any other value or is blank, fall back to the 'Default' template. This auto-selection should trigger whenever the shape field changes for a product, and should update the description field with the matched template's content unless the user has manually edited that description field.",
+      "id": "REQ-140",
+      "text": "Update the Marketplace page (frontend/src/pages/Marketplace.tsx) to remove the search bar and replace it with a horizontally scrollable carousel/slideshow at the top of the page. The carousel must reuse the same studio card layout from OcarinaStudio.tsx, displaying products fetched via the existing useProducts React Query hook. Each card in the carousel must show the product image, title, description, and assigned pitch scale, and include three interactive controls: a 'Play Demo' button (triggers the ocarinaSynth demo tone sequence for the card's pitch scale), a 'Play Ocarina' button (opens the interactive OcarinaPanel for the card's pitch scale), and a 'Buy Now' link that navigates to the marketplace product detail view for that product.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1",
-          "msg-2"
+          "msg-last"
         ],
         "quotes": [
-          "use each template for the descriptions of the same title shape",
-          "yes, it fall back to the Default template"
+          "1 marketplace. 2 copy the Studio page displays product cards. 3 still link to play demo, play ocarina and buy now"
         ]
       },
       "acceptanceCriteria": [
-        "When a product's shape field is set to 'Dolphin', the description field is automatically populated with the Dolphin template content.",
-        "When a product's shape field is set to 'Turtle', the description field is automatically populated with the Turtle template content.",
-        "When a product's shape field is set to 'Frog', the description field is automatically populated with the Frog template content.",
-        "When a product's shape field is set to 'Whale', the description field is automatically populated with the Whale template content.",
-        "When a product's shape field is set to any value other than Turtle, Dolphin, Frog, or Whale (including blank/empty), the description field falls back to the Default template content.",
-        "The auto-selection triggers each time the shape field value changes for a product.",
-        "If the user has manually edited the description field for a product, changing the shape does not overwrite their manual edits.",
-        "The template dropdown selector continues to function independently, allowing the user to manually override the auto-selected template."
+        "The search bar is removed from the Marketplace page.",
+        "A horizontally scrollable carousel appears at the top of the Marketplace page, in the position previously occupied by the search bar.",
+        "The carousel renders product cards using the same visual layout as the OcarinaStudio page studio cards.",
+        "Each carousel card displays the product image, title, description, and assigned pitch scale.",
+        "Clicking 'Play Demo' on a carousel card plays the ocarinaSynth demo tone sequence for that card's assigned pitch scale, with a visual playing indicator while the demo runs.",
+        "Clicking 'Play Ocarina' on a carousel card opens the interactive OcarinaPanel modal/inline panel for that card's assigned pitch scale, allowing individual notes to be played.",
+        "The OcarinaPanel includes a close/dismiss control.",
+        "Clicking 'Buy Now' on a carousel card navigates to the product detail view for that product (same behaviour as on the OcarinaStudio page).",
+        "Products displayed in the carousel are fetched from the backend using the existing useProducts hook and update automatically when new products are added.",
+        "The carousel is responsive and does not break the page layout on desktop or mobile viewports.",
+        "All remaining Marketplace page content (hero section, filter tabs, product sections) remains intact and functional below the carousel."
       ]
     }
   ],
-  "constraints": [],
+  "constraints": [
+    "Do not modify files listed under frontend.immutablePaths.",
+    "Reuse the existing OcarinaPanel component and ocarinaSynth utility; do not duplicate their logic.",
+    "The existing pitch-scale assignment logic from OcarinaStudio.tsx must be applied consistently in the carousel.",
+    "All other Marketplace page sections (hero, shape/category filters, featured/most-viewed/best-selling/newest product sections) must remain unchanged."
+  ],
   "nonGoals": [
-    "Modifying the backend template storage or template content.",
-    "Changing the template dropdown UI structure.",
-    "Applying shape-based template auto-selection outside of the BulkProductUpload component."
+    "Adding a new backend endpoint or changing backend data structures.",
+    "Modifying the OcarinaStudio page itself.",
+    "Adding pagination or infinite scroll to the carousel.",
+    "Changing the shape/category filter tabs or any other Marketplace section."
   ],
   "imageRequirements": {
     "required": [],

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 57,
+  "projectStateVersion": 59,
   "summary": "Artisan Hub marketplace for a sole trader to sell original creations with bulk image upload, AI-generated descriptions, and Stripe payment processing",
   "architectural_notes": [
     "Direct Stripe integration without commission handling",
@@ -821,6 +821,14 @@
         "REQ-139"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-update-the-marketplace-page-frontend-src-pages-marketplace-tsx-to-remove-the-search-bar-and-replace-it-with-a-horizontally-scrollable-carousel-slideshow-at-the-top-of-the-page-the-carousel-must-reuse-the-same-studio-card-layout-from-ocarinastudio-tsx-displaying-products-fetched-via-the-existing-useproducts-react-query-hook-each-card-in-the-carousel-must-show-the-product-image-title-description-and-assigned-pitch-scale-and-include-three-interactive-controls-a-play-demo-button-triggers-the-ocarinasynth-demo-tone-sequence-for-the-card-s-pitch-scale-a-play-ocarina-button-opens-the-interactive-ocarinapanel-for-the-card-s-pitch-scale-and-a-buy-now-link-that-navigates-to-the-marketplace-product-detail-view-for-that-product",
+      "title": "Update the Marketplace page (frontend/src/pages/Marketplace.tsx) to remove the search bar and replace it with a horizontally scrollable carousel/slideshow at the top of the page. The carousel must reuse the same studio card layout from OcarinaStudio.tsx, displaying products fetched via the existing useProducts React Query hook. Each card in the carousel must show the product image, title, description, and assigned pitch scale, and include three interactive controls: a 'Play Demo' button (triggers the ocarinaSynth demo tone sequence for the card's pitch scale), a 'Play Ocarina' button (opens the interactive OcarinaPanel for the card's pitch scale), and a 'Buy Now' link that navigates to the marketplace product detail view for that product.",
+      "reqIds": [
+        "REQ-140"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -1481,6 +1489,12 @@
     {
       "id": "AR-135",
       "summary": "In BulkProductUpload, automatically select the matching shape-specific template (Turtle, Dolphin, Frog, Whale) based on each product's shape field, falling back to the Default template for unrecognized or blank shapes",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-136",
+      "summary": "Copy the Ocarina Music Studio product card layout into a carousel/slideshow at the top of the Marketplace page, replacing the search bar. Each card retains Play Demo, Play Ocarina, and Buy Now links.",
       "reqIds": [],
       "status": "pending"
     }

@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-bulkproductupload-component-frontend-src-components-bulkproductupload-tsx-to-automatically-select-the-matching-shape-specific-description-template-for-each-product-based-on-its-shape-field-value-when-a-product-s-shape-is-set-to-turtle-dolphin-frog-or-whale-automatically-apply-the-corresponding-named-template-turtle-dolphin-frog-or-whale-to-that-product-s-description-field-when-the-shape-is-set-to-any-other-value-or-is-blank-fall-back-to-the-default-template-this-auto-selection-should-trigger-whenever-the-shape-field-changes-for-a-product-and-should-update-the-description-field-with-the-matched-template-s-content-unless-the-user-has-manually-edited-that-description-field",
-      "featureTitle": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to automatically select the matching shape-specific description template for each product based on its shape field value. When a product's shape is set to 'Turtle', 'Dolphin', 'Frog', or 'Whale', automatically apply the corresponding named template (Turtle, Dolphin, Frog, or Whale) to that product's description field. When the shape is set to any other value or is blank, fall back to the 'Default' template. This auto-selection should trigger whenever the shape field changes for a product, and should update the description field with the matched template's content unless the user has manually edited that description field.",
+      "featureId": "feature-update-the-marketplace-page-frontend-src-pages-marketplace-tsx-to-remove-the-search-bar-and-replace-it-with-a-horizontally-scrollable-carousel-slideshow-at-the-top-of-the-page-the-carousel-must-reuse-the-same-studio-card-layout-from-ocarinastudio-tsx-displaying-products-fetched-via-the-existing-useproducts-react-query-hook-each-card-in-the-carousel-must-show-the-product-image-title-description-and-assigned-pitch-scale-and-include-three-interactive-controls-a-play-demo-button-triggers-the-ocarinasynth-demo-tone-sequence-for-the-card-s-pitch-scale-a-play-ocarina-button-opens-the-interactive-ocarinapanel-for-the-card-s-pitch-scale-and-a-buy-now-link-that-navigates-to-the-marketplace-product-detail-view-for-that-product",
+      "featureTitle": "Update the Marketplace page (frontend/src/pages/Marketplace.tsx) to remove the search bar and replace it with a horizontally scrollable carousel/slideshow at the top of the page. The carousel must reuse the same studio card layout from OcarinaStudio.tsx, displaying products fetched via the existing useProducts React Query hook. Each card in the carousel must show the product image, title, description, and assigned pitch scale, and include three interactive controls: a 'Play Demo' button (triggers the ocarinaSynth demo tone sequence for the card's pitch scale), a 'Play Ocarina' button (opens the interactive OcarinaPanel for the card's pitch scale), and a 'Buy Now' link that navigates to the marketplace product detail view for that product.",
       "files": [
-        "frontend/src/components/BulkProductUpload.tsx"
+        "frontend/src/components/OcarinaCarousel.tsx",
+        "frontend/src/pages/Marketplace.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -19,7 +20,7 @@
         "http-outcalls@3.0.0"
       ],
       "testIds": [
-        "REQ-139"
+        "REQ-140"
       ],
       "confidence": "high"
     }

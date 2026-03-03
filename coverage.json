@@ -1,7 +1,7 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-03-02T02:08:57.281Z",
+  "generatedAt": "2026-03-02T09:32:18.038Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
@@ -11,14 +11,16 @@
     "implemented": 1,
     "items": [
       {
-        "id": "REQ-139",
-        "summary": "Update the BulkProductUpload component (frontend/src/components/BulkProductUpload.tsx) to automatically select the matching shape-specific description template for each product based on its shape field value. When a product's shape is set to 'Turtle', 'Dolphin', 'Frog', or 'Whale', automatically apply the corresponding named template (Turtle, Dolphin, Frog, or Whale) to that product's description field. When the shape is set to any other value or is blank, fall back to the 'Default' template. This auto-selection should trigger whenever the shape field changes for a product, and should update the description field with the matched template's content unless the user has manually edited that description field.",
+        "id": "REQ-140",
+        "summary": "Update the Marketplace page (frontend/src/pages/Marketplace.tsx) to remove the search bar and replace it with a horizontally scrollable carousel/slideshow at the top of the page. The carousel must reuse the same studio card layout from OcarinaStudio.tsx, displaying products fetched via the existing useProducts React Query hook. Each card in the carousel must show the product image, title, description, and assigned pitch scale, and include three interactive controls: a 'Play Demo' button (triggers the ocarinaSynth demo tone sequence for the card's pitch scale), a 'Play Ocarina' button (opens the interactive OcarinaPanel for the card's pitch scale), and a 'Buy Now' link that navigates to the marketplace product detail view for that product.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/BulkProductUpload.tsx"
+          "frontend/src/components/OcarinaCarousel.tsx",
+          "frontend/src/pages/Marketplace.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/components/BulkProductUpload.tsx"
+          "frontend/src/components/OcarinaCarousel.tsx",
+          "frontend/src/pages/Marketplace.tsx"
         ]
       }
     ]
@@ -28,7 +30,8 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/BulkProductUpload.tsx",
+    "frontend/src/components/OcarinaCarousel.tsx",
+    "frontend/src/pages/Marketplace.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

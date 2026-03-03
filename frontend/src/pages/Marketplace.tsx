@@ -2,10 +2,9 @@ import { useState } from 'react';
 import { useGetProducts, useMostViewedProducts, useBestSellingProducts, useNewestProducts, useGetHomepageConfig } from '../hooks/useQueries';
 import ProductCard from '../components/ProductCard';
 import ProductDetailView from '../components/ProductDetailView';
+import OcarinaCarousel from '../components/OcarinaCarousel';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Search } from 'lucide-react';
 import type { Product } from '../backend';
 
 export default function Marketplace() {
@@ -15,10 +14,20 @@ export default function Marketplace() {
   const { data: newestProducts = [] } = useNewestProducts();
   const { data: homepageConfig } = useGetHomepageConfig();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [detailOpen, setDetailOpen] = useState(false);
   const [sortBy, setSortBy] = useState<string>('all');
   const [shapeFilter, setShapeFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+
+  const handleOpenProduct = (product: Product) => {
+    setSelectedProduct(product);
+    setDetailOpen(true);
+  };
+
+  const handleDetailOpenChange = (open: boolean) => {
+    setDetailOpen(open);
+    if (!open) setSelectedProduct(null);
+  };
 
   // Get products based on sort selection
   const getSortedProducts = () => {
@@ -42,24 +51,22 @@ export default function Marketplace() {
 
   // Filter products
   const filteredProducts = products.filter((product) => {
-    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         product.stripeProductDescription.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesShape = shapeFilter === 'all' || product.shape === shapeFilter;
     const matchesCategory = categoryFilter === 'all' || product.category === categoryFilter;
-    return matchesSearch && matchesShape && matchesCategory;
+    return matchesShape && matchesCategory;
   });
 
   const heroMotto = homepageConfig?.heroMotto || 'Welcome to Original Creations Market';
   const promotionalText = homepageConfig?.promotionalText || 'Discover unique, handcrafted treasures';
   const heroImageUrl = homepageConfig?.heroImage?.getDirectURL();
-  const heroBackgroundStyle = heroImageUrl 
+  const heroBackgroundStyle = heroImageUrl
     ? { backgroundImage: `url(${heroImageUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
     : { background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%)' };
 
   return (
     <div>
       {/* Hero Section */}
-      <section 
+      <section
         className="relative py-20 px-4 text-center text-white"
         style={heroBackgroundStyle}
       >
@@ -74,19 +81,14 @@ export default function Marketplace() {
         </div>
       </section>
 
-      {/* Filters and Search */}
+      {/* Ocarina Carousel — replaces search bar */}
       <section className="container py-8">
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-            <Input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+        <OcarinaCarousel onBuyNow={handleOpenProduct} />
+      </section>
+
+      {/* Filters */}
+      <section className="container pb-4">
+        <div className="flex flex-col md:flex-row gap-4 mb-6 items-start md:items-center">
           <Select value={sortBy} onValueChange={setSortBy}>
             <SelectTrigger className="w-full md:w-[200px]">
               <SelectValue placeholder="Sort by" />
@@ -156,7 +158,7 @@ export default function Marketplace() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <div key={product.id.toString()} onClick={() => setSelectedProduct(product)} className="cursor-pointer">
+              <div key={product.id.toString()} onClick={() => handleOpenProduct(product)} className="cursor-pointer">
                 <ProductCard product={product} />
               </div>
             ))}
@@ -167,8 +169,8 @@ export default function Marketplace() {
       {/* Product Detail Modal */}
       <ProductDetailView
         product={selectedProduct}
-        open={!!selectedProduct}
-        onOpenChange={(open) => !open && setSelectedProduct(null)}
+        open={detailOpen}
+        onOpenChange={handleDetailOpenChange}
       />
     </div>
   );
