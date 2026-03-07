@@ -1,41 +1,47 @@
-import { useState, useEffect } from 'react';
-import { useGetShopDetails, useUpdateShopDetails } from '../hooks/useQueries';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import type { ShopDetails } from '../backend';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import type { ShopDetails } from "../backend";
+import { useGetShopDetails, useUpdateShopDetails } from "../hooks/useQueries";
 
 export default function ShopDetailsSettings() {
   const { data: shopDetails, isLoading } = useGetShopDetails();
   const updateDetails = useUpdateShopDetails();
 
   const [formData, setFormData] = useState<ShopDetails>({
-    shopName: '',
+    shopName: "",
     address: {
-      street: '',
-      city: '',
-      zipcode: '',
-      country: '',
+      street: "",
+      city: "",
+      zipcode: "",
+      country: "",
     },
     contactDetails: {
-      phone: '',
-      email: '',
+      phone: "",
+      email: "",
     },
     openingHours: {
-      monday: '',
-      tuesday: '',
-      wednesday: '',
-      thursday: '',
-      friday: '',
-      saturday: '',
-      sunday: '',
+      monday: "",
+      tuesday: "",
+      wednesday: "",
+      thursday: "",
+      friday: "",
+      saturday: "",
+      sunday: "",
     },
     companyDetails: {
-      vatId: '',
-      taxId: '',
+      vatId: "",
+      taxId: "",
     },
   });
 
@@ -49,17 +55,20 @@ export default function ShopDetailsSettings() {
     e.preventDefault();
 
     // Validate email
-    if (formData.contactDetails.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contactDetails.email)) {
-      toast.error('Please enter a valid email address');
+    if (
+      formData.contactDetails.email &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contactDetails.email)
+    ) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
     try {
       await updateDetails.mutateAsync(formData);
-      toast.success('Shop details updated successfully');
+      toast.success("Shop details updated successfully");
     } catch (error) {
-      console.error('Error updating shop details:', error);
-      toast.error('Failed to update shop details');
+      console.error("Error updating shop details:", error);
+      toast.error("Failed to update shop details");
     }
   };
 
@@ -78,7 +87,9 @@ export default function ShopDetailsSettings() {
     <Card>
       <CardHeader>
         <CardTitle>Shop Details</CardTitle>
-        <CardDescription>Manage your shop information and contact details</CardDescription>
+        <CardDescription>
+          Manage your shop information and contact details
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -88,7 +99,9 @@ export default function ShopDetailsSettings() {
             <Input
               id="shopName"
               value={formData.shopName}
-              onChange={(e) => setFormData({ ...formData, shopName: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, shopName: e.target.value })
+              }
               placeholder="Enter shop name"
             />
           </div>
@@ -106,7 +119,10 @@ export default function ShopDetailsSettings() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      contactDetails: { ...formData.contactDetails, email: e.target.value },
+                      contactDetails: {
+                        ...formData.contactDetails,
+                        email: e.target.value,
+                      },
                     })
                   }
                   placeholder="shop@example.com"
@@ -121,7 +137,10 @@ export default function ShopDetailsSettings() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      contactDetails: { ...formData.contactDetails, phone: e.target.value },
+                      contactDetails: {
+                        ...formData.contactDetails,
+                        phone: e.target.value,
+                      },
                     })
                   }
                   placeholder="+1 234 567 8900"
@@ -205,7 +224,10 @@ export default function ShopDetailsSettings() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      companyDetails: { ...formData.companyDetails, vatId: e.target.value },
+                      companyDetails: {
+                        ...formData.companyDetails,
+                        vatId: e.target.value,
+                      },
                     })
                   }
                   placeholder="VAT123456"
@@ -219,7 +241,10 @@ export default function ShopDetailsSettings() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      companyDetails: { ...formData.companyDetails, taxId: e.target.value },
+                      companyDetails: {
+                        ...formData.companyDetails,
+                        taxId: e.target.value,
+                      },
                     })
                   }
                   placeholder="TAX123456"
@@ -237,7 +262,7 @@ export default function ShopDetailsSettings() {
                   Saving...
                 </>
               ) : (
-                'Save Changes'
+                "Save Changes"
               )}
             </Button>
           </div>

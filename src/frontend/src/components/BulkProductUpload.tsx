@@ -1,16 +1,22 @@
-import { useState, useEffect } from 'react';
-import { useAddProduct, useGetDescriptionTemplates } from '../hooks/useQueries';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import { ExternalBlob } from '../backend';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Upload } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
+import { ExternalBlob } from "../backend";
+import { useAddProduct, useGetDescriptionTemplates } from "../hooks/useQueries";
 
 interface BulkProductUploadProps {
   onComplete?: () => void;
@@ -25,27 +31,70 @@ interface ProductPreview {
   price: string;
   inventoryCount: string;
   uploadProgress: number;
+  descriptionManuallyEdited: boolean;
 }
 
-export default function BulkProductUpload({ onComplete }: BulkProductUploadProps) {
+const SHAPE_TEMPLATE_NAMES = ["Turtle", "Dolphin", "Frog", "Whale"];
+
+export default function BulkProductUpload({
+  onComplete,
+}: BulkProductUploadProps) {
   const addProduct = useAddProduct();
-  const { data: templates = [], isLoading: templatesLoading } = useGetDescriptionTemplates();
+  const { data: templates = [], isLoading: templatesLoading } =
+    useGetDescriptionTemplates();
   const [products, setProducts] = useState<ProductPreview[]>([]);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [autoCopyEnabled, setAutoCopyEnabled] = useState(false);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>('');
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
+  const defaultTemplateSetRef = useRef(false);
 
-  // Auto-select first template if only one exists
+  // Auto-select the "Default" template on load once templates are available
   useEffect(() => {
-    if (templates.length === 1 && !selectedTemplateId) {
-      setSelectedTemplateId(templates[0].id.toString());
+    if (
+      !templatesLoading &&
+      templates.length > 0 &&
+      !defaultTemplateSetRef.current
+    ) {
+      defaultTemplateSetRef.current = true;
+      // Prefer a template named "Default", otherwise fall back to the first template
+      const defaultTemplate =
+        templates.find((t) => t.name === "Default") ?? templates[0];
+      setSelectedTemplateId(defaultTemplate.id.toString());
     }
-  }, [templates, selectedTemplateId]);
+  }, [templates, templatesLoading]);
 
   // Get the selected template content
-  const selectedTemplate = templates.find(t => t.id.toString() === selectedTemplateId);
-  const templateContent = selectedTemplate?.content || '';
+  const selectedTemplate = templates.find(
+    (t) => t.id.toString() === selectedTemplateId,
+  );
+  const templateContent = selectedTemplate?.content || "";
+
+  /**
+   * Given a shape string, find the best matching template content.
+   * If the shape matches one of the known shape template names (case-insensitive),
+   * use that template. Otherwise fall back to the "Default" template.
+   */
+  const getTemplateContentForShape = (shape: string): string => {
+    const trimmedShape = shape.trim();
+    const matchedShapeTemplate = SHAPE_TEMPLATE_NAMES.find(
+      (name) => name.toLowerCase() === trimmedShape.toLowerCase(),
+    );
+
+    if (matchedShapeTemplate) {
+      const shapeTemplate = templates.find(
+        (t) => t.name === matchedShapeTemplate,
+      );
+      if (shapeTemplate) return shapeTemplate.content;
+    }
+
+    // Fall back to Default template
+    const defaultTemplate = templates.find((t) => t.name === "Default");
+    if (defaultTemplate) return defaultTemplate.content;
+
+    // Last resort: use currently selected template content
+    return templateContent;
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -54,61 +103,122 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
         file,
         name: `Product ${products.length + index + 1}`,
         description: templateContent,
-        shape: '',
-        category: '',
-        price: '',
-        inventoryCount: '0',
+        shape: "",
+        category: "",
+        price: "",
+        inventoryCount: "0",
         uploadProgress: 0,
+        descriptionManuallyEdited: false,
       }));
       setProducts([...products, ...newProducts]);
     }
   };
 
-  // Handle template selection change
+  // Handle template selection change — only update descriptions that haven't been manually edited
   const handleTemplateChange = (templateId: string) => {
     setSelectedTemplateId(templateId);
-    const template = templates.find(t => t.id.toString() === templateId);
+    const template = templates.find((t) => t.id.toString() === templateId);
     if (template) {
-      // Update all products with the new template content
-      setProducts(prevProducts =>
-        prevProducts.map(product => ({
+      setProducts((prevProducts) =>
+        prevProducts.map((product) => ({
           ...product,
-          description: template.content,
-        }))
+          description: product.descriptionManuallyEdited
+            ? product.description
+            : template.content,
+          // Clear manual edit flag when user explicitly picks a template
+          descriptionManuallyEdited: false,
+        })),
       );
     }
   };
 
   // Auto-copy effect: when enabled, sync fields from first item to all others (including description)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentional dependency on first product fields only
   useEffect(() => {
     if (autoCopyEnabled && products.length > 1) {
       const firstProduct = products[0];
-      setProducts(prevProducts =>
+      setProducts((prevProducts) =>
         prevProducts.map((product, index) =>
           index === 0
             ? product
             : {
                 ...product,
                 description: firstProduct.description,
+                descriptionManuallyEdited: product.descriptionManuallyEdited,
                 shape: firstProduct.shape,
                 category: firstProduct.category,
                 price: firstProduct.price,
                 inventoryCount: firstProduct.inventoryCount,
-              }
-        )
+              },
+        ),
       );
     }
-  }, [autoCopyEnabled, products.length > 0 ? products[0].description : '', products.length > 0 ? products[0].shape : '', products.length > 0 ? products[0].category : '', products.length > 0 ? products[0].price : '', products.length > 0 ? products[0].inventoryCount : '']);
+  }, [
+    autoCopyEnabled,
+    products.length,
+    products[0]?.description,
+    products[0]?.shape,
+    products[0]?.category,
+    products[0]?.price,
+    products[0]?.inventoryCount,
+  ]);
 
-  const updateProduct = (index: number, field: keyof ProductPreview, value: string | number) => {
-    setProducts(prevProducts => {
+  const updateProduct = (
+    index: number,
+    field: keyof ProductPreview,
+    value: string | number | boolean,
+  ) => {
+    setProducts((prevProducts) => {
       const newProducts = [...prevProducts];
       newProducts[index] = { ...newProducts[index], [field]: value };
 
+      // Mark description as manually edited when the user types in it
+      if (field === "description") {
+        newProducts[index] = {
+          ...newProducts[index],
+          descriptionManuallyEdited: true,
+        };
+      }
+
+      // When shape changes, auto-select the matching template description (if not manually edited)
+      if (field === "shape" && typeof value === "string") {
+        if (!newProducts[index].descriptionManuallyEdited) {
+          const autoDescription = getTemplateContentForShape(value);
+          newProducts[index] = {
+            ...newProducts[index],
+            description: autoDescription,
+          };
+        }
+      }
+
       // If auto-copy is enabled and we're updating the first product, update all others
-      if (autoCopyEnabled && index === 0 && (field === 'description' || field === 'shape' || field === 'category' || field === 'price' || field === 'inventoryCount')) {
+      if (
+        autoCopyEnabled &&
+        index === 0 &&
+        (field === "description" ||
+          field === "shape" ||
+          field === "category" ||
+          field === "price" ||
+          field === "inventoryCount")
+      ) {
         for (let i = 1; i < newProducts.length; i++) {
           newProducts[i] = { ...newProducts[i], [field]: value };
+          if (field === "description") {
+            newProducts[i] = {
+              ...newProducts[i],
+              descriptionManuallyEdited: true,
+            };
+          }
+          // Also apply shape-based template auto-selection to copied products
+          if (field === "shape" && typeof value === "string") {
+            if (!newProducts[i].descriptionManuallyEdited) {
+              const autoDescription = getTemplateContentForShape(value);
+              newProducts[i] = {
+                ...newProducts[i],
+                description: autoDescription,
+              };
+            }
+          }
         }
       }
 
@@ -130,16 +240,24 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
 
   const handleUpload = async () => {
     if (products.length === 0) {
-      toast.error('Please select at least one image');
+      toast.error("Please select at least one image");
       return;
     }
 
     const invalidProducts = products.filter(
-      (p) => !p.name.trim() || !p.description.trim() || !p.shape.trim() || !p.category.trim() || !p.price || parseFloat(p.price) <= 0
+      (p) =>
+        !p.name.trim() ||
+        !p.description.trim() ||
+        !p.shape.trim() ||
+        !p.category.trim() ||
+        !p.price ||
+        Number.parseFloat(p.price) <= 0,
     );
 
     if (invalidProducts.length > 0) {
-      toast.error('Please fill in all required fields (name, description, shape, category, and valid price) for all products');
+      toast.error(
+        "Please fill in all required fields (name, description, shape, category, and valid price) for all products",
+      );
       return;
     }
 
@@ -150,12 +268,14 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
       for (let i = 0; i < products.length; i++) {
         const product = products[i];
         const imageBytes = await fileToBytes(product.file);
-        const imageBlob = ExternalBlob.fromBytes(imageBytes).withUploadProgress((percentage) => {
-          updateProduct(i, 'uploadProgress', percentage);
-        });
+        const imageBlob = ExternalBlob.fromBytes(imageBytes).withUploadProgress(
+          (percentage) => {
+            updateProduct(i, "uploadProgress", percentage);
+          },
+        );
 
-        const priceInCents = Math.round(parseFloat(product.price) * 100);
-        const inventoryCount = parseInt(product.inventoryCount) || 0;
+        const priceInCents = Math.round(Number.parseFloat(product.price) * 100);
+        const inventoryCount = Number.parseInt(product.inventoryCount) || 0;
 
         await addProduct.mutateAsync({
           name: product.name,
@@ -176,8 +296,8 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
       setProgress(0);
       onComplete?.();
     } catch (error) {
-      console.error('Upload error:', error);
-      toast.error('Failed to upload products. Please try again.');
+      console.error("Upload error:", error);
+      toast.error("Failed to upload products. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -188,7 +308,9 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-serif font-bold">Bulk Product Upload</h2>
-          <p className="text-muted-foreground">Upload multiple products at once</p>
+          <p className="text-muted-foreground">
+            Upload multiple products at once
+          </p>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
@@ -226,20 +348,28 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
           <CardContent className="pt-6">
             <div className="space-y-2">
               <Label htmlFor="template-select">Description Template</Label>
-              <Select value={selectedTemplateId} onValueChange={handleTemplateChange}>
+              <Select
+                value={selectedTemplateId}
+                onValueChange={handleTemplateChange}
+              >
                 <SelectTrigger id="template-select">
                   <SelectValue placeholder="Select a template..." />
                 </SelectTrigger>
                 <SelectContent>
                   {templates.map((template) => (
-                    <SelectItem key={template.id.toString()} value={template.id.toString()}>
+                    <SelectItem
+                      key={template.id.toString()}
+                      value={template.id.toString()}
+                    >
                       {template.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
               <p className="text-xs text-muted-foreground">
-                Select a template to pre-populate product descriptions
+                Descriptions auto-fill based on product shape (Turtle, Dolphin,
+                Frog, Whale → matching template; others → Default). Manually
+                edited descriptions are preserved.
               </p>
             </div>
           </CardContent>
@@ -250,7 +380,10 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
         <>
           <div className="space-y-4">
             {products.map((product, index) => (
-              <Card key={index}>
+              <Card
+                // biome-ignore lint/suspicious/noArrayIndexKey: products are ephemeral upload previews without stable IDs
+                key={index}
+              >
                 <CardContent className="pt-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-4">
@@ -266,7 +399,9 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                         <Input
                           id={`name-${index}`}
                           value={product.name}
-                          onChange={(e) => updateProduct(index, 'name', e.target.value)}
+                          onChange={(e) =>
+                            updateProduct(index, "name", e.target.value)
+                          }
                           placeholder="Enter product name"
                         />
                       </div>
@@ -276,65 +411,95 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                           <Input
                             id={`shape-${index}`}
                             value={product.shape}
-                            onChange={(e) => updateProduct(index, 'shape', e.target.value)}
-                            placeholder="e.g., Round"
+                            onChange={(e) =>
+                              updateProduct(index, "shape", e.target.value)
+                            }
+                            placeholder="e.g., Turtle"
                           />
                         </div>
                         <div>
-                          <Label htmlFor={`category-${index}`}>Category *</Label>
+                          <Label htmlFor={`category-${index}`}>
+                            Category *
+                          </Label>
                           <Input
                             id={`category-${index}`}
                             value={product.category}
-                            onChange={(e) => updateProduct(index, 'category', e.target.value)}
+                            onChange={(e) =>
+                              updateProduct(index, "category", e.target.value)
+                            }
                             placeholder="e.g., Pendant"
                           />
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
-                          <Label htmlFor={`price-${index}`}>Price (AUD) *</Label>
+                          <Label htmlFor={`price-${index}`}>
+                            Price (AUD) *
+                          </Label>
                           <Input
                             id={`price-${index}`}
                             type="number"
                             step="0.01"
                             min="0"
                             value={product.price}
-                            onChange={(e) => updateProduct(index, 'price', e.target.value)}
+                            onChange={(e) =>
+                              updateProduct(index, "price", e.target.value)
+                            }
                             placeholder="0.00"
                           />
                         </div>
                         <div>
-                          <Label htmlFor={`inventory-${index}`}>Inventory</Label>
+                          <Label htmlFor={`inventory-${index}`}>
+                            Inventory
+                          </Label>
                           <Input
                             id={`inventory-${index}`}
                             type="number"
                             min="0"
                             value={product.inventoryCount}
-                            onChange={(e) => updateProduct(index, 'inventoryCount', e.target.value)}
+                            onChange={(e) =>
+                              updateProduct(
+                                index,
+                                "inventoryCount",
+                                e.target.value,
+                              )
+                            }
                             placeholder="0"
                           />
                         </div>
                       </div>
                     </div>
-                    <div>
-                      <Label htmlFor={`description-${index}`}>Description *</Label>
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor={`description-${index}`}>
+                          Description *
+                        </Label>
+                        {product.descriptionManuallyEdited && (
+                          <span className="text-xs text-muted-foreground italic">
+                            Manually edited
+                          </span>
+                        )}
+                      </div>
                       <Textarea
                         id={`description-${index}`}
                         value={product.description}
-                        onChange={(e) => updateProduct(index, 'description', e.target.value)}
+                        onChange={(e) =>
+                          updateProduct(index, "description", e.target.value)
+                        }
                         placeholder="Enter product description"
-                        className="h-[calc(100%-2rem)]"
+                        className="flex-1 min-h-[200px]"
                       />
                     </div>
                   </div>
-                  {product.uploadProgress > 0 && product.uploadProgress < 100 && (
-                    <div className="mt-4">
-                      <Progress value={product.uploadProgress} />
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Uploading: {product.uploadProgress}%
-                      </p>
-                    </div>
-                  )}
+                  {product.uploadProgress > 0 &&
+                    product.uploadProgress < 100 && (
+                      <div className="mt-4">
+                        <Progress value={product.uploadProgress} />
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Uploading: {product.uploadProgress}%
+                        </p>
+                      </div>
+                    )}
                 </CardContent>
               </Card>
             ))}
@@ -342,10 +507,15 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
 
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground">
-              {products.length} product{products.length !== 1 ? 's' : ''} ready to upload
+              {products.length} product{products.length !== 1 ? "s" : ""} ready
+              to upload
             </p>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setProducts([])} disabled={uploading}>
+              <Button
+                variant="outline"
+                onClick={() => setProducts([])}
+                disabled={uploading}
+              >
                 Clear All
               </Button>
               <Button onClick={handleUpload} disabled={uploading}>
@@ -355,7 +525,7 @@ export default function BulkProductUpload({ onComplete }: BulkProductUploadProps
                     Uploading... {Math.round(progress)}%
                   </>
                 ) : (
-                  `Upload ${products.length} Product${products.length !== 1 ? 's' : ''}`
+                  `Upload ${products.length} Product${products.length !== 1 ? "s" : ""}`
                 )}
               </Button>
             </div>

@@ -47,6 +47,12 @@ export const Product = IDL.Record({
   'price' : IDL.Nat,
   'images' : IDL.Vec(ExternalBlob),
 });
+export const BonusItemConfig = IDL.Record({
+  'url' : IDL.Text,
+  'title' : IDL.Text,
+  'description' : IDL.Text,
+  'enabled' : IDL.Bool,
+});
 export const BrandingConfig = IDL.Record({
   'theme' : IDL.Opt(IDL.Text),
   'primaryColor' : IDL.Opt(IDL.Text),
@@ -70,10 +76,25 @@ export const DescriptionTemplate = IDL.Record({
   'name' : IDL.Text,
   'createdAt' : Time,
 });
+export const DiscountCode = IDL.Record({
+  'id' : IDL.Text,
+  'active' : IDL.Bool,
+  'value' : IDL.Float64,
+  'code' : IDL.Text,
+  'createdAt' : IDL.Int,
+  'discountType' : IDL.Variant({
+    'percentage' : IDL.Null,
+    'fixedAmount' : IDL.Null,
+  }),
+});
 export const HomepageConfig = IDL.Record({
   'heroImage' : IDL.Opt(ExternalBlob),
   'promotionalText' : IDL.Text,
   'heroMotto' : IDL.Text,
+});
+export const PaymentSettings = IDL.Record({
+  'bonusItemConfig' : BonusItemConfig,
+  'proOcarinaAppUrl' : IDL.Text,
 });
 export const SortingOrder = IDL.Variant({
   'bestSelling' : IDL.Null,
@@ -183,15 +204,27 @@ export const idlService = IDL.Service({
       [],
     ),
   'createDescriptionTemplate' : IDL.Func([IDL.Text, IDL.Text], [IDL.Nat], []),
+  'createDiscountCode' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Variant({ 'percentage' : IDL.Null, 'fixedAmount' : IDL.Null }),
+        IDL.Float64,
+      ],
+      [],
+      [],
+    ),
   'createNoShippingCheckoutSession' : IDL.Func(
       [IDL.Vec(ShoppingItem), IDL.Text, IDL.Text],
       [IDL.Text],
       [],
     ),
   'deleteDescriptionTemplate' : IDL.Func([IDL.Nat], [], []),
+  'deleteDiscountCode' : IDL.Func([IDL.Text], [], []),
   'deleteStripeConfig' : IDL.Func([], [], []),
   'emptyCart' : IDL.Func([], [], []),
   'getBestSellingProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+  'getBonusItemConfig' : IDL.Func([], [BonusItemConfig], ['query']),
   'getBrandingConfig' : IDL.Func([], [BrandingConfig], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
@@ -202,10 +235,12 @@ export const idlService = IDL.Service({
       [IDL.Vec(DescriptionTemplate)],
       ['query'],
     ),
+  'getDiscountCodes' : IDL.Func([], [IDL.Vec(DiscountCode)], ['query']),
   'getFeaturedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getHomepageConfig' : IDL.Func([], [HomepageConfig], ['query']),
   'getMostViewedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getNewestProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+  'getPaymentSettings' : IDL.Func([], [PaymentSettings], ['query']),
   'getProduct' : IDL.Func([IDL.Nat], [IDL.Opt(Product)], ['query']),
   'getProductCount' : IDL.Func([], [IDL.Nat], ['query']),
   'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
@@ -236,11 +271,24 @@ export const idlService = IDL.Service({
       [TransformationOutput],
       ['query'],
     ),
+  'updateBonusItemConfig' : IDL.Func([BonusItemConfig], [], []),
   'updateBrandingConfig' : IDL.Func([BrandingConfig], [], []),
   'updateCartItem' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
   'updateDescriptionTemplate' : IDL.Func([IDL.Nat, IDL.Text, IDL.Text], [], []),
+  'updateDiscountCode' : IDL.Func(
+      [
+        IDL.Text,
+        IDL.Text,
+        IDL.Variant({ 'percentage' : IDL.Null, 'fixedAmount' : IDL.Null }),
+        IDL.Float64,
+        IDL.Bool,
+      ],
+      [],
+      [],
+    ),
   'updateHomepageConfig' : IDL.Func([HomepageConfig], [], []),
   'updateInventoryCount' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
+  'updatePaymentSettings' : IDL.Func([IDL.Text, BonusItemConfig], [], []),
   'updateProduct' : IDL.Func(
       [
         IDL.Nat,
@@ -258,6 +306,11 @@ export const idlService = IDL.Service({
     ),
   'updateProductDisplayOrder' : IDL.Func([IDL.Vec(IDL.Nat)], [], []),
   'updateShopDetails' : IDL.Func([ShopDetails], [], []),
+  'validateDiscountCode' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(DiscountCode)],
+      ['query'],
+    ),
 });
 
 export const idlInitArgs = [];
@@ -302,6 +355,12 @@ export const idlFactory = ({ IDL }) => {
     'price' : IDL.Nat,
     'images' : IDL.Vec(ExternalBlob),
   });
+  const BonusItemConfig = IDL.Record({
+    'url' : IDL.Text,
+    'title' : IDL.Text,
+    'description' : IDL.Text,
+    'enabled' : IDL.Bool,
+  });
   const BrandingConfig = IDL.Record({
     'theme' : IDL.Opt(IDL.Text),
     'primaryColor' : IDL.Opt(IDL.Text),
@@ -322,10 +381,25 @@ export const idlFactory = ({ IDL }) => {
     'name' : IDL.Text,
     'createdAt' : Time,
   });
+  const DiscountCode = IDL.Record({
+    'id' : IDL.Text,
+    'active' : IDL.Bool,
+    'value' : IDL.Float64,
+    'code' : IDL.Text,
+    'createdAt' : IDL.Int,
+    'discountType' : IDL.Variant({
+      'percentage' : IDL.Null,
+      'fixedAmount' : IDL.Null,
+    }),
+  });
   const HomepageConfig = IDL.Record({
     'heroImage' : IDL.Opt(ExternalBlob),
     'promotionalText' : IDL.Text,
     'heroMotto' : IDL.Text,
+  });
+  const PaymentSettings = IDL.Record({
+    'bonusItemConfig' : BonusItemConfig,
+    'proOcarinaAppUrl' : IDL.Text,
   });
   const SortingOrder = IDL.Variant({
     'bestSelling' : IDL.Null,
@@ -436,15 +510,27 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     'createDescriptionTemplate' : IDL.Func([IDL.Text, IDL.Text], [IDL.Nat], []),
+    'createDiscountCode' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Variant({ 'percentage' : IDL.Null, 'fixedAmount' : IDL.Null }),
+          IDL.Float64,
+        ],
+        [],
+        [],
+      ),
     'createNoShippingCheckoutSession' : IDL.Func(
         [IDL.Vec(ShoppingItem), IDL.Text, IDL.Text],
         [IDL.Text],
         [],
       ),
     'deleteDescriptionTemplate' : IDL.Func([IDL.Nat], [], []),
+    'deleteDiscountCode' : IDL.Func([IDL.Text], [], []),
     'deleteStripeConfig' : IDL.Func([], [], []),
     'emptyCart' : IDL.Func([], [], []),
     'getBestSellingProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+    'getBonusItemConfig' : IDL.Func([], [BonusItemConfig], ['query']),
     'getBrandingConfig' : IDL.Func([], [BrandingConfig], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
@@ -455,10 +541,12 @@ export const idlFactory = ({ IDL }) => {
         [IDL.Vec(DescriptionTemplate)],
         ['query'],
       ),
+    'getDiscountCodes' : IDL.Func([], [IDL.Vec(DiscountCode)], ['query']),
     'getFeaturedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getHomepageConfig' : IDL.Func([], [HomepageConfig], ['query']),
     'getMostViewedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getNewestProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+    'getPaymentSettings' : IDL.Func([], [PaymentSettings], ['query']),
     'getProduct' : IDL.Func([IDL.Nat], [IDL.Opt(Product)], ['query']),
     'getProductCount' : IDL.Func([], [IDL.Nat], ['query']),
     'getProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
@@ -489,6 +577,7 @@ export const idlFactory = ({ IDL }) => {
         [TransformationOutput],
         ['query'],
       ),
+    'updateBonusItemConfig' : IDL.Func([BonusItemConfig], [], []),
     'updateBrandingConfig' : IDL.Func([BrandingConfig], [], []),
     'updateCartItem' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
     'updateDescriptionTemplate' : IDL.Func(
@@ -496,8 +585,20 @@ export const idlFactory = ({ IDL }) => {
         [],
         [],
       ),
+    'updateDiscountCode' : IDL.Func(
+        [
+          IDL.Text,
+          IDL.Text,
+          IDL.Variant({ 'percentage' : IDL.Null, 'fixedAmount' : IDL.Null }),
+          IDL.Float64,
+          IDL.Bool,
+        ],
+        [],
+        [],
+      ),
     'updateHomepageConfig' : IDL.Func([HomepageConfig], [], []),
     'updateInventoryCount' : IDL.Func([IDL.Nat, IDL.Nat], [], []),
+    'updatePaymentSettings' : IDL.Func([IDL.Text, BonusItemConfig], [], []),
     'updateProduct' : IDL.Func(
         [
           IDL.Nat,
@@ -515,6 +616,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'updateProductDisplayOrder' : IDL.Func([IDL.Vec(IDL.Nat)], [], []),
     'updateShopDetails' : IDL.Func([ShopDetails], [], []),
+    'validateDiscountCode' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(DiscountCode)],
+        ['query'],
+      ),
   });
 };
 

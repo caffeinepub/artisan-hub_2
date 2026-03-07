@@ -1,10 +1,14 @@
-import { Link, Outlet, useNavigate } from '@tanstack/react-router';
-import { ShoppingCart, Menu, X, LayoutDashboard } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useState, useEffect } from 'react';
-import Footer from './Footer';
-import { useInternetIdentity } from '../hooks/useInternetIdentity';
-import { useGetCartItemCount, useGetBrandingConfig, useIsAdmin } from '../hooks/useQueries';
+import { Button } from "@/components/ui/button";
+import { Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { LayoutDashboard, Menu, Music, ShoppingCart, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useInternetIdentity } from "../hooks/useInternetIdentity";
+import {
+  useGetBrandingConfig,
+  useGetCartItemCount,
+  useIsAdmin,
+} from "../hooks/useQueries";
+import Footer from "./Footer";
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -15,9 +19,9 @@ export default function Layout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isAuthenticated = !!identity;
-  const isLoggingIn = loginStatus === 'logging-in';
+  const isLoggingIn = loginStatus === "logging-in";
 
-  const siteName = brandingConfig?.siteName || 'Original Creations Market';
+  const siteName = brandingConfig?.siteName || "Original Creations Market";
   const logoUrl = brandingConfig?.logo?.getDirectURL();
 
   const handleAuth = async () => {
@@ -27,12 +31,13 @@ export default function Layout() {
       try {
         await login();
       } catch (error: any) {
-        console.error('Login error:', error);
+        console.error("Login error:", error);
       }
     }
   };
 
   // Close mobile menu when route changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: navigate is stable but intentionally included to trigger on route changes
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [navigate]);
@@ -42,9 +47,16 @@ export default function Layout() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center justify-between">
           {/* Logo and Site Name */}
-          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <Link
+            to="/"
+            className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          >
             {logoUrl ? (
-              <img src={logoUrl} alt={siteName} className="h-10 w-auto object-contain" />
+              <img
+                src={logoUrl}
+                alt={siteName}
+                className="h-10 w-auto object-contain"
+              />
             ) : (
               <span className="font-serif text-2xl font-bold">{siteName}</span>
             )}
@@ -58,6 +70,13 @@ export default function Layout() {
             >
               Home
             </Link>
+            <Link
+              to="/ocarina-studio"
+              className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1.5"
+            >
+              <Music className="h-4 w-4" />
+              Ocarina Music Studio
+            </Link>
             {isAdmin && (
               <Link
                 to="/dashboard"
@@ -67,10 +86,7 @@ export default function Layout() {
                 Dashboard
               </Link>
             )}
-            <Link
-              to="/basket"
-              className="relative"
-            >
+            <Link to="/basket" className="relative">
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="h-5 w-5" />
                 {cartItemCount > 0 && (
@@ -83,18 +99,27 @@ export default function Layout() {
             <Button
               onClick={handleAuth}
               disabled={isLoggingIn}
-              variant={isAuthenticated ? 'outline' : 'default'}
+              variant={isAuthenticated ? "outline" : "default"}
             >
-              {isLoggingIn ? 'Logging in...' : isAuthenticated ? 'Logout' : 'Login'}
+              {isLoggingIn
+                ? "Logging in..."
+                : isAuthenticated
+                  ? "Logout"
+                  : "Login"}
             </Button>
           </nav>
 
           {/* Mobile Menu Button */}
           <button
+            type="button"
             className="md:hidden p-2"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {mobileMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </button>
         </div>
 
@@ -107,6 +132,13 @@ export default function Layout() {
                 className="text-sm font-medium transition-colors hover:text-primary"
               >
                 Home
+              </Link>
+              <Link
+                to="/ocarina-studio"
+                className="flex items-center gap-2 text-sm font-medium transition-colors hover:text-primary"
+              >
+                <Music className="h-4 w-4" />
+                Ocarina Music Studio
               </Link>
               {isAdmin && (
                 <Link
@@ -132,10 +164,14 @@ export default function Layout() {
               <Button
                 onClick={handleAuth}
                 disabled={isLoggingIn}
-                variant={isAuthenticated ? 'outline' : 'default'}
+                variant={isAuthenticated ? "outline" : "default"}
                 className="w-full"
               >
-                {isLoggingIn ? 'Logging in...' : isAuthenticated ? 'Logout' : 'Login'}
+                {isLoggingIn
+                  ? "Logging in..."
+                  : isAuthenticated
+                    ? "Logout"
+                    : "Login"}
               </Button>
             </nav>
           </div>

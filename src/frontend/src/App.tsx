@@ -1,16 +1,22 @@
-import { RouterProvider, createRouter, createRootRoute, createRoute } from '@tanstack/react-router';
-import { ThemeProvider } from 'next-themes';
-import Layout from './components/Layout';
-import Marketplace from './pages/Marketplace';
-import Dashboard from './pages/Dashboard';
-import Checkout from './pages/Checkout';
-import PaymentSuccess from './pages/PaymentSuccess';
-import PaymentFailure from './pages/PaymentFailure';
-import Terms from './pages/Terms';
-import PrivacyPolicy from './pages/PrivacyPolicy';
-import ShoppingBasket from './pages/ShoppingBasket';
-import { Toaster } from '@/components/ui/sonner';
-import { useDynamicBranding } from './hooks/useDynamicBranding';
+import { Toaster } from "@/components/ui/sonner";
+import {
+  RouterProvider,
+  createRootRoute,
+  createRoute,
+  createRouter,
+} from "@tanstack/react-router";
+import { ThemeProvider } from "next-themes";
+import Layout from "./components/Layout";
+import { useDynamicBranding } from "./hooks/useDynamicBranding";
+import Checkout from "./pages/Checkout";
+import Dashboard from "./pages/Dashboard";
+import Marketplace from "./pages/Marketplace";
+import OcarinaStudio from "./pages/OcarinaStudio";
+import PaymentFailure from "./pages/PaymentFailure";
+import PaymentSuccess from "./pages/PaymentSuccess";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import ShoppingBasket from "./pages/ShoppingBasket";
+import Terms from "./pages/Terms";
 
 function AppContent() {
   useDynamicBranding();
@@ -23,50 +29,56 @@ const rootRoute = createRootRoute({
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
+  path: "/",
   component: Marketplace,
 });
 
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/dashboard',
+  path: "/dashboard",
   component: Dashboard,
 });
 
 const basketRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/basket',
+  path: "/basket",
   component: ShoppingBasket,
 });
 
 const checkoutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/checkout',
+  path: "/checkout",
   component: Checkout,
 });
 
 const paymentSuccessRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/payment-success',
+  path: "/payment-success",
   component: PaymentSuccess,
 });
 
 const paymentFailureRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/payment-failure',
+  path: "/payment-failure",
   component: PaymentFailure,
 });
 
 const termsRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/terms',
+  path: "/terms",
   component: Terms,
 });
 
 const privacyRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/privacy-policy',
+  path: "/privacy-policy",
   component: PrivacyPolicy,
+});
+
+const ocarinaStudioRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/ocarina-studio",
+  component: OcarinaStudio,
 });
 
 const routeTree = rootRoute.addChildren([
@@ -78,11 +90,12 @@ const routeTree = rootRoute.addChildren([
   paymentFailureRoute,
   termsRoute,
   privacyRoute,
+  ocarinaStudioRoute,
 ]);
 
 const router = createRouter({ routeTree });
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }

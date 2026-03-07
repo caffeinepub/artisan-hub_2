@@ -1,8 +1,3 @@
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,36 +8,52 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { useSetStripeConfiguration, useIsStripeConfigured, useDeleteStripeConfig } from '../hooks/useQueries';
-import { toast } from 'sonner';
-import { CreditCard, Check, Trash2 } from 'lucide-react';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Check, CreditCard, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import {
+  useDeleteStripeConfig,
+  useIsStripeConfigured,
+  useSetStripeConfiguration,
+} from "../hooks/useQueries";
 
 interface StripeSetupProps {
   onComplete?: () => void;
 }
 
 export default function StripeSetup({ onComplete }: StripeSetupProps) {
-  const [secretKey, setSecretKey] = useState('');
-  const [countries, setCountries] = useState('US,CA,GB');
+  const [secretKey, setSecretKey] = useState("");
+  const [countries, setCountries] = useState("US,CA,GB");
   const setConfig = useSetStripeConfiguration();
   const deleteConfig = useDeleteStripeConfig();
-  const { data: isConfigured, isLoading: isCheckingConfig } = useIsStripeConfigured();
+  const { data: isConfigured, isLoading: isCheckingConfig } =
+    useIsStripeConfigured();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!secretKey.trim()) {
-      toast.error('Please enter your Stripe secret key');
+      toast.error("Please enter your Stripe secret key");
       return;
     }
 
     const countryList = countries
-      .split(',')
+      .split(",")
       .map((c) => c.trim().toUpperCase())
       .filter((c) => c.length === 2);
 
     if (countryList.length === 0) {
-      toast.error('Please enter at least one valid country code');
+      toast.error("Please enter at least one valid country code");
       return;
     }
 
@@ -51,11 +62,11 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
         secretKey: secretKey.trim(),
         allowedCountries: countryList,
       });
-      toast.success('Stripe configured successfully!');
-      setSecretKey('');
+      toast.success("Stripe configured successfully!");
+      setSecretKey("");
       onComplete?.();
     } catch (error) {
-      toast.error('Failed to configure Stripe');
+      toast.error("Failed to configure Stripe");
       console.error(error);
     }
   };
@@ -75,9 +86,12 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
           <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
             <CreditCard className="h-6 w-6 text-primary" />
           </div>
-          <CardTitle className="font-serif text-3xl">Setup Stripe Payments</CardTitle>
+          <CardTitle className="font-serif text-3xl">
+            Setup Stripe Payments
+          </CardTitle>
           <CardDescription>
-            Configure your Stripe account to start accepting payments for your artisan products
+            Configure your Stripe account to start accepting payments for your
+            artisan products
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -87,9 +101,12 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
                 <Check className="h-5 w-5 text-green-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-green-900">Stripe Configured</p>
+                <p className="text-sm font-medium text-green-900">
+                  Stripe Configured
+                </p>
                 <p className="text-xs text-green-700 mt-0.5">
-                  Your Stripe payment integration is active and ready to accept payments
+                  Your Stripe payment integration is active and ready to accept
+                  payments
                 </p>
               </div>
             </div>
@@ -121,13 +138,22 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
                 required
               />
               <p className="text-xs text-muted-foreground">
-                Comma-separated list of 2-letter country codes (e.g., US, CA, GB)
+                Comma-separated list of 2-letter country codes (e.g., US, CA,
+                GB)
               </p>
             </div>
 
             <div className="flex gap-3">
-              <Button type="submit" className="flex-1" disabled={setConfig.isPending}>
-                {setConfig.isPending ? 'Configuring...' : isConfigured ? 'Update Stripe Configuration' : 'Configure Stripe'}
+              <Button
+                type="submit"
+                className="flex-1"
+                disabled={setConfig.isPending}
+              >
+                {setConfig.isPending
+                  ? "Configuring..."
+                  : isConfigured
+                    ? "Update Stripe Configuration"
+                    : "Configure Stripe"}
               </Button>
 
               {!isCheckingConfig && isConfigured && (
@@ -145,9 +171,13 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Delete Stripe Configuration?</AlertDialogTitle>
+                      <AlertDialogTitle>
+                        Delete Stripe Configuration?
+                      </AlertDialogTitle>
                       <AlertDialogDescription>
-                        This will remove your Stripe API key and disable payment processing. You will need to reconfigure Stripe to accept payments again. This action cannot be undone.
+                        This will remove your Stripe API key and disable payment
+                        processing. You will need to reconfigure Stripe to
+                        accept payments again. This action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

@@ -1,15 +1,30 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import type { Product, UserProfile, ShoppingItem, StripeConfiguration, ExternalBlob, CartItem, BrandingConfig, ShopDetails, HomepageConfig, DescriptionTemplate } from '../backend';
-import { toast } from 'sonner';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import type {
+  BonusItemConfig,
+  BrandingConfig,
+  CartItem,
+  DescriptionTemplate,
+  DiscountCode,
+  ExternalBlob,
+  HomepageConfig,
+  PaymentSettings,
+  Product,
+  ShopDetails,
+  ShoppingItem,
+  StripeConfiguration,
+  UserProfile,
+} from "../backend";
+import type { Variant_percentage_fixedAmount } from "../backend";
+import { useActor } from "./useActor";
 
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
 
   const query = useQuery<UserProfile | null>({
-    queryKey: ['currentUserProfile'],
+    queryKey: ["currentUserProfile"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getCallerUserProfile();
     },
     enabled: !!actor && !actorFetching,
@@ -29,11 +44,11 @@ export function useSaveCallerUserProfile() {
 
   return useMutation({
     mutationFn: async (profile: UserProfile) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.saveCallerUserProfile(profile);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      queryClient.invalidateQueries({ queryKey: ["currentUserProfile"] });
     },
   });
 }
@@ -42,12 +57,13 @@ export function useGetProducts() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Product[]>({
-    queryKey: ['products'],
+    queryKey: ["products"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getProducts();
     },
     enabled: !!actor && !isFetching,
+    staleTime: 30_000,
   });
 }
 
@@ -55,12 +71,13 @@ export function useMostViewedProducts() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Product[]>({
-    queryKey: ['products', 'mostViewed'],
+    queryKey: ["products", "mostViewed"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getMostViewedProducts();
     },
     enabled: !!actor && !isFetching,
+    staleTime: 60_000,
   });
 }
 
@@ -68,12 +85,13 @@ export function useBestSellingProducts() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Product[]>({
-    queryKey: ['products', 'bestSelling'],
+    queryKey: ["products", "bestSelling"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getBestSellingProducts();
     },
     enabled: !!actor && !isFetching,
+    staleTime: 60_000,
   });
 }
 
@@ -81,12 +99,13 @@ export function useNewestProducts() {
   const { actor, isFetching } = useActor();
 
   return useQuery<Product[]>({
-    queryKey: ['products', 'newest'],
+    queryKey: ["products", "newest"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getNewestProducts();
     },
     enabled: !!actor && !isFetching,
+    staleTime: 60_000,
   });
 }
 
@@ -94,7 +113,7 @@ export function useGetProduct(productId: bigint | null) {
   const { actor, isFetching } = useActor();
 
   return useQuery<Product | null>({
-    queryKey: ['product', productId?.toString()],
+    queryKey: ["product", productId?.toString()],
     queryFn: async () => {
       if (!actor || !productId) return null;
       return actor.getProduct(productId);
@@ -107,7 +126,7 @@ export function useGetProductCount() {
   const { actor, isFetching } = useActor();
 
   return useQuery<bigint>({
-    queryKey: ['productCount'],
+    queryKey: ["productCount"],
     queryFn: async () => {
       if (!actor) return BigInt(0);
       return actor.getProductCount();
@@ -131,7 +150,7 @@ export function useAddProduct() {
       inventoryCount: bigint;
       category: string;
     }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.addProduct(
         params.name,
         params.shape,
@@ -140,13 +159,13 @@ export function useAddProduct() {
         params.stripeProductDescription,
         params.images,
         params.inventoryCount,
-        params.category
+        params.category,
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['productCount'] });
-      queryClient.invalidateQueries({ queryKey: ['totalInventoryValue'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["productCount"] });
+      queryClient.invalidateQueries({ queryKey: ["totalInventoryValue"] });
     },
   });
 }
@@ -167,7 +186,7 @@ export function useUpdateProduct() {
       inventoryCount?: bigint;
       category?: string;
     }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.updateProduct(
         params.productId,
         params.name ?? null,
@@ -177,13 +196,13 @@ export function useUpdateProduct() {
         params.stripeProductDescription ?? null,
         params.images ?? null,
         params.inventoryCount ?? null,
-        params.category ?? null
+        params.category ?? null,
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['product'] });
-      queryClient.invalidateQueries({ queryKey: ['totalInventoryValue'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+      queryClient.invalidateQueries({ queryKey: ["totalInventoryValue"] });
     },
   });
 }
@@ -204,8 +223,8 @@ export function useBulkUpdateProducts() {
         category?: string;
       };
     }) => {
-      if (!actor) throw new Error('Actor not available');
-      
+      if (!actor) throw new Error("Actor not available");
+
       const results = await Promise.allSettled(
         params.productIds.map((productId) =>
           actor.updateProduct(
@@ -213,33 +232,37 @@ export function useBulkUpdateProducts() {
             params.updates.name ?? null,
             params.updates.shape ?? null,
             params.updates.price ?? null,
-            null, // stripeProductId
+            null,
             params.updates.stripeProductDescription ?? null,
-            null, // images
+            null,
             params.updates.inventoryCount ?? null,
-            params.updates.category ?? null
-          )
-        )
+            params.updates.category ?? null,
+          ),
+        ),
       );
 
-      const successCount = results.filter((r) => r.status === 'fulfilled').length;
-      const failedCount = results.filter((r) => r.status === 'rejected').length;
+      const successCount = results.filter(
+        (r) => r.status === "fulfilled",
+      ).length;
+      const failedCount = results.filter((r) => r.status === "rejected").length;
 
       return { successCount, failedCount, results };
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['product'] });
-      queryClient.invalidateQueries({ queryKey: ['totalInventoryValue'] });
-      
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+      queryClient.invalidateQueries({ queryKey: ["totalInventoryValue"] });
+
       if (data.failedCount > 0) {
-        toast.warning(`${data.successCount} products updated, ${data.failedCount} failed`);
+        toast.warning(
+          `${data.successCount} products updated, ${data.failedCount} failed`,
+        );
       } else {
         toast.success(`${data.successCount} products updated successfully`);
       }
     },
     onError: (error) => {
-      toast.error('Failed to update products');
+      toast.error("Failed to update products");
       console.error(error);
     },
   });
@@ -250,14 +273,17 @@ export function useUpdateInventoryCount() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: { productId: bigint; inventoryCount: bigint }) => {
-      if (!actor) throw new Error('Actor not available');
+    mutationFn: async (params: {
+      productId: bigint;
+      inventoryCount: bigint;
+    }) => {
+      if (!actor) throw new Error("Actor not available");
       await actor.updateInventoryCount(params.productId, params.inventoryCount);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['product'] });
-      queryClient.invalidateQueries({ queryKey: ['totalInventoryValue'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+      queryClient.invalidateQueries({ queryKey: ["totalInventoryValue"] });
     },
   });
 }
@@ -268,16 +294,16 @@ export function useIncrementInventory() {
 
   return useMutation({
     mutationFn: async (productId: bigint) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       const product = await actor.getProduct(productId);
-      if (!product) throw new Error('Product not found');
+      if (!product) throw new Error("Product not found");
       const newCount = product.inventoryCount + BigInt(1);
       await actor.updateInventoryCount(productId, newCount);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['product'] });
-      queryClient.invalidateQueries({ queryKey: ['totalInventoryValue'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+      queryClient.invalidateQueries({ queryKey: ["totalInventoryValue"] });
     },
   });
 }
@@ -288,16 +314,19 @@ export function useDecrementInventory() {
 
   return useMutation({
     mutationFn: async (productId: bigint) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       const product = await actor.getProduct(productId);
-      if (!product) throw new Error('Product not found');
-      const newCount = product.inventoryCount > BigInt(0) ? product.inventoryCount - BigInt(1) : BigInt(0);
+      if (!product) throw new Error("Product not found");
+      const newCount =
+        product.inventoryCount > BigInt(0)
+          ? product.inventoryCount - BigInt(1)
+          : BigInt(0);
       await actor.updateInventoryCount(productId, newCount);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['product'] });
-      queryClient.invalidateQueries({ queryKey: ['totalInventoryValue'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+      queryClient.invalidateQueries({ queryKey: ["totalInventoryValue"] });
     },
   });
 }
@@ -312,12 +341,16 @@ export function useReplaceProductImage() {
       imageIndex: bigint;
       newImage: ExternalBlob;
     }) => {
-      if (!actor) throw new Error('Actor not available');
-      await actor.replaceProductImage(params.productId, params.imageIndex, params.newImage);
+      if (!actor) throw new Error("Actor not available");
+      await actor.replaceProductImage(
+        params.productId,
+        params.imageIndex,
+        params.newImage,
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      queryClient.invalidateQueries({ queryKey: ['product'] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
     },
   });
 }
@@ -327,7 +360,7 @@ export function useTrackProductView() {
 
   return useMutation({
     mutationFn: async (productId: bigint) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.trackProductView(productId);
     },
   });
@@ -337,7 +370,7 @@ export function useGetCart() {
   const { actor, isFetching } = useActor();
 
   return useQuery<CartItem[]>({
-    queryKey: ['cart'],
+    queryKey: ["cart"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getCart();
@@ -350,7 +383,7 @@ export function useGetCartItemCount() {
   const { actor, isFetching } = useActor();
 
   return useQuery<number>({
-    queryKey: ['cart', 'count'],
+    queryKey: ["cart", "count"],
     queryFn: async () => {
       if (!actor) return 0;
       const cart = await actor.getCart();
@@ -364,7 +397,7 @@ export function useGetCartTotal() {
   const { actor, isFetching } = useActor();
 
   return useQuery<bigint>({
-    queryKey: ['cart', 'total'],
+    queryKey: ["cart", "total"],
     queryFn: async () => {
       if (!actor) return BigInt(0);
       return actor.getCartTotal();
@@ -379,18 +412,18 @@ export function useAddCartItem() {
 
   return useMutation({
     mutationFn: async (params: { productId: bigint; quantity: bigint }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.addCartItem(params.productId, params.quantity);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-      toast.success('Added to basket!');
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      toast.success("Added to basket!");
     },
     onError: (error: any) => {
-      if (error?.message?.includes('Unauthorized')) {
-        toast.error('Please log in to add items to your basket');
+      if (error?.message?.includes("Unauthorized")) {
+        toast.error("Please log in to add items to your basket");
       } else {
-        toast.error('Failed to add to basket');
+        toast.error("Failed to add to basket");
       }
       console.error(error);
     },
@@ -403,18 +436,18 @@ export function useAddToCart() {
 
   return useMutation({
     mutationFn: async (params: { productId: bigint; quantity: number }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.addCartItem(params.productId, BigInt(params.quantity));
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
-      toast.success('Added to basket!');
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      toast.success("Added to basket!");
     },
     onError: (error: any) => {
-      if (error?.message?.includes('Unauthorized')) {
-        toast.error('Please log in to add items to your basket');
+      if (error?.message?.includes("Unauthorized")) {
+        toast.error("Please log in to add items to your basket");
       } else {
-        toast.error('Failed to add to basket');
+        toast.error("Failed to add to basket");
       }
       console.error(error);
     },
@@ -427,11 +460,11 @@ export function useUpdateCartItem() {
 
   return useMutation({
     mutationFn: async (params: { productId: bigint; newQuantity: bigint }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.updateCartItem(params.productId, params.newQuantity);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 }
@@ -442,11 +475,11 @@ export function useRemoveCartItem() {
 
   return useMutation({
     mutationFn: async (productId: bigint) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.removeCartItem(productId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 }
@@ -457,11 +490,11 @@ export function useRemoveAllCartItems() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.removeAllCartItems();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] });
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
 }
@@ -470,7 +503,7 @@ export function useIsStripeConfigured() {
   const { actor, isFetching } = useActor();
 
   return useQuery<boolean>({
-    queryKey: ['stripeConfigured'],
+    queryKey: ["stripeConfigured"],
     queryFn: async () => {
       if (!actor) return false;
       return actor.isStripeConfigured();
@@ -485,11 +518,11 @@ export function useSetStripeConfiguration() {
 
   return useMutation({
     mutationFn: async (config: StripeConfiguration) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.setStripeConfiguration(config);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['stripeConfigured'] });
+      queryClient.invalidateQueries({ queryKey: ["stripeConfigured"] });
     },
   });
 }
@@ -500,15 +533,15 @@ export function useDeleteStripeConfig() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.deleteStripeConfig();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['stripeConfigured'] });
-      toast.success('Stripe configuration deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["stripeConfigured"] });
+      toast.success("Stripe configuration deleted successfully");
     },
     onError: (error) => {
-      toast.error('Failed to delete Stripe configuration');
+      toast.error("Failed to delete Stripe configuration");
       console.error(error);
     },
   });
@@ -523,15 +556,15 @@ export function useCreateCheckoutSession() {
       successUrl: string;
       cancelUrl: string;
     }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       const result = await actor.createNoShippingCheckoutSession(
         params.items,
         params.successUrl,
-        params.cancelUrl
+        params.cancelUrl,
       );
       const session = JSON.parse(result) as { id: string; url: string };
       if (!session?.url) {
-        throw new Error('Stripe session missing url');
+        throw new Error("Stripe session missing url");
       }
       return session;
     },
@@ -542,7 +575,7 @@ export function useIsAdmin() {
   const { actor, isFetching } = useActor();
 
   return useQuery<boolean>({
-    queryKey: ['isAdmin'],
+    queryKey: ["isAdmin"],
     queryFn: async () => {
       if (!actor) return false;
       return actor.isAdmin();
@@ -555,7 +588,7 @@ export function useIsCallerAdmin() {
   const { actor, isFetching } = useActor();
 
   return useQuery<boolean>({
-    queryKey: ['isCallerAdmin'],
+    queryKey: ["isCallerAdmin"],
     queryFn: async () => {
       if (!actor) return false;
       return actor.isCallerAdmin();
@@ -568,9 +601,9 @@ export function useGetBrandingConfig() {
   const { actor, isFetching } = useActor();
 
   return useQuery<BrandingConfig>({
-    queryKey: ['brandingConfig'],
+    queryKey: ["brandingConfig"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getBrandingConfig();
     },
     enabled: !!actor && !isFetching,
@@ -583,11 +616,11 @@ export function useUpdateBrandingConfig() {
 
   return useMutation({
     mutationFn: async (config: BrandingConfig) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.updateBrandingConfig(config);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['brandingConfig'] });
+      queryClient.invalidateQueries({ queryKey: ["brandingConfig"] });
     },
   });
 }
@@ -596,7 +629,7 @@ export function useGetShopDetails() {
   const { actor, isFetching } = useActor();
 
   return useQuery<ShopDetails | null>({
-    queryKey: ['shopDetails'],
+    queryKey: ["shopDetails"],
     queryFn: async () => {
       if (!actor) return null;
       return actor.getShopDetails();
@@ -611,11 +644,11 @@ export function useUpdateShopDetails() {
 
   return useMutation({
     mutationFn: async (details: ShopDetails) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.updateShopDetails(details);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['shopDetails'] });
+      queryClient.invalidateQueries({ queryKey: ["shopDetails"] });
     },
   });
 }
@@ -624,12 +657,13 @@ export function useGetHomepageConfig() {
   const { actor, isFetching } = useActor();
 
   return useQuery<HomepageConfig>({
-    queryKey: ['homepageConfig'],
+    queryKey: ["homepageConfig"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getHomepageConfig();
     },
     enabled: !!actor && !isFetching,
+    staleTime: 60_000,
   });
 }
 
@@ -639,25 +673,12 @@ export function useUpdateHomepageConfig() {
 
   return useMutation({
     mutationFn: async (config: HomepageConfig) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.updateHomepageConfig(config);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['homepageConfig'] });
+      queryClient.invalidateQueries({ queryKey: ["homepageConfig"] });
     },
-  });
-}
-
-export function useGetTotalInventoryValue() {
-  const { actor, isFetching } = useActor();
-
-  return useQuery<bigint>({
-    queryKey: ['totalInventoryValue'],
-    queryFn: async () => {
-      if (!actor) return BigInt(0);
-      return actor.getTotalInventoryValue();
-    },
-    enabled: !!actor && !isFetching,
   });
 }
 
@@ -665,7 +686,7 @@ export function useGetDescriptionTemplates() {
   const { actor, isFetching } = useActor();
 
   return useQuery<DescriptionTemplate[]>({
-    queryKey: ['descriptionTemplates'],
+    queryKey: ["descriptionTemplates"],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getDescriptionTemplates();
@@ -680,16 +701,11 @@ export function useCreateDescriptionTemplate() {
 
   return useMutation({
     mutationFn: async (params: { name: string; content: string }) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.createDescriptionTemplate(params.name, params.content);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['descriptionTemplates'] });
-      toast.success('Template created successfully');
-    },
-    onError: (error) => {
-      toast.error('Failed to create template');
-      console.error(error);
+      queryClient.invalidateQueries({ queryKey: ["descriptionTemplates"] });
     },
   });
 }
@@ -699,17 +715,20 @@ export function useUpdateDescriptionTemplate() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: { id: bigint; name: string; content: string }) => {
-      if (!actor) throw new Error('Actor not available');
-      await actor.updateDescriptionTemplate(params.id, params.name, params.content);
+    mutationFn: async (params: {
+      id: bigint;
+      name: string;
+      content: string;
+    }) => {
+      if (!actor) throw new Error("Actor not available");
+      await actor.updateDescriptionTemplate(
+        params.id,
+        params.name,
+        params.content,
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['descriptionTemplates'] });
-      toast.success('Template updated successfully');
-    },
-    onError: (error) => {
-      toast.error('Failed to update template');
-      console.error(error);
+      queryClient.invalidateQueries({ queryKey: ["descriptionTemplates"] });
     },
   });
 }
@@ -720,15 +739,176 @@ export function useDeleteDescriptionTemplate() {
 
   return useMutation({
     mutationFn: async (id: bigint) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       await actor.deleteDescriptionTemplate(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['descriptionTemplates'] });
-      toast.success('Template deleted successfully');
+      queryClient.invalidateQueries({ queryKey: ["descriptionTemplates"] });
+    },
+  });
+}
+
+export function useGetTotalInventoryValue() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<bigint>({
+    queryKey: ["totalInventoryValue"],
+    queryFn: async () => {
+      if (!actor) return BigInt(0);
+      return actor.getTotalInventoryValue();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+// ================== Discount Code Hooks ==================
+
+export function useDiscountCodes() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<DiscountCode[]>({
+    queryKey: ["discountCodes"],
+    queryFn: async () => {
+      if (!actor) return [];
+      return actor.getDiscountCodes();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useCreateDiscountCode() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: {
+      id: string;
+      code: string;
+      discountType: Variant_percentage_fixedAmount;
+      value: number;
+    }) => {
+      if (!actor) throw new Error("Actor not available");
+      await actor.createDiscountCode(
+        params.id,
+        params.code,
+        params.discountType,
+        params.value,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["discountCodes"] });
+      toast.success("Discount code created successfully");
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.message?.includes("already exists")
+          ? "A code with this ID already exists"
+          : "Failed to create discount code",
+      );
+      console.error(error);
+    },
+  });
+}
+
+export function useUpdateDiscountCode() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: {
+      id: string;
+      code: string;
+      discountType: Variant_percentage_fixedAmount;
+      value: number;
+      active: boolean;
+    }) => {
+      if (!actor) throw new Error("Actor not available");
+      await actor.updateDiscountCode(
+        params.id,
+        params.code,
+        params.discountType,
+        params.value,
+        params.active,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["discountCodes"] });
+      toast.success("Discount code updated successfully");
     },
     onError: (error) => {
-      toast.error('Failed to delete template');
+      toast.error("Failed to update discount code");
+      console.error(error);
+    },
+  });
+}
+
+export function useDeleteDiscountCode() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      if (!actor) throw new Error("Actor not available");
+      await actor.deleteDiscountCode(id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["discountCodes"] });
+      toast.success("Discount code deleted");
+    },
+    onError: (error) => {
+      toast.error("Failed to delete discount code");
+      console.error(error);
+    },
+  });
+}
+
+export function useValidateDiscountCode() {
+  const { actor } = useActor();
+
+  return useMutation({
+    mutationFn: async (code: string): Promise<DiscountCode | null> => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.validateDiscountCode(code);
+    },
+  });
+}
+
+// ================== Payment Settings Hooks ==================
+
+export function usePaymentSettings() {
+  const { actor, isFetching } = useActor();
+
+  return useQuery<PaymentSettings>({
+    queryKey: ["paymentSettings"],
+    queryFn: async () => {
+      if (!actor) throw new Error("Actor not available");
+      return actor.getPaymentSettings();
+    },
+    enabled: !!actor && !isFetching,
+  });
+}
+
+export function useUpdatePaymentSettings() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (params: {
+      proOcarinaAppUrl: string;
+      bonusItemConfig: BonusItemConfig;
+    }) => {
+      if (!actor) throw new Error("Actor not available");
+      await actor.updatePaymentSettings(
+        params.proOcarinaAppUrl,
+        params.bonusItemConfig,
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["paymentSettings"] });
+      toast.success("Payment settings saved successfully");
+    },
+    onError: (error) => {
+      toast.error("Failed to save payment settings");
       console.error(error);
     },
   });

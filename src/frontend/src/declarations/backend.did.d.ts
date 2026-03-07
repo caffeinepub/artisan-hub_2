@@ -10,6 +10,12 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface BonusItemConfig {
+  'url' : string,
+  'title' : string,
+  'description' : string,
+  'enabled' : boolean,
+}
 export interface BrandingConfig {
   'theme' : [] | [string],
   'primaryColor' : [] | [string],
@@ -25,11 +31,24 @@ export interface DescriptionTemplate {
   'name' : string,
   'createdAt' : Time,
 }
+export interface DiscountCode {
+  'id' : string,
+  'active' : boolean,
+  'value' : number,
+  'code' : string,
+  'createdAt' : bigint,
+  'discountType' : { 'percentage' : null } |
+    { 'fixedAmount' : null },
+}
 export type ExternalBlob = Uint8Array;
 export interface HomepageConfig {
   'heroImage' : [] | [ExternalBlob],
   'promotionalText' : string,
   'heroMotto' : string,
+}
+export interface PaymentSettings {
+  'bonusItemConfig' : BonusItemConfig,
+  'proOcarinaAppUrl' : string,
 }
 export interface Product {
   'id' : bigint,
@@ -158,24 +177,38 @@ export interface _SERVICE {
     string
   >,
   'createDescriptionTemplate' : ActorMethod<[string, string], bigint>,
+  'createDiscountCode' : ActorMethod<
+    [
+      string,
+      string,
+      { 'percentage' : null } |
+        { 'fixedAmount' : null },
+      number,
+    ],
+    undefined
+  >,
   'createNoShippingCheckoutSession' : ActorMethod<
     [Array<ShoppingItem>, string, string],
     string
   >,
   'deleteDescriptionTemplate' : ActorMethod<[bigint], undefined>,
+  'deleteDiscountCode' : ActorMethod<[string], undefined>,
   'deleteStripeConfig' : ActorMethod<[], undefined>,
   'emptyCart' : ActorMethod<[], undefined>,
   'getBestSellingProducts' : ActorMethod<[], Array<Product>>,
+  'getBonusItemConfig' : ActorMethod<[], BonusItemConfig>,
   'getBrandingConfig' : ActorMethod<[], BrandingConfig>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getCart' : ActorMethod<[], Array<CartItem>>,
   'getCartTotal' : ActorMethod<[], bigint>,
   'getDescriptionTemplates' : ActorMethod<[], Array<DescriptionTemplate>>,
+  'getDiscountCodes' : ActorMethod<[], Array<DiscountCode>>,
   'getFeaturedProducts' : ActorMethod<[], Array<Product>>,
   'getHomepageConfig' : ActorMethod<[], HomepageConfig>,
   'getMostViewedProducts' : ActorMethod<[], Array<Product>>,
   'getNewestProducts' : ActorMethod<[], Array<Product>>,
+  'getPaymentSettings' : ActorMethod<[], PaymentSettings>,
   'getProduct' : ActorMethod<[bigint], [] | [Product]>,
   'getProductCount' : ActorMethod<[], bigint>,
   'getProducts' : ActorMethod<[], Array<Product>>,
@@ -197,14 +230,27 @@ export interface _SERVICE {
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'trackProductView' : ActorMethod<[bigint], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,
+  'updateBonusItemConfig' : ActorMethod<[BonusItemConfig], undefined>,
   'updateBrandingConfig' : ActorMethod<[BrandingConfig], undefined>,
   'updateCartItem' : ActorMethod<[bigint, bigint], undefined>,
   'updateDescriptionTemplate' : ActorMethod<
     [bigint, string, string],
     undefined
   >,
+  'updateDiscountCode' : ActorMethod<
+    [
+      string,
+      string,
+      { 'percentage' : null } |
+        { 'fixedAmount' : null },
+      number,
+      boolean,
+    ],
+    undefined
+  >,
   'updateHomepageConfig' : ActorMethod<[HomepageConfig], undefined>,
   'updateInventoryCount' : ActorMethod<[bigint, bigint], undefined>,
+  'updatePaymentSettings' : ActorMethod<[string, BonusItemConfig], undefined>,
   'updateProduct' : ActorMethod<
     [
       bigint,
@@ -221,6 +267,7 @@ export interface _SERVICE {
   >,
   'updateProductDisplayOrder' : ActorMethod<[Array<bigint>], undefined>,
   'updateShopDetails' : ActorMethod<[ShopDetails], undefined>,
+  'validateDiscountCode' : ActorMethod<[string], [] | [DiscountCode]>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

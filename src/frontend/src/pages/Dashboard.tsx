@@ -1,16 +1,29 @@
-import { useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import { useIsCallerAdmin, useGetProducts, useGetProductCount, useIsStripeConfigured, useGetTotalInventoryValue } from '../hooks/useQueries';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Package, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react';
-import ProductManagementTable from '../components/ProductManagementTable';
-import BulkProductUpload from '../components/BulkProductUpload';
-import StripeSetup from '../components/StripeSetup';
-import BrandingSettings from '../components/BrandingSettings';
-import ShopDetailsSettings from '../components/ShopDetailsSettings';
-import HomepageSettings from '../components/HomepageSettings';
-import DescriptionTemplatesManager from '../components/DescriptionTemplatesManager';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from "@tanstack/react-router";
+import { DollarSign, Package, ShoppingCart, TrendingUp } from "lucide-react";
+import { useState } from "react";
+import BrandingSettings from "../components/BrandingSettings";
+import BulkProductUpload from "../components/BulkProductUpload";
+import DescriptionTemplatesManager from "../components/DescriptionTemplatesManager";
+import HomepageSettings from "../components/HomepageSettings";
+import PaymentSettingsTab from "../components/PaymentSettingsTab";
+import ProductManagementTable from "../components/ProductManagementTable";
+import ShopDetailsSettings from "../components/ShopDetailsSettings";
+import StripeSetup from "../components/StripeSetup";
+import {
+  useGetProductCount,
+  useGetProducts,
+  useGetTotalInventoryValue,
+  useIsCallerAdmin,
+  useIsStripeConfigured,
+} from "../hooks/useQueries";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -19,7 +32,7 @@ export default function Dashboard() {
   const { data: productCount = BigInt(0) } = useGetProductCount();
   const { data: isStripeConfigured = false } = useIsStripeConfigured();
   const { data: totalInventoryValue = BigInt(0) } = useGetTotalInventoryValue();
-  const [activeTab, setActiveTab] = useState('products');
+  const [activeTab, setActiveTab] = useState("products");
 
   if (adminLoading) {
     return (
@@ -33,9 +46,12 @@ export default function Dashboard() {
     return (
       <div className="container py-16 text-center">
         <h1 className="font-serif text-3xl font-bold mb-4">Access Denied</h1>
-        <p className="text-muted-foreground mb-6">You don't have permission to access this page.</p>
+        <p className="text-muted-foreground mb-6">
+          You don't have permission to access this page.
+        </p>
         <button
-          onClick={() => navigate({ to: '/' })}
+          type="button"
+          onClick={() => navigate({ to: "/" })}
           className="px-6 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
         >
           Go Home
@@ -44,14 +60,10 @@ export default function Dashboard() {
     );
   }
 
-  const totalRevenue = products.reduce((sum, product) => {
-    return sum + Number(product.price) * Number(product.viewCount);
-  }, 0);
-
   const formatCurrency = (cents: number) => {
-    return new Intl.NumberFormat('en-AU', {
-      style: 'currency',
-      currency: 'AUD',
+    return new Intl.NumberFormat("en-AU", {
+      style: "currency",
+      currency: "AUD",
     }).format(cents / 100);
   };
 
@@ -59,14 +71,18 @@ export default function Dashboard() {
     <div className="container py-8">
       <div className="mb-8">
         <h1 className="font-serif text-4xl font-bold mb-2">Admin Dashboard</h1>
-        <p className="text-muted-foreground">Manage your products, settings, and store configuration</p>
+        <p className="text-muted-foreground">
+          Manage your products, settings, and store configuration
+        </p>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Products
+            </CardTitle>
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -76,11 +92,15 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Inventory Value</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Inventory Value
+            </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(Number(totalInventoryValue))}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(Number(totalInventoryValue))}
+            </div>
           </CardContent>
         </Card>
 
@@ -102,9 +122,11 @@ export default function Dashboard() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{isStripeConfigured ? '✓' : '✗'}</div>
+            <div className="text-2xl font-bold">
+              {isStripeConfigured ? "✓" : "✗"}
+            </div>
             <p className="text-xs text-muted-foreground">
-              {isStripeConfigured ? 'Configured' : 'Not configured'}
+              {isStripeConfigured ? "Configured" : "Not configured"}
             </p>
           </CardContent>
         </Card>
@@ -112,13 +134,14 @@ export default function Dashboard() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="products">Products</TabsTrigger>
           <TabsTrigger value="bulk-upload">Bulk Upload</TabsTrigger>
           <TabsTrigger value="templates">Templates</TabsTrigger>
           <TabsTrigger value="stripe">Stripe</TabsTrigger>
+          <TabsTrigger value="payment-settings">Payment</TabsTrigger>
           <TabsTrigger value="branding">Branding</TabsTrigger>
-          <TabsTrigger value="shop-details">Shop Details</TabsTrigger>
+          <TabsTrigger value="shop-details">Shop</TabsTrigger>
           <TabsTrigger value="homepage">Homepage</TabsTrigger>
         </TabsList>
 
@@ -126,7 +149,9 @@ export default function Dashboard() {
           <Card>
             <CardHeader>
               <CardTitle>Product Management</CardTitle>
-              <CardDescription>View and manage all your products</CardDescription>
+              <CardDescription>
+                View and manage all your products
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ProductManagementTable />
@@ -135,7 +160,7 @@ export default function Dashboard() {
         </TabsContent>
 
         <TabsContent value="bulk-upload" className="mt-6">
-          <BulkProductUpload onComplete={() => setActiveTab('products')} />
+          <BulkProductUpload onComplete={() => setActiveTab("products")} />
         </TabsContent>
 
         <TabsContent value="templates" className="mt-6">
@@ -144,6 +169,10 @@ export default function Dashboard() {
 
         <TabsContent value="stripe" className="mt-6">
           <StripeSetup />
+        </TabsContent>
+
+        <TabsContent value="payment-settings" className="mt-6">
+          <PaymentSettingsTab />
         </TabsContent>
 
         <TabsContent value="branding" className="mt-6">

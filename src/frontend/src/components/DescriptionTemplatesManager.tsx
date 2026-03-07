@@ -1,28 +1,47 @@
-import { useState } from 'react';
-import { useGetDescriptionTemplates, useDeleteDescriptionTemplate } from '../hooks/useQueries';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { FileText, Pencil, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
-import DescriptionTemplateEditor from './DescriptionTemplateEditor';
-import type { DescriptionTemplate } from '../backend';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { FileText, Pencil, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import type { DescriptionTemplate } from "../backend";
+import {
+  useDeleteDescriptionTemplate,
+  useGetDescriptionTemplates,
+} from "../hooks/useQueries";
+import DescriptionTemplateEditor from "./DescriptionTemplateEditor";
 
 export default function DescriptionTemplatesManager() {
   const { data: templates = [], isLoading } = useGetDescriptionTemplates();
   const deleteTemplate = useDeleteDescriptionTemplate();
-  const [editingTemplate, setEditingTemplate] = useState<DescriptionTemplate | null>(null);
+  const [editingTemplate, setEditingTemplate] =
+    useState<DescriptionTemplate | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<bigint | null>(null);
 
   const handleDelete = async (id: bigint) => {
     try {
       await deleteTemplate.mutateAsync(id);
-      toast.success('Template deleted successfully');
+      toast.success("Template deleted successfully");
       setDeleteConfirmId(null);
     } catch (error) {
-      console.error('Error deleting template:', error);
-      toast.error('Failed to delete template');
+      console.error("Error deleting template:", error);
+      toast.error("Failed to delete template");
     }
   };
 
@@ -44,7 +63,9 @@ export default function DescriptionTemplatesManager() {
           <div className="flex items-center justify-between">
             <div>
               <CardTitle>Description Templates</CardTitle>
-              <CardDescription>Manage reusable product description templates</CardDescription>
+              <CardDescription>
+                Manage reusable product description templates
+              </CardDescription>
             </div>
             <Button onClick={() => setIsCreating(true)}>
               <FileText className="mr-2 h-4 w-4" />
@@ -56,7 +77,9 @@ export default function DescriptionTemplatesManager() {
           {templates.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>No templates yet. Create your first template to get started.</p>
+              <p>
+                No templates yet. Create your first template to get started.
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -108,12 +131,16 @@ export default function DescriptionTemplatesManager() {
       />
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteConfirmId !== null} onOpenChange={() => setDeleteConfirmId(null)}>
+      <AlertDialog
+        open={deleteConfirmId !== null}
+        onOpenChange={() => setDeleteConfirmId(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Template</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this template? This action cannot be undone.
+              Are you sure you want to delete this template? This action cannot
+              be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

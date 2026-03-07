@@ -1,10 +1,15 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { useNavigate } from '@tanstack/react-router';
-import { ShoppingCart, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
-import type { Product } from '../backend';
-import { useAddToCart } from '../hooks/useQueries';
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useNavigate } from "@tanstack/react-router";
+import { Ban, Loader2, ShoppingCart, Truck } from "lucide-react";
+import { toast } from "sonner";
+import type { Product } from "../backend";
+import { useAddToCart } from "../hooks/useQueries";
 
 interface ProductDetailViewProps {
   product: Product | null;
@@ -12,36 +17,41 @@ interface ProductDetailViewProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export default function ProductDetailView({ product, open, onOpenChange }: ProductDetailViewProps) {
+export default function ProductDetailView({
+  product,
+  open,
+  onOpenChange,
+}: ProductDetailViewProps) {
   const navigate = useNavigate();
   const addToCart = useAddToCart();
 
   if (!product) return null;
 
-  const imageUrl = product.images.length > 0
-    ? product.images[0].getDirectURL()
-    : '/assets/generated/product-placeholder.dim_400x400.png';
+  const imageUrl =
+    product.images.length > 0
+      ? product.images[0].getDirectURL()
+      : "/assets/generated/product-placeholder.dim_400x400.png";
 
   const handleBuyNow = () => {
-    sessionStorage.setItem('buyNowProductId', product.id.toString());
+    sessionStorage.setItem("buyNowProductId", product.id.toString());
     onOpenChange(false);
-    navigate({ to: '/checkout' });
+    navigate({ to: "/checkout" });
   };
 
   const handleAddToBasket = async () => {
     try {
       await addToCart.mutateAsync({ productId: product.id, quantity: 1 });
-      toast.success('Added to basket!');
+      toast.success("Added to basket!");
     } catch (error) {
-      toast.error('Failed to add to basket');
+      toast.error("Failed to add to basket");
       console.error(error);
     }
   };
 
   const formatPrice = (priceInCents: bigint) => {
-    return new Intl.NumberFormat('en-AU', {
-      style: 'currency',
-      currency: 'AUD',
+    return new Intl.NumberFormat("en-AU", {
+      style: "currency",
+      currency: "AUD",
     }).format(Number(priceInCents) / 100);
   };
 
@@ -49,7 +59,9 @@ export default function ProductDetailView({ product, open, onOpenChange }: Produ
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="font-serif text-2xl">{product.name}</DialogTitle>
+          <DialogTitle className="font-serif text-2xl">
+            {product.name}
+          </DialogTitle>
         </DialogHeader>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="aspect-square overflow-hidden rounded-lg bg-muted">
@@ -72,11 +84,24 @@ export default function ProductDetailView({ product, open, onOpenChange }: Produ
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Description</p>
-              <p className="text-base leading-relaxed">{product.stripeProductDescription}</p>
+              <p className="text-base leading-relaxed">
+                {product.stripeProductDescription}
+              </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground mb-1">Price</p>
               <p className="text-3xl font-bold">{formatPrice(product.price)}</p>
+              {/* Policy notices */}
+              <div className="mt-2 space-y-1">
+                <div className="flex items-center gap-1.5 text-sm text-green-700 dark:text-green-400">
+                  <Truck className="h-3.5 w-3.5" />
+                  <span>Free postage on every order</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Ban className="h-3.5 w-3.5" />
+                  <span>No returns accepted</span>
+                </div>
+              </div>
             </div>
             <div className="flex gap-3 pt-4">
               <Button

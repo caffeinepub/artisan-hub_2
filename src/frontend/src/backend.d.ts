@@ -48,6 +48,14 @@ export interface BrandingConfig {
     favicon?: ExternalBlob;
     secondaryColor?: string;
 }
+export interface DiscountCode {
+    id: string;
+    active: boolean;
+    value: number;
+    code: string;
+    createdAt: bigint;
+    discountType: Variant_percentage_fixedAmount;
+}
 export interface http_header {
     value: string;
     name: string;
@@ -56,6 +64,10 @@ export interface http_request_result {
     status: bigint;
     body: Uint8Array;
     headers: Array<http_header>;
+}
+export interface PaymentSettings {
+    bonusItemConfig: BonusItemConfig;
+    proOcarinaAppUrl: string;
 }
 export interface HomepageConfig {
     heroImage?: ExternalBlob;
@@ -99,6 +111,12 @@ export interface ShopDetails {
         phone: string;
     };
 }
+export interface BonusItemConfig {
+    url: string;
+    title: string;
+    description: string;
+    enabled: boolean;
+}
 export type StripeSessionStatus = {
     __kind__: "completed";
     completed: {
@@ -134,6 +152,10 @@ export enum UserRole {
     user = "user",
     guest = "guest"
 }
+export enum Variant_percentage_fixedAmount {
+    percentage = "percentage",
+    fixedAmount = "fixedAmount"
+}
 export interface backendInterface {
     addCartItem(productId: bigint, quantity: bigint): Promise<void>;
     addOrUpdateProductImage(productId: bigint, image: ExternalBlob): Promise<void>;
@@ -143,21 +165,26 @@ export interface backendInterface {
     clearAllCarts(): Promise<void>;
     createCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     createDescriptionTemplate(name: string, content: string): Promise<bigint>;
+    createDiscountCode(id: string, code: string, discountType: Variant_percentage_fixedAmount, value: number): Promise<void>;
     createNoShippingCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     deleteDescriptionTemplate(id: bigint): Promise<void>;
+    deleteDiscountCode(id: string): Promise<void>;
     deleteStripeConfig(): Promise<void>;
     emptyCart(): Promise<void>;
     getBestSellingProducts(): Promise<Array<Product>>;
+    getBonusItemConfig(): Promise<BonusItemConfig>;
     getBrandingConfig(): Promise<BrandingConfig>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
     getCart(): Promise<Array<CartItem>>;
     getCartTotal(): Promise<bigint>;
     getDescriptionTemplates(): Promise<Array<DescriptionTemplate>>;
+    getDiscountCodes(): Promise<Array<DiscountCode>>;
     getFeaturedProducts(): Promise<Array<Product>>;
     getHomepageConfig(): Promise<HomepageConfig>;
     getMostViewedProducts(): Promise<Array<Product>>;
     getNewestProducts(): Promise<Array<Product>>;
+    getPaymentSettings(): Promise<PaymentSettings>;
     getProduct(productId: bigint): Promise<Product | null>;
     getProductCount(): Promise<bigint>;
     getProducts(): Promise<Array<Product>>;
@@ -176,12 +203,16 @@ export interface backendInterface {
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     trackProductView(productId: bigint): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;
+    updateBonusItemConfig(bonusItemConfig: BonusItemConfig): Promise<void>;
     updateBrandingConfig(config: BrandingConfig): Promise<void>;
     updateCartItem(productId: bigint, newQuantity: bigint): Promise<void>;
     updateDescriptionTemplate(id: bigint, name: string, content: string): Promise<void>;
+    updateDiscountCode(id: string, code: string, discountType: Variant_percentage_fixedAmount, value: number, active: boolean): Promise<void>;
     updateHomepageConfig(config: HomepageConfig): Promise<void>;
     updateInventoryCount(productId: bigint, inventoryCount: bigint): Promise<void>;
+    updatePaymentSettings(proOcarinaAppUrl: string, bonusItemConfig: BonusItemConfig): Promise<void>;
     updateProduct(productId: bigint, name: string | null, shape: string | null, price: bigint | null, stripeProductId: string | null, stripeProductDescription: string | null, images: Array<ExternalBlob> | null, inventoryCount: bigint | null, category: string | null): Promise<void>;
     updateProductDisplayOrder(productIds: Array<bigint>): Promise<void>;
     updateShopDetails(details: ShopDetails): Promise<void>;
+    validateDiscountCode(code: string): Promise<DiscountCode | null>;
 }

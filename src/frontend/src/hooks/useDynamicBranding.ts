@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { useGetBrandingConfig } from './useQueries';
+import { useEffect } from "react";
+import { useGetBrandingConfig } from "./useQueries";
 
 export function useDynamicBranding() {
   const { data: brandingConfig } = useGetBrandingConfig();
@@ -14,10 +14,11 @@ export function useDynamicBranding() {
       // Update favicon
       if (brandingConfig.favicon) {
         const faviconUrl = brandingConfig.favicon.getDirectURL();
-        let link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
+        let link: HTMLLinkElement | null =
+          document.querySelector("link[rel~='icon']");
         if (!link) {
-          link = document.createElement('link');
-          link.rel = 'icon';
+          link = document.createElement("link");
+          link.rel = "icon";
           document.head.appendChild(link);
         }
         link.href = faviconUrl;

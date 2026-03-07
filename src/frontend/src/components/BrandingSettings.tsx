@@ -1,18 +1,27 @@
-import { useState } from 'react';
-import { useGetBrandingConfig, useUpdateBrandingConfig } from '../hooks/useQueries';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Loader2, Upload, X } from 'lucide-react';
-import { toast } from 'sonner';
-import { ExternalBlob } from '../backend';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2, Upload, X } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ExternalBlob } from "../backend";
+import {
+  useGetBrandingConfig,
+  useUpdateBrandingConfig,
+} from "../hooks/useQueries";
 
 export default function BrandingSettings() {
   const { data: brandingConfig, isLoading } = useGetBrandingConfig();
   const updateBranding = useUpdateBrandingConfig();
 
-  const [siteName, setSiteName] = useState('');
+  const [siteName, setSiteName] = useState("");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [faviconFile, setFaviconFile] = useState<File | null>(null);
@@ -23,7 +32,7 @@ export default function BrandingSettings() {
   // Initialize form with current config
   useState(() => {
     if (brandingConfig) {
-      setSiteName(brandingConfig.siteName || '');
+      setSiteName(brandingConfig.siteName || "");
       if (brandingConfig.logo) {
         setLogoPreview(brandingConfig.logo.getDirectURL());
       }
@@ -36,8 +45,8 @@ export default function BrandingSettings() {
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file');
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select an image file");
         return;
       }
       setLogoFile(file);
@@ -52,8 +61,8 @@ export default function BrandingSettings() {
   const handleFaviconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file');
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select an image file");
         return;
       }
       setFaviconFile(file);
@@ -79,20 +88,24 @@ export default function BrandingSettings() {
     e.preventDefault();
 
     if (!siteName.trim()) {
-      toast.error('Site name is required');
+      toast.error("Site name is required");
       return;
     }
 
     try {
-      let logoBlob: ExternalBlob | undefined = brandingConfig?.logo || undefined;
-      let faviconBlob: ExternalBlob | undefined = brandingConfig?.favicon || undefined;
+      let logoBlob: ExternalBlob | undefined =
+        brandingConfig?.logo || undefined;
+      let faviconBlob: ExternalBlob | undefined =
+        brandingConfig?.favicon || undefined;
 
       // Upload logo if changed
       if (logoFile) {
         const logoBytes = new Uint8Array(await logoFile.arrayBuffer());
-        logoBlob = ExternalBlob.fromBytes(logoBytes).withUploadProgress((percentage) => {
-          setLogoUploadProgress(percentage);
-        });
+        logoBlob = ExternalBlob.fromBytes(logoBytes).withUploadProgress(
+          (percentage) => {
+            setLogoUploadProgress(percentage);
+          },
+        );
       } else if (logoPreview === null && brandingConfig?.logo) {
         // Logo was cleared
         logoBlob = undefined;
@@ -101,9 +114,11 @@ export default function BrandingSettings() {
       // Upload favicon if changed
       if (faviconFile) {
         const faviconBytes = new Uint8Array(await faviconFile.arrayBuffer());
-        faviconBlob = ExternalBlob.fromBytes(faviconBytes).withUploadProgress((percentage) => {
-          setFaviconUploadProgress(percentage);
-        });
+        faviconBlob = ExternalBlob.fromBytes(faviconBytes).withUploadProgress(
+          (percentage) => {
+            setFaviconUploadProgress(percentage);
+          },
+        );
       } else if (faviconPreview === null && brandingConfig?.favicon) {
         // Favicon was cleared
         faviconBlob = undefined;
@@ -118,14 +133,14 @@ export default function BrandingSettings() {
         theme: brandingConfig?.theme,
       });
 
-      toast.success('Branding settings updated successfully');
+      toast.success("Branding settings updated successfully");
       setLogoFile(null);
       setFaviconFile(null);
       setLogoUploadProgress(0);
       setFaviconUploadProgress(0);
     } catch (error) {
-      console.error('Error updating branding:', error);
-      toast.error('Failed to update branding settings');
+      console.error("Error updating branding:", error);
+      toast.error("Failed to update branding settings");
     }
   };
 
@@ -144,7 +159,9 @@ export default function BrandingSettings() {
     <Card>
       <CardHeader>
         <CardTitle>Branding Settings</CardTitle>
-        <CardDescription>Customize your store's branding and appearance</CardDescription>
+        <CardDescription>
+          Customize your store's branding and appearance
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -199,7 +216,9 @@ export default function BrandingSettings() {
                   Recommended: PNG or SVG, max height 64px
                 </p>
                 {logoUploadProgress > 0 && logoUploadProgress < 100 && (
-                  <p className="text-sm text-primary mt-1">Uploading: {logoUploadProgress}%</p>
+                  <p className="text-sm text-primary mt-1">
+                    Uploading: {logoUploadProgress}%
+                  </p>
                 )}
               </div>
             </div>
@@ -243,7 +262,9 @@ export default function BrandingSettings() {
                   Recommended: ICO, PNG, or SVG, 32x32px or 64x64px
                 </p>
                 {faviconUploadProgress > 0 && faviconUploadProgress < 100 && (
-                  <p className="text-sm text-primary mt-1">Uploading: {faviconUploadProgress}%</p>
+                  <p className="text-sm text-primary mt-1">
+                    Uploading: {faviconUploadProgress}%
+                  </p>
                 )}
               </div>
             </div>
@@ -258,7 +279,7 @@ export default function BrandingSettings() {
                   Saving...
                 </>
               ) : (
-                'Save Changes'
+                "Save Changes"
               )}
             </Button>
           </div>

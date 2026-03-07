@@ -4,6 +4,7 @@ import Stripe "stripe/stripe";
 import Storage "blob-storage/Storage";
 import MixinStorage "blob-storage/Mixin";
 import Map "mo:core/Map";
+import Iter "mo:core/Iter";
 import Array "mo:core/Array";
 import Principal "mo:core/Principal";
 import Runtime "mo:core/Runtime";
@@ -11,11 +12,12 @@ import OutCall "http-outcalls/outcall";
 import Nat "mo:core/Nat";
 import Time "mo:core/Time";
 import Int "mo:core/Int";
-import Iter "mo:core/Iter";
+import Float "mo:core/Float";
 import Order "mo:core/Order";
-import Migration "migration";
+import Text "mo:core/Text";
 
-(with migration = Migration.run)
+
+
 actor {
   include MixinStorage();
 
@@ -361,6 +363,9 @@ actor {
   };
 
   public query ({ caller }) func getCart() : async [CartItem] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view their cart");
+    };
     switch (shoppingCarts.get(caller)) {
       case (null) { [] };
       case (?items) { items };
@@ -485,7 +490,7 @@ actor {
   public shared ({ caller }) func createCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
     let audItems = items.map(
       func(item) {
-        { item with currency = "aud" };
+        { item with currency = "AUD" };
       }
     );
     await Stripe.createCheckoutSession(getStripeConfiguration(), caller, audItems, successUrl, cancelUrl, transform);
@@ -494,7 +499,7 @@ actor {
   public shared ({ caller }) func createNoShippingCheckoutSession(items : [Stripe.ShoppingItem], successUrl : Text, cancelUrl : Text) : async Text {
     let audItems = items.map(
       func(item) {
-        { item with currency = "aud" };
+        { item with currency = "AUD" };
       }
     );
     await Stripe.createCheckoutSession(getStripeConfiguration(), caller, audItems, successUrl, cancelUrl, transform);
@@ -570,7 +575,7 @@ actor {
       func(cartItem) {
         {
           cartItem with
-          currency = "aud";
+          currency = "AUD";
           productName = cartItem.product.name;
           productDescription = cartItem.product.stripeProductDescription;
           priceInCents = cartItem.product.price;
@@ -650,6 +655,167 @@ actor {
       totalValue += product.price * product.inventoryCount;
     };
     totalValue;
+  };
+
+  // ================== Discount Management ==================
+
+  public type DiscountCode = {
+    id : Text;
+    code : Text;
+    discountType : { #percentage; #fixedAmount };
+    value : Float;
+    active : Bool;
+    createdAt : Int;
+  };
+
+  let discountCodes = Map.empty<Text, DiscountCode>();
+
+  public shared ({ caller }) func createDiscountCode(
+    id : Text,
+    code : Text,
+    discountType : { #percentage; #fixedAmount },
+    value : Float,
+  ) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can create discount codes");
+    };
+
+    if (discountCodes.containsKey(id)) {
+      Runtime.trap("Discount code with given id already exists");
+    };
+
+    let discount : DiscountCode = {
+      id;
+      code;
+      discountType;
+      value;
+      active = true;
+      createdAt = Time.now();
+    };
+
+    discountCodes.add(code, discount);
+  };
+
+  public shared ({ caller }) func updateDiscountCode(
+    id : Text,
+    code : Text,
+    discountType : { #percentage; #fixedAmount },
+    value : Float,
+    active : Bool,
+  ) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can update discount codes");
+    };
+
+    let existingDiscount = switch (discountCodes.get(code)) {
+      case (null) { Runtime.trap("Discount does not exist") };
+      case (?discount) { discount };
+    };
+
+    let updatedDiscount : DiscountCode = {
+      id;
+      code;
+      discountType;
+      value;
+      active;
+      createdAt = existingDiscount.createdAt;
+    };
+
+    discountCodes.add(code, updatedDiscount);
+  };
+
+  public shared ({ caller }) func deleteDiscountCode(id : Text) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can delete discount codes");
+    };
+
+    if (not discountCodes.containsKey(id)) {
+      Runtime.trap("Discount code does not exist");
+    };
+
+    discountCodes.remove(id);
+  };
+
+  public query ({ caller }) func getDiscountCodes() : async [DiscountCode] {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can get discount codes");
+    };
+
+    discountCodes.values().toArray();
+  };
+
+  public query func validateDiscountCode(code : Text) : async ?DiscountCode {
+    switch (discountCodes.get(code)) {
+      case (null) { null };
+      case (?discount) {
+        if (discount.active) { ?discount } else { null };
+      };
+    };
+  };
+
+  // ================== Bonus Item Management ==================
+
+  public type BonusItemConfig = {
+    title : Text;
+    description : Text;
+    url : Text;
+    enabled : Bool;
+  };
+
+  public type PaymentSettings = {
+    proOcarinaAppUrl : Text;
+    bonusItemConfig : BonusItemConfig;
+  };
+
+  var paymentSettings : PaymentSettings = {
+    proOcarinaAppUrl = "";
+    bonusItemConfig = {
+      title = "";
+      description = "";
+      url = "";
+      enabled = false;
+    };
+  };
+
+  public query ({ caller }) func getPaymentSettings() : async PaymentSettings {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can get payment settings");
+    };
+
+    paymentSettings;
+  };
+
+  public shared ({ caller }) func updatePaymentSettings(
+    proOcarinaAppUrl : Text,
+    bonusItemConfig : BonusItemConfig,
+  ) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can update payment settings");
+    };
+
+    paymentSettings := {
+      proOcarinaAppUrl;
+      bonusItemConfig;
+    };
+  };
+
+  public query ({ caller }) func getBonusItemConfig() : async BonusItemConfig {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can get bonus item config");
+    };
+
+    paymentSettings.bonusItemConfig;
+  };
+
+  public shared ({ caller }) func updateBonusItemConfig(bonusItemConfig : BonusItemConfig) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can update bonus items");
+    };
+
+    paymentSettings := {
+      paymentSettings with
+      bonusItemConfig;
+    };
   };
 
   // ================== Description Template Management ==================

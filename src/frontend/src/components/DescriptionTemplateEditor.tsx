@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useCreateDescriptionTemplate, useUpdateDescriptionTemplate } from '../hooks/useQueries';
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,13 +6,17 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import type { DescriptionTemplate } from '../backend';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import type { DescriptionTemplate } from "../backend";
+import {
+  useCreateDescriptionTemplate,
+  useUpdateDescriptionTemplate,
+} from "../hooks/useQueries";
 
 interface DescriptionTemplateEditorProps {
   open: boolean;
@@ -26,31 +29,32 @@ export default function DescriptionTemplateEditor({
   onOpenChange,
   template,
 }: DescriptionTemplateEditorProps) {
-  const [name, setName] = useState('');
-  const [content, setContent] = useState('');
+  const [name, setName] = useState("");
+  const [content, setContent] = useState("");
   const createTemplate = useCreateDescriptionTemplate();
   const updateTemplate = useUpdateDescriptionTemplate();
 
   const isEditMode = !!template;
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: open is intentionally used to reset form when dialog closes
   useEffect(() => {
     if (template) {
       setName(template.name);
       setContent(template.content);
     } else {
-      setName('');
-      setContent('');
+      setName("");
+      setContent("");
     }
   }, [template, open]);
 
   const handleSave = async () => {
     if (!name.trim()) {
-      toast.error('Please enter a template name');
+      toast.error("Please enter a template name");
       return;
     }
 
     if (!content.trim()) {
-      toast.error('Please enter template content');
+      toast.error("Please enter template content");
       return;
     }
 
@@ -61,18 +65,20 @@ export default function DescriptionTemplateEditor({
           name: name.trim(),
           content: content.trim(),
         });
-        toast.success('Template updated successfully');
+        toast.success("Template updated successfully");
       } else {
         await createTemplate.mutateAsync({
           name: name.trim(),
           content: content.trim(),
         });
-        toast.success('Template created successfully');
+        toast.success("Template created successfully");
       }
       onOpenChange(false);
     } catch (error) {
-      toast.error(isEditMode ? 'Failed to update template' : 'Failed to create template');
-      console.error('Save template error:', error);
+      toast.error(
+        isEditMode ? "Failed to update template" : "Failed to create template",
+      );
+      console.error("Save template error:", error);
     }
   };
 
@@ -86,11 +92,13 @@ export default function DescriptionTemplateEditor({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>{isEditMode ? 'Edit Template' : 'Create New Template'}</DialogTitle>
+          <DialogTitle>
+            {isEditMode ? "Edit Template" : "Create New Template"}
+          </DialogTitle>
           <DialogDescription>
             {isEditMode
-              ? 'Update the template name and content below.'
-              : 'Create a new description template for your products.'}
+              ? "Update the template name and content below."
+              : "Create a new description template for your products."}
           </DialogDescription>
         </DialogHeader>
 
@@ -118,7 +126,8 @@ export default function DescriptionTemplateEditor({
               className="resize-none"
             />
             <p className="text-xs text-muted-foreground">
-              This text will be used as the default description for products during bulk upload.
+              This text will be used as the default description for products
+              during bulk upload.
             </p>
           </div>
         </div>
@@ -128,7 +137,11 @@ export default function DescriptionTemplateEditor({
             Cancel
           </Button>
           <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? 'Saving...' : isEditMode ? 'Update Template' : 'Create Template'}
+            {isSaving
+              ? "Saving..."
+              : isEditMode
+                ? "Update Template"
+                : "Create Template"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,7 +1,7 @@
-import { useNavigate } from '@tanstack/react-router';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { XCircle } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "@tanstack/react-router";
+import { XCircle } from "lucide-react";
 
 export default function PaymentFailure() {
   const navigate = useNavigate();
@@ -17,13 +17,19 @@ export default function PaymentFailure() {
         </CardHeader>
         <CardContent className="text-center space-y-6">
           <p className="text-muted-foreground">
-            We couldn't process your payment. Please try again or use a different payment method.
+            We couldn't process your payment. Please try again or use a
+            different payment method.
           </p>
           <div className="flex gap-4 justify-center">
-            <Button onClick={() => navigate({ to: '/checkout' })} variant="outline">
+            <Button
+              onClick={() => navigate({ to: "/checkout" })}
+              variant="outline"
+            >
               Try Again
             </Button>
-            <Button onClick={() => navigate({ to: '/' })}>Return to Shop</Button>
+            <Button onClick={() => navigate({ to: "/" })}>
+              Return to Shop
+            </Button>
           </div>
         </CardContent>
       </Card>
