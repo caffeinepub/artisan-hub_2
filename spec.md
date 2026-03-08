@@ -1,15 +1,39 @@
-# Specification
+# Artisan Hub
 
-## Summary
-**Goal:** Replace the search bar on the Marketplace page with a horizontally scrollable carousel of studio-style product cards at the top of the page.
+## Current State
+- Marketplace page has a hero section, an OcarinaCarousel component (existing), filter buttons (shape/category), a sort select, and a product grid.
+- OcarinaStudio page has a hero section, a "How It Works" section, and a product grid with ProductStudioCard components.
+- Both pages fetch products via `useGetProducts`.
+- There is no continuous auto-scrolling product ticker/banner at the top of either page.
 
-**Planned changes:**
-- Remove the search bar from the Marketplace page.
-- Add a horizontally scrollable carousel at the top of the Marketplace page (where the search bar was).
-- Reuse the same product card layout from OcarinaStudio.tsx, displaying product image, title, description, and assigned pitch scale.
-- Each carousel card includes a "Play Demo" button (plays the ocarinaSynth demo tone sequence for the card's pitch scale, with a visual playing indicator), a "Play Ocarina" button (opens the interactive OcarinaPanel for the card's pitch scale with a close control), and a "Buy Now" link (navigates to the product detail view).
-- Fetch products for the carousel using the existing `useProducts` React Query hook.
-- Apply the same pitch-scale assignment logic from OcarinaStudio.tsx to carousel cards.
-- All other Marketplace page sections (hero, filter tabs, featured/most-viewed/best-selling/newest product sections) remain unchanged.
+## Requested Changes (Diff)
 
-**User-visible outcome:** Visitors to the Marketplace page see a horizontally scrollable row of interactive product cards at the top, where they can play demos, open the ocarina panel, or go directly to a product — while all existing marketplace content remains intact below.
+### Add
+- A new `ProductTickerBar` component: a full-width continuously auto-scrolling horizontal strip showing all products (image + title + price). Each item navigates to that product when clicked.
+  - Scrolls continuously and automatically (CSS animation, no pause on hover unless explicitly specified — user did NOT request pause on hover).
+  - On mobile: 3–5 items visible at once.
+  - On desktop: as many items as possible (small fixed-size cards, fill the viewport width).
+  - Clicking a product on the Marketplace page opens the ProductDetailView modal (same as clicking a product card).
+  - Clicking a product on the OcarinaStudio page navigates to `/` with `?productId=` search param (same as the existing Buy Now link).
+  - The bar loops seamlessly: duplicate the list once so the CSS translate animation creates an infinite loop without a jump.
+
+### Modify
+- `Marketplace.tsx`: insert `<ProductTickerBar>` at the very top of the page (above the hero section), passing all products and an `onProductClick` handler.
+- `OcarinaStudio.tsx`: insert `<ProductTickerBar>` at the very top of the page (above the hero section).
+
+### Remove
+- Nothing removed.
+
+## Implementation Plan
+1. Create `src/frontend/src/components/ProductTickerBar.tsx`:
+   - Accept props: `products: Product[]`, `onProductClick?: (product: Product) => void`.
+   - Render a fixed-height bar (e.g. h-24 or h-28) with `overflow-hidden`.
+   - Inner strip: flex row of product mini-cards, duplicated once for seamless loop.
+   - Each mini-card: small square image (aspect-square, ~80px), title (truncated 1 line), price (AUD).
+   - CSS keyframe animation `ticker-scroll` translating X from 0 to -50% (since list is doubled), `linear`, `infinite`, duration computed to feel smooth (e.g. 40s for typical lists, or `calc(N * 3s)` via inline style).
+   - On click: call `onProductClick(product)` if provided; otherwise navigate to `/?productId=<id>` using `useNavigate` from tanstack-router.
+   - Add deterministic `data-ocid` markers: `ticker.item.1`, `ticker.item.2`, etc.
+   - Use Tailwind for styling; no third-party carousel library needed.
+2. Update `Marketplace.tsx`: import and render `<ProductTickerBar products={allProducts} onProductClick={handleOpenProduct} />` as the first child inside the top-level `<div>`, before the hero section.
+3. Update `OcarinaStudio.tsx`: import and render `<ProductTickerBar products={products} />` as the first child inside the top-level `<div>`, before the hero section. Since no modal exists on this page, clicking navigates to marketplace with the productId param.
+4. Add the CSS keyframe to `index.css` (or use a Tailwind `animate-` class via arbitrary value if supported).

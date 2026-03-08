@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@tanstack/react-router";
@@ -6,6 +5,7 @@ import { Loader2, Music, Music2, Play, ShoppingBag } from "lucide-react";
 import { useState } from "react";
 import type { Product } from "../backend";
 import OcarinaPanel from "../components/OcarinaPanel";
+import ProductTickerBar from "../components/ProductTickerBar";
 import { useGetProducts } from "../hooks/useQueries";
 import {
   type OcarinaScale,
@@ -191,6 +191,9 @@ export default function OcarinaStudio() {
 
   return (
     <div className="min-h-screen">
+      {/* Product Ticker Bar */}
+      <ProductTickerBar products={products} />
+
       {/* Hero Section */}
       <section
         className="relative py-20 px-4 text-center text-white overflow-hidden"

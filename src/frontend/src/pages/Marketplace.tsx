@@ -12,6 +12,7 @@ import type { Product } from "../backend";
 import OcarinaCarousel from "../components/OcarinaCarousel";
 import ProductCard from "../components/ProductCard";
 import ProductDetailView from "../components/ProductDetailView";
+import ProductTickerBar from "../components/ProductTickerBar";
 import {
   useBestSellingProducts,
   useGetHomepageConfig,
@@ -92,6 +93,12 @@ export default function Marketplace() {
 
   return (
     <div>
+      {/* Product Ticker Bar */}
+      <ProductTickerBar
+        products={allProducts}
+        onProductClick={handleOpenProduct}
+      />
+
       {/* Hero Section */}
       <section
         className="relative py-20 px-4 text-center text-white"
