@@ -90,6 +90,80 @@ export const SCALE_LABELS: Record<OcarinaScale, string> = {
   soprano: "Soprano C6–C7",
 };
 
+// ─── Hole Diagram Tablature ───────────────────────────────────────────────────
+//
+// Simplified 8-hole diatonic ocarina layout:
+//   top: 4 holes (left → right)  true = covered (filled dot), false = open
+//   bottom: 4 holes (left → right)
+//   thumb: single back thumb hole
+//
+// Fingering follows standard 8-hole ocarina (C-major diatonic):
+//   degree 0 = C  — all covered
+//   degree 1 = D  — top right open
+//   degree 2 = E  — top 2 right open
+//   degree 3 = F  — top right + bottom right open
+//   degree 4 = G  — top 2 right + bottom 2 right open
+//   degree 5 = A  — top 3 right + bottom 2 right open
+//   degree 6 = B  — all top open + bottom 2 right open, thumb open
+//   degree 7 = C' — all open
+
+export interface HoleDiagram {
+  top: [boolean, boolean, boolean, boolean]; // true = covered
+  bottom: [boolean, boolean, boolean, boolean];
+  thumb: boolean;
+}
+
+export const HOLE_DIAGRAMS: HoleDiagram[] = [
+  // C (degree 0) — all covered
+  {
+    top: [true, true, true, true],
+    bottom: [true, true, true, true],
+    thumb: true,
+  },
+  // D (degree 1)
+  {
+    top: [true, true, true, false],
+    bottom: [true, true, true, true],
+    thumb: true,
+  },
+  // E (degree 2)
+  {
+    top: [true, true, false, false],
+    bottom: [true, true, true, true],
+    thumb: true,
+  },
+  // F (degree 3)
+  {
+    top: [true, true, true, false],
+    bottom: [true, true, true, false],
+    thumb: true,
+  },
+  // G (degree 4)
+  {
+    top: [true, true, false, false],
+    bottom: [true, true, false, false],
+    thumb: true,
+  },
+  // A (degree 5)
+  {
+    top: [true, false, false, false],
+    bottom: [true, true, false, false],
+    thumb: true,
+  },
+  // B (degree 6)
+  {
+    top: [false, false, false, false],
+    bottom: [true, true, false, false],
+    thumb: false,
+  },
+  // C' (degree 7) — all open
+  {
+    top: [false, false, false, false],
+    bottom: [false, false, false, false],
+    thumb: false,
+  },
+];
+
 // Lazy-initialized AudioContext (created on first user interaction)
 let audioCtx: AudioContext | null = null;
 
@@ -373,17 +447,87 @@ export const PRESET_SONGS: {
       { degree: 0, beats: 2 },
     ],
   },
+  {
+    // "Following the Sun" — vocal melody transcribed to diatonic scale degrees
+    // Original key F#m, mapped to C-major relative degrees
+    // Verse 1: "Maybe I don't wanna know the way home"
+    // Verse 2: "Come and give your love away; don't play it safe"
+    // Chorus: "Following the Sun" lift
+    name: "Following the Sun",
+    notes: [
+      // "May - be"
+      { degree: 2, beats: 0.5 },
+      { degree: 3, beats: 0.5 },
+      // "I don't"
+      { degree: 4, beats: 1 },
+      { degree: 3, beats: 0.5 },
+      // "wan - na"
+      { degree: 2, beats: 0.5 },
+      { degree: 1, beats: 0.5 },
+      // "know"
+      { degree: 2, beats: 1.5 },
+      // "the way"
+      { degree: 4, beats: 0.5 },
+      { degree: 3, beats: 0.5 },
+      // "home"
+      { degree: 2, beats: 2 },
+      // "Come and"
+      { degree: 2, beats: 0.5 },
+      { degree: 3, beats: 0.5 },
+      { degree: 4, beats: 0.5 },
+      // "give your"
+      { degree: 5, beats: 0.5 },
+      { degree: 4, beats: 0.5 },
+      // "love a -"
+      { degree: 3, beats: 0.5 },
+      { degree: 2, beats: 0.5 },
+      // "way"
+      { degree: 1, beats: 2 },
+      // "don't play"
+      { degree: 2, beats: 0.5 },
+      { degree: 3, beats: 0.5 },
+      // "it safe"
+      { degree: 4, beats: 0.5 },
+      { degree: 5, beats: 2 },
+      // Chorus — "Fol-low-ing the sun"
+      { degree: 5, beats: 0.5 },
+      { degree: 5, beats: 0.5 },
+      { degree: 6, beats: 0.5 },
+      { degree: 5, beats: 0.5 },
+      { degree: 4, beats: 1 },
+      { degree: 3, beats: 2 },
+      // "Fol-low-ing"
+      { degree: 4, beats: 0.5 },
+      { degree: 4, beats: 0.5 },
+      { degree: 5, beats: 0.5 },
+      { degree: 4, beats: 0.5 },
+      // "the sun"
+      { degree: 3, beats: 1 },
+      { degree: 2, beats: 2 },
+      // Outro phrase
+      { degree: 3, beats: 0.5 },
+      { degree: 4, beats: 0.5 },
+      { degree: 5, beats: 1 },
+      { degree: 4, beats: 0.5 },
+      { degree: 3, beats: 0.5 },
+      { degree: 2, beats: 3 },
+    ],
+  },
 ];
 
 /**
  * Play a melody from a preset song array, calling back on each note change.
  * BPM = 120 → one beat = 500 ms.
  * Returns a { cancel } handle to stop playback early.
+ * onNoteChange receives (noteLabel, songNoteIndex) — index used for tablature scroll.
  */
 export function playMelody(
   scale: OcarinaScale,
   song: { degree: number; beats: number }[],
-  onNoteChange: (noteLabel: string | null) => void,
+  onNoteChange: (
+    noteLabel: string | null,
+    songNoteIndex: number | null,
+  ) => void,
   onComplete: () => void,
 ): { cancel: () => void } {
   const BPM = 120;
@@ -393,16 +537,16 @@ export function playMelody(
   const scaleNotes = SCALE_NOTES[scale];
   let cursor = 0;
 
-  for (const note of song) {
+  song.forEach((note, songIdx) => {
     const startMs = cursor;
     const durationSec = note.beats * 0.45;
     const noteIndex = Math.min(note.degree, scaleNotes.length - 1);
     const { label, frequency } = scaleNotes[noteIndex];
 
-    // Start note
+    // Start note — pass song index for tablature scroll tracking
     timers.push(
       setTimeout(() => {
-        onNoteChange(label);
+        onNoteChange(label, songIdx);
         playNote(frequency, durationSec);
       }, startMs),
     );
@@ -411,14 +555,14 @@ export function playMelody(
     timers.push(
       setTimeout(
         () => {
-          onNoteChange(null);
+          onNoteChange(null, null);
         },
         startMs + note.beats * msPerBeat * 0.9,
       ),
     );
 
     cursor += note.beats * msPerBeat;
-  }
+  });
 
   // Fire onComplete after last note finishes
   const lastNote = song[song.length - 1];
