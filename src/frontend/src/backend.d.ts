@@ -40,13 +40,23 @@ export interface TransformationOutput {
     headers: Array<http_header>;
 }
 export type Time = bigint;
-export interface BrandingConfig {
-    theme?: string;
-    primaryColor?: string;
-    logo?: ExternalBlob;
-    siteName: string;
-    favicon?: ExternalBlob;
-    secondaryColor?: string;
+export interface OcarinaFingeringMap {
+    note0: Array<boolean>;
+    note1: Array<boolean>;
+    note2: Array<boolean>;
+    note3: Array<boolean>;
+    note4: Array<boolean>;
+    note5: Array<boolean>;
+    note6: Array<boolean>;
+    note7: Array<boolean>;
+}
+export interface OcarinaProfile {
+    id: bigint;
+    scaleName: string;
+    fingeringMap: OcarinaFingeringMap;
+    iconMappings?: Array<string>;
+    noteDegreeMappings: OcarinaNoteDegrees;
+    noteAudioBlobs?: Array<ExternalBlob>;
 }
 export interface DiscountCode {
     id: string;
@@ -64,6 +74,14 @@ export interface http_request_result {
     status: bigint;
     body: Uint8Array;
     headers: Array<http_header>;
+}
+export interface BrandingConfig {
+    theme?: string;
+    primaryColor?: string;
+    logo?: ExternalBlob;
+    siteName: string;
+    favicon?: ExternalBlob;
+    secondaryColor?: string;
 }
 export interface PaymentSettings {
     bonusItemConfig: BonusItemConfig;
@@ -133,6 +151,7 @@ export interface StripeConfiguration {
     allowedCountries: Array<string>;
     secretKey: string;
 }
+export type OcarinaNoteDegrees = Array<bigint>;
 export interface CartItem {
     quantity: bigint;
     product: Product;
@@ -169,6 +188,7 @@ export interface backendInterface {
     createNoShippingCheckoutSession(items: Array<ShoppingItem>, successUrl: string, cancelUrl: string): Promise<string>;
     deleteDescriptionTemplate(id: bigint): Promise<void>;
     deleteDiscountCode(id: string): Promise<void>;
+    deleteOcarinaProfile(productId: bigint): Promise<void>;
     deleteStripeConfig(): Promise<void>;
     emptyCart(): Promise<void>;
     getBestSellingProducts(): Promise<Array<Product>>;
@@ -181,9 +201,14 @@ export interface backendInterface {
     getDescriptionTemplates(): Promise<Array<DescriptionTemplate>>;
     getDiscountCodes(): Promise<Array<DiscountCode>>;
     getFeaturedProducts(): Promise<Array<Product>>;
+    getFingeringMap(productId: bigint): Promise<OcarinaFingeringMap>;
     getHomepageConfig(): Promise<HomepageConfig>;
     getMostViewedProducts(): Promise<Array<Product>>;
     getNewestProducts(): Promise<Array<Product>>;
+    getNoteAudio(productId: bigint, noteIndex: bigint): Promise<ExternalBlob>;
+    getNoteIcon(productId: bigint, noteIndex: bigint): Promise<string>;
+    getOcarinaProfile(productId: bigint): Promise<OcarinaProfile | null>;
+    getOcarinaProfiles(): Promise<Array<OcarinaProfile>>;
     getPaymentSettings(): Promise<PaymentSettings>;
     getProduct(productId: bigint): Promise<Product | null>;
     getProductCount(): Promise<bigint>;
@@ -200,6 +225,10 @@ export interface backendInterface {
     removeCartItem(productId: bigint): Promise<void>;
     replaceProductImage(productId: bigint, imageIndex: bigint, newImage: ExternalBlob): Promise<void>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    saveNoteAudio(productId: bigint, noteIndex: bigint, audioBlob: ExternalBlob): Promise<void>;
+    saveNoteIcon(productId: bigint, noteIndex: bigint, iconId: string): Promise<void>;
+    saveOcarinaProfile(profile: OcarinaProfile): Promise<void>;
+    scanSheetMusic(url: string): Promise<Array<bigint>>;
     setStripeConfiguration(config: StripeConfiguration): Promise<void>;
     trackProductView(productId: bigint): Promise<void>;
     transform(input: TransformationInput): Promise<TransformationOutput>;

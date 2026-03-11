@@ -155,12 +155,12 @@ export default function Checkout() {
         cancelUrl,
       });
 
-      if (!session?.url) {
+      if (!session) {
         throw new Error("Stripe session missing url");
       }
 
       sessionStorage.removeItem("buyNowProductId");
-      window.location.href = session.url;
+      window.location.href = session;
     } catch (error) {
       console.error("Checkout error:", error);
       toast.error("Failed to create checkout session");

@@ -16,8 +16,6 @@ import Float "mo:core/Float";
 import Order "mo:core/Order";
 import Text "mo:core/Text";
 
-
-
 actor {
   include MixinStorage();
 
@@ -901,5 +899,169 @@ actor {
   // Helper function to convert Iter to array
   func itemsFromIter<A>(iter : Iter.Iter<A>) : [A] {
     iter.toArray();
+  };
+
+  // ============= Ocarina Profile Management =================
+
+  public type OcarinaNoteDegrees = [Nat];
+  public type OcarinaFingeringMap = {
+    note0 : [Bool];
+    note1 : [Bool];
+    note2 : [Bool];
+    note3 : [Bool];
+    note4 : [Bool];
+    note5 : [Bool];
+    note6 : [Bool];
+    note7 : [Bool];
+  };
+
+  public type OcarinaProfile = {
+    id : Nat;
+    scaleName : Text;
+    fingeringMap : OcarinaFingeringMap;
+    noteDegreeMappings : OcarinaNoteDegrees;
+    noteAudioBlobs : ?[Storage.ExternalBlob];
+    iconMappings : ?[Text];
+  };
+
+  let ocarinaProfiles = Map.empty<Nat, OcarinaProfile>();
+
+  public shared ({ caller }) func saveOcarinaProfile(profile : OcarinaProfile) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can save Ocarina profiles");
+    };
+    ocarinaProfiles.add(profile.id, profile);
+  };
+
+  public query ({ caller }) func getOcarinaProfile(productId : Nat) : async ?OcarinaProfile {
+    ocarinaProfiles.get(productId);
+  };
+
+  public query ({ caller }) func getFingeringMap(productId : Nat) : async OcarinaFingeringMap {
+    switch (ocarinaProfiles.get(productId)) {
+      case (null) { Runtime.trap("Ocarina profile does not exist") };
+      case (?profile) { profile.fingeringMap };
+    };
+  };
+
+  public shared ({ caller }) func deleteOcarinaProfile(productId : Nat) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can delete Ocarina profiles");
+    };
+    if (not ocarinaProfiles.containsKey(productId)) {
+      Runtime.trap("Ocarina profile does not exist");
+    };
+    ocarinaProfiles.remove(productId);
+  };
+
+  public shared ({ caller }) func saveNoteAudio(productId : Nat, noteIndex : Nat, audioBlob : Storage.ExternalBlob) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can save note audio");
+    };
+
+    let profile = switch (ocarinaProfiles.get(productId)) {
+      case (null) { Runtime.trap("Ocarina profile does not exist") };
+      case (?prof) { prof };
+    };
+
+    let noteAudioBlobs = switch (profile.noteAudioBlobs) {
+      case (?blobs) {
+        Array.tabulate(
+          8,
+          func(i) {
+            if (i == noteIndex) { audioBlob } else if (i < blobs.size()) { blobs[i] } else {
+              audioBlob;
+            };
+          },
+        );
+      };
+      case (null) {
+        Array.tabulate(8, func(i) { audioBlob });
+      };
+    };
+
+    let updatedProfile = {
+      profile with
+      noteAudioBlobs = ?noteAudioBlobs;
+    };
+    ocarinaProfiles.add(productId, updatedProfile);
+  };
+
+  public query ({ caller }) func getNoteAudio(productId : Nat, noteIndex : Nat) : async Storage.ExternalBlob {
+    switch (ocarinaProfiles.get(productId)) {
+      case (null) { Runtime.trap("Ocarina profile does not exist") };
+      case (?profile) {
+        switch (profile.noteAudioBlobs) {
+          case (null) { Runtime.trap("Note audio blobs do not exist") };
+          case (?noteAudioBlobs) {
+            if (noteIndex >= noteAudioBlobs.size()) {
+              Runtime.trap("Note index out of bounds");
+            };
+            noteAudioBlobs[noteIndex];
+          };
+        };
+      };
+    };
+  };
+
+  public shared ({ caller }) func saveNoteIcon(productId : Nat, noteIndex : Nat, iconId : Text) : async () {
+    if (not (AccessControl.isAdmin(accessControlState, caller))) {
+      Runtime.trap("Unauthorized: Only admins can save note icons");
+    };
+
+    let profile = switch (ocarinaProfiles.get(productId)) {
+      case (null) { Runtime.trap("Ocarina profile does not exist") };
+      case (?prof) { prof };
+    };
+
+    let iconMappings = switch (profile.iconMappings) {
+      case (?icons) {
+        Array.tabulate(
+          8,
+          func(i) {
+            if (i == noteIndex) { iconId } else if (i < icons.size()) { icons[i] } else {
+              iconId;
+            };
+          },
+        );
+      };
+      case (null) {
+        Array.tabulate(8, func(i) { iconId });
+      };
+    };
+
+    let updatedProfile = {
+      profile with iconMappings = ?iconMappings;
+    };
+    ocarinaProfiles.add(productId, updatedProfile);
+  };
+
+  public query ({ caller }) func getNoteIcon(productId : Nat, noteIndex : Nat) : async Text {
+    switch (ocarinaProfiles.get(productId)) {
+      case (null) { Runtime.trap("Ocarina profile does not exist") };
+      case (?profile) {
+        switch (profile.iconMappings) {
+          case (null) { Runtime.trap("Icon mappings do not exist") };
+          case (?iconMappings) {
+            if (noteIndex >= iconMappings.size()) {
+              Runtime.trap("Note index out of bounds");
+            };
+            iconMappings[noteIndex];
+          };
+        };
+      };
+    };
+  };
+
+  public shared ({ caller }) func scanSheetMusic(url : Text) : async [Nat] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only authenticated users can scan music sheets");
+    };
+
+    [];
+  };
+
+  public query ({ caller }) func getOcarinaProfiles() : async [OcarinaProfile] {
+    ocarinaProfiles.values().toArray();
   };
 };

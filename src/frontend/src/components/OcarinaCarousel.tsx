@@ -160,6 +160,7 @@ function CarouselCard({ product, onBuyNow }: CarouselCardProps) {
           <OcarinaPanel
             scale={scale}
             productName={product.name}
+            productId={product.id}
             onClose={() => setPanelOpen(false)}
           />
         </div>

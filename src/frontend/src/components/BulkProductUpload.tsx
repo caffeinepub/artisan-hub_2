@@ -282,8 +282,7 @@ export default function BulkProductUpload({
           shape: product.shape,
           category: product.category,
           price: BigInt(priceInCents),
-          stripeProductId: `prod_${Date.now()}_${i}`,
-          stripeProductDescription: product.description,
+          description: product.description,
           images: [imageBlob],
           inventoryCount: BigInt(inventoryCount),
         });

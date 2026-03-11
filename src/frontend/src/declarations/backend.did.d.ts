@@ -46,6 +46,25 @@ export interface HomepageConfig {
   'promotionalText' : string,
   'heroMotto' : string,
 }
+export interface OcarinaFingeringMap {
+  'note0' : Array<boolean>,
+  'note1' : Array<boolean>,
+  'note2' : Array<boolean>,
+  'note3' : Array<boolean>,
+  'note4' : Array<boolean>,
+  'note5' : Array<boolean>,
+  'note6' : Array<boolean>,
+  'note7' : Array<boolean>,
+}
+export type OcarinaNoteDegrees = Array<bigint>;
+export interface OcarinaProfile {
+  'id' : bigint,
+  'scaleName' : string,
+  'fingeringMap' : OcarinaFingeringMap,
+  'iconMappings' : [] | [Array<string>],
+  'noteDegreeMappings' : OcarinaNoteDegrees,
+  'noteAudioBlobs' : [] | [Array<ExternalBlob>],
+}
 export interface PaymentSettings {
   'bonusItemConfig' : BonusItemConfig,
   'proOcarinaAppUrl' : string,
@@ -193,6 +212,7 @@ export interface _SERVICE {
   >,
   'deleteDescriptionTemplate' : ActorMethod<[bigint], undefined>,
   'deleteDiscountCode' : ActorMethod<[string], undefined>,
+  'deleteOcarinaProfile' : ActorMethod<[bigint], undefined>,
   'deleteStripeConfig' : ActorMethod<[], undefined>,
   'emptyCart' : ActorMethod<[], undefined>,
   'getBestSellingProducts' : ActorMethod<[], Array<Product>>,
@@ -205,9 +225,14 @@ export interface _SERVICE {
   'getDescriptionTemplates' : ActorMethod<[], Array<DescriptionTemplate>>,
   'getDiscountCodes' : ActorMethod<[], Array<DiscountCode>>,
   'getFeaturedProducts' : ActorMethod<[], Array<Product>>,
+  'getFingeringMap' : ActorMethod<[bigint], OcarinaFingeringMap>,
   'getHomepageConfig' : ActorMethod<[], HomepageConfig>,
   'getMostViewedProducts' : ActorMethod<[], Array<Product>>,
   'getNewestProducts' : ActorMethod<[], Array<Product>>,
+  'getNoteAudio' : ActorMethod<[bigint, bigint], ExternalBlob>,
+  'getNoteIcon' : ActorMethod<[bigint, bigint], string>,
+  'getOcarinaProfile' : ActorMethod<[bigint], [] | [OcarinaProfile]>,
+  'getOcarinaProfiles' : ActorMethod<[], Array<OcarinaProfile>>,
   'getPaymentSettings' : ActorMethod<[], PaymentSettings>,
   'getProduct' : ActorMethod<[bigint], [] | [Product]>,
   'getProductCount' : ActorMethod<[], bigint>,
@@ -227,6 +252,10 @@ export interface _SERVICE {
     undefined
   >,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'saveNoteAudio' : ActorMethod<[bigint, bigint, ExternalBlob], undefined>,
+  'saveNoteIcon' : ActorMethod<[bigint, bigint, string], undefined>,
+  'saveOcarinaProfile' : ActorMethod<[OcarinaProfile], undefined>,
+  'scanSheetMusic' : ActorMethod<[string], Array<bigint>>,
   'setStripeConfiguration' : ActorMethod<[StripeConfiguration], undefined>,
   'trackProductView' : ActorMethod<[bigint], undefined>,
   'transform' : ActorMethod<[TransformationInput], TransformationOutput>,

@@ -148,7 +148,7 @@ export default function ProductManagementTable() {
           shape: editingProduct.shape,
           category: editingProduct.category,
           price: BigInt(priceInCents),
-          stripeProductDescription: editingProduct.description,
+          description: editingProduct.description,
         };
 
         setPendingBulkUpdate({
@@ -164,7 +164,7 @@ export default function ProductManagementTable() {
           shape: editingProduct.shape,
           category: editingProduct.category,
           price: BigInt(priceInCents),
-          stripeProductDescription: editingProduct.description,
+          description: editingProduct.description,
           images: imageBlob ? [imageBlob] : undefined,
         });
 

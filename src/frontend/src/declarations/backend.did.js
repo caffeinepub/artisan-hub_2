@@ -87,10 +87,29 @@ export const DiscountCode = IDL.Record({
     'fixedAmount' : IDL.Null,
   }),
 });
+export const OcarinaFingeringMap = IDL.Record({
+  'note0' : IDL.Vec(IDL.Bool),
+  'note1' : IDL.Vec(IDL.Bool),
+  'note2' : IDL.Vec(IDL.Bool),
+  'note3' : IDL.Vec(IDL.Bool),
+  'note4' : IDL.Vec(IDL.Bool),
+  'note5' : IDL.Vec(IDL.Bool),
+  'note6' : IDL.Vec(IDL.Bool),
+  'note7' : IDL.Vec(IDL.Bool),
+});
 export const HomepageConfig = IDL.Record({
   'heroImage' : IDL.Opt(ExternalBlob),
   'promotionalText' : IDL.Text,
   'heroMotto' : IDL.Text,
+});
+export const OcarinaNoteDegrees = IDL.Vec(IDL.Nat);
+export const OcarinaProfile = IDL.Record({
+  'id' : IDL.Nat,
+  'scaleName' : IDL.Text,
+  'fingeringMap' : OcarinaFingeringMap,
+  'iconMappings' : IDL.Opt(IDL.Vec(IDL.Text)),
+  'noteDegreeMappings' : OcarinaNoteDegrees,
+  'noteAudioBlobs' : IDL.Opt(IDL.Vec(ExternalBlob)),
 });
 export const PaymentSettings = IDL.Record({
   'bonusItemConfig' : BonusItemConfig,
@@ -221,6 +240,7 @@ export const idlService = IDL.Service({
     ),
   'deleteDescriptionTemplate' : IDL.Func([IDL.Nat], [], []),
   'deleteDiscountCode' : IDL.Func([IDL.Text], [], []),
+  'deleteOcarinaProfile' : IDL.Func([IDL.Nat], [], []),
   'deleteStripeConfig' : IDL.Func([], [], []),
   'emptyCart' : IDL.Func([], [], []),
   'getBestSellingProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
@@ -237,9 +257,18 @@ export const idlService = IDL.Service({
     ),
   'getDiscountCodes' : IDL.Func([], [IDL.Vec(DiscountCode)], ['query']),
   'getFeaturedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+  'getFingeringMap' : IDL.Func([IDL.Nat], [OcarinaFingeringMap], ['query']),
   'getHomepageConfig' : IDL.Func([], [HomepageConfig], ['query']),
   'getMostViewedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
   'getNewestProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+  'getNoteAudio' : IDL.Func([IDL.Nat, IDL.Nat], [ExternalBlob], ['query']),
+  'getNoteIcon' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Text], ['query']),
+  'getOcarinaProfile' : IDL.Func(
+      [IDL.Nat],
+      [IDL.Opt(OcarinaProfile)],
+      ['query'],
+    ),
+  'getOcarinaProfiles' : IDL.Func([], [IDL.Vec(OcarinaProfile)], ['query']),
   'getPaymentSettings' : IDL.Func([], [PaymentSettings], ['query']),
   'getProduct' : IDL.Func([IDL.Nat], [IDL.Opt(Product)], ['query']),
   'getProductCount' : IDL.Func([], [IDL.Nat], ['query']),
@@ -264,6 +293,10 @@ export const idlService = IDL.Service({
   'removeCartItem' : IDL.Func([IDL.Nat], [], []),
   'replaceProductImage' : IDL.Func([IDL.Nat, IDL.Nat, ExternalBlob], [], []),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveNoteAudio' : IDL.Func([IDL.Nat, IDL.Nat, ExternalBlob], [], []),
+  'saveNoteIcon' : IDL.Func([IDL.Nat, IDL.Nat, IDL.Text], [], []),
+  'saveOcarinaProfile' : IDL.Func([OcarinaProfile], [], []),
+  'scanSheetMusic' : IDL.Func([IDL.Text], [IDL.Vec(IDL.Nat)], []),
   'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
   'trackProductView' : IDL.Func([IDL.Nat], [], []),
   'transform' : IDL.Func(
@@ -392,10 +425,29 @@ export const idlFactory = ({ IDL }) => {
       'fixedAmount' : IDL.Null,
     }),
   });
+  const OcarinaFingeringMap = IDL.Record({
+    'note0' : IDL.Vec(IDL.Bool),
+    'note1' : IDL.Vec(IDL.Bool),
+    'note2' : IDL.Vec(IDL.Bool),
+    'note3' : IDL.Vec(IDL.Bool),
+    'note4' : IDL.Vec(IDL.Bool),
+    'note5' : IDL.Vec(IDL.Bool),
+    'note6' : IDL.Vec(IDL.Bool),
+    'note7' : IDL.Vec(IDL.Bool),
+  });
   const HomepageConfig = IDL.Record({
     'heroImage' : IDL.Opt(ExternalBlob),
     'promotionalText' : IDL.Text,
     'heroMotto' : IDL.Text,
+  });
+  const OcarinaNoteDegrees = IDL.Vec(IDL.Nat);
+  const OcarinaProfile = IDL.Record({
+    'id' : IDL.Nat,
+    'scaleName' : IDL.Text,
+    'fingeringMap' : OcarinaFingeringMap,
+    'iconMappings' : IDL.Opt(IDL.Vec(IDL.Text)),
+    'noteDegreeMappings' : OcarinaNoteDegrees,
+    'noteAudioBlobs' : IDL.Opt(IDL.Vec(ExternalBlob)),
   });
   const PaymentSettings = IDL.Record({
     'bonusItemConfig' : BonusItemConfig,
@@ -527,6 +579,7 @@ export const idlFactory = ({ IDL }) => {
       ),
     'deleteDescriptionTemplate' : IDL.Func([IDL.Nat], [], []),
     'deleteDiscountCode' : IDL.Func([IDL.Text], [], []),
+    'deleteOcarinaProfile' : IDL.Func([IDL.Nat], [], []),
     'deleteStripeConfig' : IDL.Func([], [], []),
     'emptyCart' : IDL.Func([], [], []),
     'getBestSellingProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
@@ -543,9 +596,18 @@ export const idlFactory = ({ IDL }) => {
       ),
     'getDiscountCodes' : IDL.Func([], [IDL.Vec(DiscountCode)], ['query']),
     'getFeaturedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+    'getFingeringMap' : IDL.Func([IDL.Nat], [OcarinaFingeringMap], ['query']),
     'getHomepageConfig' : IDL.Func([], [HomepageConfig], ['query']),
     'getMostViewedProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
     'getNewestProducts' : IDL.Func([], [IDL.Vec(Product)], ['query']),
+    'getNoteAudio' : IDL.Func([IDL.Nat, IDL.Nat], [ExternalBlob], ['query']),
+    'getNoteIcon' : IDL.Func([IDL.Nat, IDL.Nat], [IDL.Text], ['query']),
+    'getOcarinaProfile' : IDL.Func(
+        [IDL.Nat],
+        [IDL.Opt(OcarinaProfile)],
+        ['query'],
+      ),
+    'getOcarinaProfiles' : IDL.Func([], [IDL.Vec(OcarinaProfile)], ['query']),
     'getPaymentSettings' : IDL.Func([], [PaymentSettings], ['query']),
     'getProduct' : IDL.Func([IDL.Nat], [IDL.Opt(Product)], ['query']),
     'getProductCount' : IDL.Func([], [IDL.Nat], ['query']),
@@ -570,6 +632,10 @@ export const idlFactory = ({ IDL }) => {
     'removeCartItem' : IDL.Func([IDL.Nat], [], []),
     'replaceProductImage' : IDL.Func([IDL.Nat, IDL.Nat, ExternalBlob], [], []),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveNoteAudio' : IDL.Func([IDL.Nat, IDL.Nat, ExternalBlob], [], []),
+    'saveNoteIcon' : IDL.Func([IDL.Nat, IDL.Nat, IDL.Text], [], []),
+    'saveOcarinaProfile' : IDL.Func([OcarinaProfile], [], []),
+    'scanSheetMusic' : IDL.Func([IDL.Text], [IDL.Vec(IDL.Nat)], []),
     'setStripeConfiguration' : IDL.Func([StripeConfiguration], [], []),
     'trackProductView' : IDL.Func([IDL.Nat], [], []),
     'transform' : IDL.Func(
