@@ -34,7 +34,7 @@ interface StripeSetupProps {
 
 export default function StripeSetup({ onComplete }: StripeSetupProps) {
   const [secretKey, setSecretKey] = useState("");
-  const [countries, setCountries] = useState("US,CA,GB");
+  const [countries, setCountries] = useState("AU,US,CA,GB,NZ");
   const setConfig = useSetStripeConfiguration();
   const deleteConfig = useDeleteStripeConfig();
   const { data: isConfigured, isLoading: isCheckingConfig } =
@@ -91,7 +91,7 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
           </CardTitle>
           <CardDescription>
             Configure your Stripe account to start accepting payments for your
-            artisan products
+            3D-printed ocarinas
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -134,12 +134,12 @@ export default function StripeSetup({ onComplete }: StripeSetupProps) {
                 id="countries"
                 value={countries}
                 onChange={(e) => setCountries(e.target.value)}
-                placeholder="US,CA,GB"
+                placeholder="AU,US,CA,GB,NZ"
                 required
               />
               <p className="text-xs text-muted-foreground">
-                Comma-separated list of 2-letter country codes (e.g., US, CA,
-                GB)
+                Comma-separated list of 2-letter country codes (e.g., AU, US,
+                CA, GB, NZ)
               </p>
             </div>
 

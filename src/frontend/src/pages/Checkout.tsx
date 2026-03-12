@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useNavigate } from "@tanstack/react-router";
 import {
   AlertCircle,
@@ -27,7 +28,7 @@ import {
 
 export default function Checkout() {
   const navigate = useNavigate();
-  const { actor } = useActor();
+  const { actor, isFetching: actorFetching } = useActor();
   const { data: cart = [] } = useGetCart();
   const createCheckoutSession = useCreateCheckoutSession();
   const validateDiscountCode = useValidateDiscountCode();
@@ -340,20 +341,32 @@ export default function Checkout() {
         >
           Back
         </Button>
-        <Button
-          onClick={handleCheckout}
-          disabled={isProcessing || !actor}
-          className="flex-1"
-        >
-          {isProcessing ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
-            </>
-          ) : (
-            "Proceed to Payment"
-          )}
-        </Button>
+
+        {actorFetching ? (
+          <div
+            data-ocid="checkout.loading_state"
+            className="flex-1 flex items-center justify-center gap-2 rounded-md border border-border bg-muted/50 px-4 py-2 text-sm text-muted-foreground"
+          >
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Connecting...
+          </div>
+        ) : (
+          <Button
+            data-ocid="checkout.primary_button"
+            onClick={handleCheckout}
+            disabled={isProcessing || !actor}
+            className="flex-1"
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Proceed to Payment"
+            )}
+          </Button>
+        )}
       </div>
     </div>
   );

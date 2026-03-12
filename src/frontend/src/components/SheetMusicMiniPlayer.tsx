@@ -9,17 +9,15 @@ import {
 import { FourHoleDiagram } from "./OcarinaPanel";
 
 // ─── Staff Y positions for C5–C6 on treble clef ────────────────────────────
-// 5 staff lines: y=50,40,30,20,10 (bottom to top)
-// Degrees 0-7 map to C5,D5,E5,F5,G5,A5,B5,C6
 const NOTE_STAFF_Y: Record<number, number> = {
-  0: 25, // C5
-  1: 20, // D5
-  2: 15, // E5
-  3: 10, // F5
-  4: 5, // G5
-  5: 0, // A5 (ledger line)
-  6: -5, // B5
-  7: -10, // C6 (ledger line)
+  0: 25,
+  1: 20,
+  2: 15,
+  3: 10,
+  4: 5,
+  5: 0,
+  6: -5,
+  7: -10,
 };
 
 const NOTE_COL_W = 36;
@@ -47,7 +45,6 @@ function StaffSVG({
       viewBox={`0 0 ${totalW} ${SVG_HEIGHT}`}
     >
       <title>Sheet music staff</title>
-      {/* Staff lines */}
       {staffLines.map((y) => (
         <line
           key={y}
@@ -59,8 +56,6 @@ function StaffSVG({
           strokeWidth={0.8}
         />
       ))}
-
-      {/* Treble clef symbol */}
       <text
         x={12}
         y={SVG_PADDING_TOP + 48}
@@ -70,8 +65,6 @@ function StaffSVG({
       >
         {"\u{1D11E}"}
       </text>
-
-      {/* Note columns */}
       {notes.map((note, i) => {
         // biome-ignore lint/suspicious/noArrayIndexKey: sequential note positions
         const x = 60 + i * NOTE_COL_W + NOTE_COL_W / 2;
@@ -100,7 +93,6 @@ function StaffSVG({
         return (
           // biome-ignore lint/suspicious/noArrayIndexKey: sequential note positions
           <g key={i} opacity={opacity}>
-            {/* Ledger line for A5 (degree 5) */}
             {note.degree === 5 && (
               <line
                 x1={x - 9}
@@ -111,7 +103,6 @@ function StaffSVG({
                 strokeWidth={1.2}
               />
             )}
-            {/* Ledger line for C6 (degree 7) */}
             {note.degree === 7 && (
               <line
                 x1={x - 9}
@@ -122,8 +113,6 @@ function StaffSVG({
                 strokeWidth={1.2}
               />
             )}
-
-            {/* Glow for current note */}
             {isCurrent && (
               <ellipse
                 cx={x}
@@ -134,11 +123,7 @@ function StaffSVG({
                 opacity={0.2}
               />
             )}
-
-            {/* Note head */}
             <ellipse cx={x} cy={y} rx={5} ry={3.5} fill={fill} />
-
-            {/* Stem */}
             <line
               x1={stemX}
               y1={stemY1}
@@ -147,8 +132,6 @@ function StaffSVG({
               stroke={fill}
               strokeWidth={1.2}
             />
-
-            {/* Note label */}
             <text
               x={x}
               y={SVG_PADDING_TOP + 65}
@@ -184,13 +167,28 @@ export default function SheetMusicMiniPlayer() {
   const [activeSongNoteIdx, setActiveSongNoteIdx] = useState<number | null>(
     null,
   );
+
+  // Advanced settings
+  const [showSettings, setShowSettings] = useState(false);
+  const [tempo, setTempo] = useState(100); // percent: 50–200
+  const [pitch, setPitch] = useState(0); // semitones: -4 to +4
+  const [repeat, setRepeat] = useState(false);
+
   const cancelRef = useRef<(() => void) | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const repeatRef = useRef(repeat);
+  useEffect(() => {
+    repeatRef.current = repeat;
+  }, [repeat]);
+  const selectedSongRef = useRef<(typeof PRESET_SONGS)[0] | null>(null);
 
   const selectedSong =
     selectedSongIdx !== null ? PRESET_SONGS[selectedSongIdx] : null;
-  const currentNotes = selectedSong?.notes ?? [];
+  useEffect(() => {
+    selectedSongRef.current = selectedSong;
+  }, [selectedSong]);
 
+  const currentNotes = selectedSong?.notes ?? [];
   const currentDegree =
     activeSongNoteIdx !== null && currentNotes[activeSongNoteIdx]
       ? currentNotes[activeSongNoteIdx].degree
@@ -202,7 +200,6 @@ export default function SheetMusicMiniPlayer() {
   const currentNoteLabel =
     currentDegree !== null ? (scaleNotes[currentDegree]?.label ?? null) : null;
 
-  // Scroll staff to centre on active note
   useEffect(() => {
     if (scrollRef.current && activeSongNoteIdx !== null) {
       const containerW = scrollRef.current.clientWidth;
@@ -211,24 +208,45 @@ export default function SheetMusicMiniPlayer() {
     }
   }, [activeSongNoteIdx]);
 
-  const handlePlay = () => {
-    if (!selectedSong || isPlaying) return;
+  const startPlayback = (
+    song: (typeof PRESET_SONGS)[0],
+    currentTempo: number,
+    currentPitch: number,
+  ) => {
     setIsPlaying(true);
     const handle = playMelody(
       selectedScale,
-      selectedSong.notes,
+      song.notes,
       (label, idx) => {
         setActiveNote(label);
         setActiveSongNoteIdx(idx);
       },
       () => {
-        setIsPlaying(false);
-        setActiveNote(null);
-        setActiveSongNoteIdx(null);
-        cancelRef.current = null;
+        if (repeatRef.current && selectedSongRef.current) {
+          setTimeout(
+            () =>
+              startPlayback(
+                selectedSongRef.current!,
+                currentTempo,
+                currentPitch,
+              ),
+            200,
+          );
+        } else {
+          setIsPlaying(false);
+          setActiveNote(null);
+          setActiveSongNoteIdx(null);
+          cancelRef.current = null;
+        }
       },
+      { tempoMultiplier: currentTempo / 100, pitchSemitones: currentPitch },
     );
     cancelRef.current = handle.cancel;
+  };
+
+  const handlePlay = () => {
+    if (!selectedSong || isPlaying) return;
+    startPlayback(selectedSong, tempo, pitch);
   };
 
   const handleStop = () => {
@@ -249,6 +267,96 @@ export default function SheetMusicMiniPlayer() {
       }}
       data-ocid="miniplayer.panel"
     >
+      {/* Advanced settings drawer */}
+      {showSettings && (
+        <div
+          className="border-b px-4 py-3 flex flex-wrap items-center gap-x-8 gap-y-3"
+          style={{
+            borderColor: "rgba(255,255,255,0.08)",
+            background: "rgba(10,10,28,0.98)",
+          }}
+          data-ocid="miniplayer.settings.panel"
+        >
+          {/* Tempo */}
+          <div className="flex items-center gap-3">
+            <span className="text-[9px] uppercase tracking-widest text-white/40 w-10">
+              Tempo
+            </span>
+            <input
+              type="range"
+              min={50}
+              max={200}
+              step={5}
+              value={tempo}
+              onChange={(e) => {
+                if (isPlaying) handleStop();
+                setTempo(Number(e.target.value));
+              }}
+              className="w-28 accent-amber-400 cursor-pointer"
+              data-ocid="miniplayer.settings.tempo.input"
+            />
+            <span className="text-[11px] font-mono text-amber-400 w-10">
+              {tempo}%
+            </span>
+          </div>
+
+          {/* Pitch */}
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] uppercase tracking-widest text-white/40 w-10">
+              Pitch
+            </span>
+            <div className="flex gap-0.5">
+              {([-4, -3, -2, -1, 0, 1, 2, 3, 4] as const).map((semi) => (
+                <button
+                  key={semi}
+                  type="button"
+                  onClick={() => {
+                    if (isPlaying) handleStop();
+                    setPitch(semi);
+                  }}
+                  data-ocid="miniplayer.settings.pitch.toggle"
+                  className="text-[9px] w-6 h-5 rounded transition-all"
+                  style={{
+                    background:
+                      pitch === semi
+                        ? "rgba(245,158,11,0.3)"
+                        : "rgba(255,255,255,0.05)",
+                    color:
+                      pitch === semi ? "#F59E0B" : "rgba(255,255,255,0.35)",
+                    border: `1px solid ${pitch === semi ? "#F59E0B" : "rgba(255,255,255,0.1)"}`,
+                  }}
+                >
+                  {semi > 0 ? `+${semi}` : semi}
+                </button>
+              ))}
+            </div>
+            <span className="text-[9px] text-white/30">st</span>
+          </div>
+
+          {/* Repeat */}
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] uppercase tracking-widest text-white/40">
+              Repeat
+            </span>
+            <button
+              type="button"
+              onClick={() => setRepeat((r) => !r)}
+              data-ocid="miniplayer.settings.repeat.toggle"
+              className="text-[10px] px-2 py-0.5 rounded-full border transition-all"
+              style={{
+                borderColor: repeat ? "#F59E0B" : "rgba(255,255,255,0.15)",
+                background: repeat
+                  ? "rgba(245,158,11,0.2)"
+                  : "rgba(255,255,255,0.04)",
+                color: repeat ? "#F59E0B" : "rgba(255,255,255,0.4)",
+              }}
+            >
+              {repeat ? "On" : "Off"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div
         className="flex items-stretch"
         style={{ minHeight: "128px", maxHeight: "148px" }}
@@ -331,7 +439,7 @@ export default function SheetMusicMiniPlayer() {
         <div
           className="flex flex-col justify-center gap-1.5 px-3 py-2 flex-shrink-0"
           style={{
-            width: "260px",
+            width: "290px",
             borderLeft: "1px solid rgba(255,255,255,0.08)",
           }}
         >
@@ -401,37 +509,89 @@ export default function SheetMusicMiniPlayer() {
             ))}
           </div>
 
-          {/* Playback buttons */}
-          <div className="flex items-center gap-2 mt-0.5">
+          {/* Playback row */}
+          <div className="flex items-center gap-1.5 mt-0.5">
+            {/* Play */}
             <button
               type="button"
               onClick={handlePlay}
               disabled={!selectedSong || isPlaying}
               data-ocid="miniplayer.primary_button"
-              className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold transition-all disabled:opacity-40"
+              title="Play"
+              className="flex items-center justify-center w-7 h-7 rounded-full text-sm font-bold transition-all disabled:opacity-40"
               style={{ background: "rgba(245,158,11,0.85)", color: "#000" }}
             >
-              ▶ Play
+              ▶
             </button>
+
+            {/* Stop */}
             <button
               type="button"
               onClick={handleStop}
               disabled={!isPlaying}
               data-ocid="miniplayer.secondary_button"
-              className="flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold transition-all disabled:opacity-40"
+              title="Stop"
+              className="flex items-center justify-center w-7 h-7 rounded-full text-sm transition-all disabled:opacity-40"
               style={{
                 background: "rgba(255,255,255,0.07)",
                 color: "rgba(255,255,255,0.65)",
                 border: "1px solid rgba(255,255,255,0.15)",
               }}
             >
-              ■ Stop
+              ■
             </button>
-            {isPlaying && (
-              <span className="text-[9px] text-amber-400 animate-pulse">
-                Playing…
-              </span>
-            )}
+
+            {/* Repeat toggle */}
+            <button
+              type="button"
+              onClick={() => setRepeat((r) => !r)}
+              data-ocid="miniplayer.repeat_toggle"
+              title={repeat ? "Repeat: On" : "Repeat: Off"}
+              className="flex items-center justify-center w-7 h-7 rounded-full text-sm transition-all"
+              style={{
+                background: repeat
+                  ? "rgba(245,158,11,0.2)"
+                  : "rgba(255,255,255,0.04)",
+                color: repeat ? "#F59E0B" : "rgba(255,255,255,0.3)",
+                border: `1px solid ${repeat ? "rgba(245,158,11,0.5)" : "rgba(255,255,255,0.1)"}`,
+              }}
+            >
+              ↺
+            </button>
+
+            {/* Settings toggle */}
+            <button
+              type="button"
+              onClick={() => setShowSettings((s) => !s)}
+              data-ocid="miniplayer.settings.open_modal_button"
+              title="Advanced settings"
+              className="flex items-center justify-center w-7 h-7 rounded-full text-sm transition-all"
+              style={{
+                background: showSettings
+                  ? "rgba(96,165,250,0.2)"
+                  : "rgba(255,255,255,0.04)",
+                color: showSettings ? "#93C5FD" : "rgba(255,255,255,0.3)",
+                border: `1px solid ${showSettings ? "rgba(96,165,250,0.4)" : "rgba(255,255,255,0.1)"}`,
+              }}
+            >
+              ⚙
+            </button>
+
+            {/* Status indicators */}
+            <div className="flex items-center gap-1.5 ml-1">
+              {isPlaying && (
+                <span className="text-[9px] text-amber-400 animate-pulse">
+                  Playing…
+                </span>
+              )}
+              {!isPlaying && (tempo !== 100 || pitch !== 0) && (
+                <span className="text-[8px] text-white/30">
+                  {tempo !== 100 && `${tempo}%`}
+                  {tempo !== 100 && pitch !== 0 && " "}
+                  {pitch !== 0 && `${pitch > 0 ? "+" : ""}${pitch}st`}
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </div>

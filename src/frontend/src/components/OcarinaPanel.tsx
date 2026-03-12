@@ -180,7 +180,7 @@ export function FourHoleDiagram({
   const gap = gapMap[size];
 
   return (
-    <div className={`flex flex-row items-center ${gap}`}>
+    <div className={`grid grid-cols-2 ${gap}`}>
       {holes.map((covered, i) => (
         <div
           // biome-ignore lint/suspicious/noArrayIndexKey: fixed 4-hole positions
@@ -894,7 +894,7 @@ export default function OcarinaPanel({
                     </span>
                   </span>
 
-                  <div className="flex gap-1 flex-shrink-0">
+                  <div className="grid grid-cols-2 gap-1 flex-shrink-0">
                     {getHolesForNote(noteIdx).map((covered, holeIdx) => (
                       <button
                         type="button"
